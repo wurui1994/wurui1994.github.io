@@ -1,0 +1,335 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>C++笔记 | WuRui</title><meta name="author" content="WuRui"><meta name="copyright" content="WuRui"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="C++11中enable_shared_from_this的用法解析https:&#x2F;&#x2F;blog.csdn.net&#x2F;breadheart&#x2F;article&#x2F;details&#x2F;112451022 cpp featurehttps:&#x2F;&#x2F;godbolt.org&#x2F;stacktrace -&gt; gcc 12source_location -&gt; gcc 11&#x2F;clang 15&#x2F;msvc">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++笔记">
+<meta property="og:url" content="https://wurui1994.github.io/2023/06/27/cpp-note/index.html">
+<meta property="og:site_name" content="WuRui">
+<meta property="og:description" content="C++11中enable_shared_from_this的用法解析https:&#x2F;&#x2F;blog.csdn.net&#x2F;breadheart&#x2F;article&#x2F;details&#x2F;112451022 cpp featurehttps:&#x2F;&#x2F;godbolt.org&#x2F;stacktrace -&gt; gcc 12source_location -&gt; gcc 11&#x2F;clang 15&#x2F;msvc">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wurui1994.github.io/img/avatar.jpg">
+<meta property="article:published_time" content="2023-06-27T05:33:36.000Z">
+<meta property="article:modified_time" content="2023-06-27T14:28:32.001Z">
+<meta property="article:author" content="WuRui">
+<meta property="article:tag" content="c++">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wurui1994.github.io/img/avatar.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://wurui1994.github.io/2023/06/27/cpp-note/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.bootcdn.net/ajax/libs/flickr-justified-gallery/2.1.2/fjGallery.min.js',
+      css: 'https://cdn.bootcdn.net/ajax/libs/flickr-justified-gallery/2.1.2/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'C++笔记',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-06-27 22:28:32'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">97</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">88</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">8</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 目录</span></a></div><div class="menus_item"><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img fixed" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="WuRui"><span class="site-name">WuRui</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 目录</span></a></div><div class="menus_item"><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">C++笔记</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2023-06-27T05:33:36.000Z" title="发表于 2023-06-27 13:33:36">2023-06-27</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-06-27T14:28:32.001Z" title="更新于 2023-06-27 22:28:32">2023-06-27</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/c/">c++</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">2.2k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>8分钟</span></span></div></div></div><article class="post-content" id="article-container"><p>C++11中enable_shared_from_this的用法解析<br><a target="_blank" rel="noopener" href="https://blog.csdn.net/breadheart/article/details/112451022">https://blog.csdn.net/breadheart/article/details/112451022</a></p>
+<h2 id="cpp-feature"><a href="#cpp-feature" class="headerlink" title="cpp feature"></a>cpp feature</h2><p><a target="_blank" rel="noopener" href="https://godbolt.org/">https://godbolt.org/</a><br>stacktrace -&gt; gcc 12<br>source_location -&gt; gcc 11&#x2F;clang 15&#x2F;msvc 19.29<br>ranges views -&gt; gcc 10&#x2F;clang 16&#x2F;msvc 19.32<br>coroutine -&gt; gcc 11&#x2F;clang 13(not apple clang)&#x2F;msvc 19.30<br>deducing this -&gt; msvc 19.32&#x2F;</p>
+<h2 id="C-实现lambda递归调用（C-11-C-23）"><a href="#C-实现lambda递归调用（C-11-C-23）" class="headerlink" title="C++ 实现lambda递归调用（C++11 - C++23）"></a>C++ 实现lambda递归调用（C++11 - C++23）</h2><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/J__M__C/article/details/125437699">https://blog.csdn.net/J__M__C/article/details/125437699</a><br><a target="_blank" rel="noopener" href="https://wandbox.org/">https://wandbox.org/</a></p>
+<p><a target="_blank" rel="noopener" href="https://zh.cppreference.com/w/cpp/feature_test">https://zh.cppreference.com/w/cpp/feature_test</a></p>
+<h2 id="cppref-note"><a href="#cppref-note" class="headerlink" title="cppref note"></a>cppref note</h2><p>无后缀浮点常量拥有 double 类型。若 后缀 为字母 f 或 F ，则浮点常量拥有 float 类型。若 后缀 为 l 或 L ，则浮点常量拥有 long double 类型。 </p>
+<p>C++11新特性3 - 左右值与右值引用<br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/85668787">https://zhuanlan.zhihu.com/p/85668787</a></p>
+<p>有限定的名字查找<br>如果 :: 左边为空，那么查找过程只会考虑全局命名空间作用域中作出（或通过 using 声明引入到全局命名空间中）的声明。这使得即使被局部声明隐藏的名字也能够被访问： </p>
+<p>C++中的mutable关键字<br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/yongdaimi/p/9565996.html">https://www.cnblogs.com/yongdaimi/p/9565996.html</a><br>显而易见，mutable只能用来修饰类的数据成员；而被mutable修饰的数据成员，可以在const成员函数中修改。</p>
+<p>friend有点类似</p>
+<p>从函数返回时，作为求值函数调用结果的临时量的复制初始化按顺序早于在 return 语句的操作数末尾处对所有临时量的销毁，而这些销毁进一步按顺序早于对环绕 return 语句的块的所有局部变量的销毁。</p>
+<p>构造函数不能是虚函数（因为在调用构造函数时，虚表指针并没有在对象的内存空间中，必须要构造函数调用完成后才会形成虚表指针）</p>
+<p>虚析构函数是为了解决基类的指针指向派生类对象，并用基类的指针删除派生类对象。</p>
+<p>别让异常逃离析构函数（析构函数应该吞下不传播异常，或者结束程序，而不是吐出异常；如果要处理异常应该在非析构的普通函数处理）</p>
+<h2 id="counting-semaphore"><a href="#counting-semaphore" class="headerlink" title="counting_semaphore"></a>counting_semaphore</h2><p>不同于 std::mutex ， counting_semaphore 不捆绑到执行线程——能在不同于释放信号量的线程获取该信号量。能同时进行 counting_semaphore 上的所有操作而无需联系到任何特定的执行线程，除了不能同时执行，但能在一个不同的线程上执行析构函数。</p>
+<p>信号量亦常用于发信&#x2F;提醒而非互斥，通过初始化该信号量为0 从而阻塞尝试 acquire() 的接收者，直至提醒者通过调用 release(n) “发信”。在此方面可把信号量当作 std::condition_variable 的替用品，通常它有更好的性能。 </p>
+<p>Mutex只能由获取它的线程释放，而您可以从任何其他线程(或进程)发出信号量信号，因此信号量更适合某些同步问题，如producer-consumer。</p>
+<p>在Windows上，二进制信号量更像是事件对象而不是互斥体。<br><a target="_blank" rel="noopener" href="https://www.codenong.com/62814/">https://www.codenong.com/62814/</a></p>
+<h2 id="std-list和std-forward-list"><a href="#std-list和std-forward-list" class="headerlink" title="std::list和std::forward_list"></a>std::list和std::forward_list</h2><p><a target="_blank" rel="noopener" href="https://zh.cppreference.com/w/cpp/container/list">https://zh.cppreference.com/w/cpp/container/list</a><br>std::list 是支持常数时间从容器任何位置插入和移除元素的容器。不支持快速随机访问。它通常实现为双向链表。与 std::forward_list 相比，此容器提供双向迭代但在空间上效率稍低。<br><a target="_blank" rel="noopener" href="https://zh.cppreference.com/w/cpp/container/forward_list">https://zh.cppreference.com/w/cpp/container/forward_list</a><br>std::forward_list 是支持从容器中的任何位置快速插入和移除元素的容器。不支持快速随机访问。它实现为单链表，且实质上与其在 C 中实现相比无任何开销。与 std::list 相比，此容器在不需要双向迭代时提供更有效地利用空间的存储。</p>
+<h2 id="std-recursive-mutex"><a href="#std-recursive-mutex" class="headerlink" title="std::recursive_mutex"></a>std::recursive_mutex</h2><p>有时候会在两个函数中分别对数据进行lock，如果在一个函数中又调用了另一个函数，此时如果使用std::mutex将会死锁，而用std::recursive_mutex则不会。看起来std::recursive_mutex很不错，但是使用的时候也需要多注意，lock和unlock的数量必须相等，否则会出错。</p>
+<p>另外还有性能的问题，std::recursive_mutex的性能会比较差一些</p>
+<h2 id="std-unique-lock与std-lock-guard"><a href="#std-unique-lock与std-lock-guard" class="headerlink" title="std::unique_lock与std::lock_guard"></a>std::unique_lock与std::lock_guard</h2><p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/7eba4f722e07">https://www.jianshu.com/p/7eba4f722e07</a><br>std::condition_variable 对象通常使用 std::unique_lock 来等待，如果需要使用另外的 lockable 类型，可以使用std::condition_variable_any类</p>
+<p>condition_variable(条件变量)，通俗的将线程根据条件去拿锁，若不符合条件则休眠，直到有线程唤醒它才会继续去竞争锁，用于线程同步，只能配合unique_lock使用，前面3个wait函数需要传入一个已经上锁的变量unique_lock<mutex>，此外第二个参数传入lambda表达式用于防止虚假唤醒;而condition_variable_any可以应用于任意的lock；</p>
+<p>C++锁的管理– std::lock_guard和std::unique_lock<br><a target="_blank" rel="noopener" href="https://blog.51cto.com/u_15127564/3587504?b=totalstatistic">https://blog.51cto.com/u_15127564/3587504?b=totalstatistic</a></p>
+<p><a target="_blank" rel="noopener" href="https://zh.cppreference.com/w/cpp/thread/lock">https://zh.cppreference.com/w/cpp/thread/lock</a><br>用免死锁算法避免死锁。<br>std::scoped_lock 提供此函数的 RAII 包装，通常它比裸调用 std::lock 更好。 </p>
+<p>std::weak_ptr 是一种智能指针，它对被 std::shared_ptr 管理的对象存在非拥有性（「弱」）引用。在访问所引用的对象前必须先转换为 std::shared_ptr。</p>
+<p>std::weak_ptr 用来表达临时所有权的概念：当某个对象只有存在时才需要被访问，而且随时可能被他人删除时，可以使用 std::weak_ptr 来跟踪该对象。需要获得临时所有权时，则将其转换为 std::shared_ptr，此时如果原来的 std::shared_ptr 被销毁，则该对象的生命期将被延长至这个临时的 std::shared_ptr 同样被销毁为止。</p>
+<p>std::weak_ptr 的另一用法是打断 std::shared_ptr 所管理的对象组成的环状引用。若这种环被孤立（例如无指向环中的外部共享指针），则 shared_ptr 引用计数无法抵达零，而内存被泄露。能令环中的指针之一为弱指针以避免此情况。 </p>
+<h2 id="misc"><a href="#misc" class="headerlink" title="misc"></a>misc</h2><p><a target="_blank" rel="noopener" href="https://winbgim.codecutter.org/">https://winbgim.codecutter.org/</a><br><a target="_blank" rel="noopener" href="https://libxbgi.sourceforge.net/">https://libxbgi.sourceforge.net/</a><br><a target="_blank" rel="noopener" href="https://lcc-win32.services.net/">https://lcc-win32.services.net/</a></p>
+<p>avilib -&gt; Rainer Johanni<br>player -&gt; MCI mciSendCommand<br><a target="_blank" rel="noopener" href="https://learn.microsoft.com/zh-cn/windows/win32/multimedia/mci">https://learn.microsoft.com/zh-cn/windows/win32/multimedia/mci</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/leixiaohua1020/simplest_media_play">https://github.com/leixiaohua1020/simplest_media_play</a></p>
+<p>各系统添加根证书<br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/meilong/p/ge-xi-tong-tian-jia-gen-zheng-shu.html">https://www.cnblogs.com/meilong/p/ge-xi-tong-tian-jia-gen-zheng-shu.html</a></p>
+<p>format str -&gt; python -&gt; c++ fmtlib</p>
+<p>C++ 项目编译优化：记一次提速 60% 的实践<br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/466738535">https://zhuanlan.zhihu.com/p/466738535</a><br>json_fwd.hpp</p>
+<p>windows -&gt; robocopy&#x2F;forfiles&#x2F;runas</p>
+<p>cimg -&gt; x11&#x2F;win32 -&gt; not apple</p>
+<p>基于范围的 for 循环—自定义类型<br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/354609822">https://zhuanlan.zhihu.com/p/354609822</a><br><a target="_blank" rel="noopener" href="https://learnmoderncpp.com/2019/11/18/pythons-range-in-20-lines-of-c/">https://learnmoderncpp.com/2019/11/18/pythons-range-in-20-lines-of-c/</a></p>
+<p>C++20之模板元条件判断，编译期if else, switch case</p>
+<p>std::decay 主要是弱化一些类型，说白了就是通过typedef 的方式去除掉引用、cv等属性。一般std::decay 与std::is_same 配合使用，确认基础类型。</p>
+<h2 id="探索X86架构C可变参数函数实现原理-gt-va-list-x2F-cdecl"><a href="#探索X86架构C可变参数函数实现原理-gt-va-list-x2F-cdecl" class="headerlink" title="探索X86架构C可变参数函数实现原理 -&gt; va_list&#x2F;__cdecl"></a>探索X86架构C可变参数函数实现原理 -&gt; va_list&#x2F;__cdecl</h2><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/m0_50662680/article/details/127709109">https://blog.csdn.net/m0_50662680/article/details/127709109</a><br>AArch64中va_list&#x2F;va_start&#x2F;va_arg&#x2F;…的实现<br><a target="_blank" rel="noopener" href="https://blog.csdn.net/lidan113lidan/article/details/123962416">https://blog.csdn.net/lidan113lidan/article/details/123962416</a></p>
+<p>c++自定义迭代器练习<br><a target="_blank" rel="noopener" href="https://blog.csdn.net/wyg_031113/article/details/128277587">https://blog.csdn.net/wyg_031113/article/details/128277587</a></p>
+<p>struct 内成员初始化<br>成员是class的情况 c++会调用构造函数 此时gcc<br>默认初始化为0的情况(基础类型?)<br>mingw gcc&#x2F;mingw clang&#x2F;apple clang(-O1)部分<br>Uninitialized variable warnings and compiler optimizations<br><a target="_blank" rel="noopener" href="http://jakegoulding.com/blog/2011/01/27/uninitialized-variable-warnings-and-compiler-optimizations/">http://jakegoulding.com/blog/2011/01/27/uninitialized-variable-warnings-and-compiler-optimizations/</a></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">A</span>&#123;&#125;;</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">A</span> = &#123;&#125;; <span class="comment">// -pedantic warn</span></span><br><span class="line"><span class="comment">// gcc -&gt; warning: ISO C forbids empty initializer braces before C2X [-Wpedantic]</span></span><br><span class="line"><span class="comment">// clang -&gt; warning: use of GNU empty initializer extension [-Wgnu-empty-initializer]</span></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">A</span> = &#123;<span class="number">0</span>&#125;; <span class="comment">// ok for c</span></span><br><span class="line"><span class="comment">// but c++ not happy</span></span><br><span class="line"><span class="comment">// gcc -&gt; warning: missing initializer for member &#x27;b&#x27; [-Wmissing-field-initializers]</span></span><br><span class="line"><span class="comment">// clang -&gt; warning: missing field &#x27;b&#x27; initializer [-Wmissing-field-initializers]</span></span><br></pre></td></tr></table></figure>
+
+<p>C++11编译问题：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// warning: ISO C++11 does not allow conversion from string literal to &#x27;char *&#x27;</span></span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_35683407/article/details/119603415">https://blog.csdn.net/qq_35683407/article/details/119603415</a></p>
+<p>gcc -Wuninitialized会warn<br>clang编译好像没有警告 clang –analyze可以<br>msvc &#x2F;permissive检查比较严格</p>
+<p><a target="_blank" rel="noopener" href="https://curl.se/docs/caextract.html">https://curl.se/docs/caextract.html</a></p>
+<p>gcc与vs2013的三个charset编译选项<br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/findumars/p/6627255.html">https://www.cnblogs.com/findumars/p/6627255.html</a><br><a target="_blank" rel="noopener" href="https://zh.cppreference.com/w/c/language/translation_phases">https://zh.cppreference.com/w/c/language/translation_phases</a></p>
+<p>C 语言中 static 的作用<br><a target="_blank" rel="noopener" href="https://www.runoob.com/w3cnote/c-static-effect.html">https://www.runoob.com/w3cnote/c-static-effect.html</a></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">char</span> *🐱 = <span class="string">&quot;cat&quot;</span>; <span class="comment">// 实现定义（ Clang 可用，但版本 10 前的 GCC 不可）</span></span><br></pre></td></tr></table></figure>
+
+<p>确定对象身份（左值求值）或读取之前赋给对象的值（右值求值）<br><a target="_blank" rel="noopener" href="https://zh.cppreference.com/w/c/language/eval_order">https://zh.cppreference.com/w/c/language/eval_order</a></p>
+<p>c构造函数<br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/imlgc/archive/2014/06/25/3808507.html">https://www.cnblogs.com/imlgc/archive/2014/06/25/3808507.html</a><br><a target="_blank" rel="noopener" href="https://www.orcode.com/question/217772_k204b7.html">https://www.orcode.com/question/217772_k204b7.html</a></p>
+<p>在main函数启动前和退出后执行代码<br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/shokey520/p/3680804.html">https://www.cnblogs.com/shokey520/p/3680804.html</a></p>
+<p>gcc由于全局对象的构建和析构都是由运行库完成的，于是在程序或共享库中有全局对象时，记得不能使用“-nonstartfiles”或“-nostdlib”选项，否则，构建与析构函数将不能正常执行（除非你很清楚自己的行为，并且手工构造和析构全局对象）。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://wurui1994.github.io">WuRui</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://wurui1994.github.io/2023/06/27/cpp-note/">https://wurui1994.github.io/2023/06/27/cpp-note/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://wurui1994.github.io" target="_blank">WuRui</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/c/">c++</a></div><div class="post_share"><div class="social-share" data-image="/img/avatar.jpg" data-sites="wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/butterfly-extsrc/1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.bootcdn.net/ajax/libs/butterfly-extsrc/1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechatpay.png" target="_blank"><img class="post-qr-code-img" src="/img/wechatpay.png" alt="微信"/></a><div class="post-qr-code-desc">微信</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/alipay.jpg" alt="支付宝"/></a><div class="post-qr-code-desc">支付宝</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2023/06/27/qt-note/" title="Qt相关"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Qt相关</div></div></a></div><div class="next-post pull-right"><a href="/2023/06/27/macos-note/" title="macOS记录"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">macOS记录</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2023/06/25/cpp-learn/" title="C++学习指南"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-25</div><div class="title">C++学习指南</div></div></a></div><div><a href="/2023/06/26/cpp-print/" title="C++输出"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-26</div><div class="title">C++输出</div></div></a></div><div><a href="/2023/06/25/cpplib-note/" title="C++库记录"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-25</div><div class="title">C++库记录</div></div></a></div><div><a href="/2023/06/25/node-api/" title="node-api使用"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-25</div><div class="title">node-api使用</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="giscus-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">WuRui</div><div class="author-info__description">每天都是新的一天</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">97</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">88</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">8</div></a></div><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/wurui1994" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="/img/qq.jpg" target="_blank" title="QQ"><i class="fab fa-qq"></i></a><a class="social-icon" href="/img/wechat.jpg" target="_blank" title="微信"><i class="fab fa-weixin"></i></a><a class="social-icon" href="mailto:1341531859@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn"></i><span>公告</span></div><div class="announcement_content">这里是我的博客, <a href=https://www.cnblogs.com/wurui1994/>旧博客地址</a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#cpp-feature"><span class="toc-number">1.</span> <span class="toc-text">cpp feature</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#C-%E5%AE%9E%E7%8E%B0lambda%E9%80%92%E5%BD%92%E8%B0%83%E7%94%A8%EF%BC%88C-11-C-23%EF%BC%89"><span class="toc-number">2.</span> <span class="toc-text">C++ 实现lambda递归调用（C++11 - C++23）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#cppref-note"><span class="toc-number">3.</span> <span class="toc-text">cppref note</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#counting-semaphore"><span class="toc-number">4.</span> <span class="toc-text">counting_semaphore</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#std-list%E5%92%8Cstd-forward-list"><span class="toc-number">5.</span> <span class="toc-text">std::list和std::forward_list</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#std-recursive-mutex"><span class="toc-number">6.</span> <span class="toc-text">std::recursive_mutex</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#std-unique-lock%E4%B8%8Estd-lock-guard"><span class="toc-number">7.</span> <span class="toc-text">std::unique_lock与std::lock_guard</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#misc"><span class="toc-number">8.</span> <span class="toc-text">misc</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%A2%E7%B4%A2X86%E6%9E%B6%E6%9E%84C%E5%8F%AF%E5%8F%98%E5%8F%82%E6%95%B0%E5%87%BD%E6%95%B0%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86-gt-va-list-x2F-cdecl"><span class="toc-number">9.</span> <span class="toc-text">探索X86架构C可变参数函数实现原理 -&gt; va_list&#x2F;__cdecl</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/07/20/dopamine-note/" title="多巴胺相关">多巴胺相关</a><time datetime="2023-07-20T06:47:32.000Z" title="发表于 2023-07-20 14:47:32">2023-07-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/07/03/meshroom-note/" title="MeshRoom相关">MeshRoom相关</a><time datetime="2023-07-03T12:27:32.000Z" title="发表于 2023-07-03 20:27:32">2023-07-03</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/07/01/sleep-note/" title="Sleep函数">Sleep函数</a><time datetime="2023-07-01T15:20:05.000Z" title="发表于 2023-07-01 23:20:05">2023-07-01</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/06/29/proxy-note/" title="代理记录">代理记录</a><time datetime="2023-06-29T09:31:21.000Z" title="发表于 2023-06-29 17:31:21">2023-06-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/06/29/parallel-compute/" title="并行计算">并行计算</a><time datetime="2023-06-29T01:54:41.000Z" title="发表于 2023-06-29 09:54:41">2023-06-29</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2023 By WuRui</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>function getGiscusTheme (theme) {
+  return theme === 'dark' ? 'dark' : 'light'
+}
+
+function loadGiscus () {
+  const config = Object.assign({
+    src: 'https://giscus.app/client.js',
+    'data-repo': 'wurui1994/wurui1994.github.io',
+    'data-repo-id': 'R_kgDOJzB0HA',
+    'data-category-id': 'DIC_kwDOJzB0HM4CXeHj',
+    'data-lang': 'zh-CN',
+    'data-mapping': 'pathname',
+    'data-theme': getGiscusTheme(document.documentElement.getAttribute('data-theme')),
+    'data-reactions-enabled': '1',
+    crossorigin: 'anonymous',
+    async: true
+  },null)
+
+  let ele = document.createElement('script')
+  for (let key in config) {
+    ele.setAttribute(key, config[key])
+  }
+  document.getElementById('giscus-wrap').insertAdjacentElement('afterbegin',ele)
+}
+
+function changeGiscusTheme (theme) {
+  function sendMessage(message) {
+    const iframe = document.querySelector('iframe.giscus-frame')
+    if (!iframe) return
+    iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app')
+  }
+
+  sendMessage({
+    setConfig: {
+      theme: getGiscusTheme(theme)
+    }
+  });
+}
+
+btf.addModeChange('giscus', changeGiscusTheme)
+
+if ('Giscus' === 'Giscus' || !false) {
+  if (false) btf.loadComment(document.getElementById('giscus-wrap'), loadGiscus)
+  else loadGiscus()
+} else {
+  function loadOtherComment () {
+    loadGiscus()
+  }
+}</script></div><link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/aplayer/1.10.1/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.bootcdn.net/ajax/libs/aplayer/1.10.1/APlayer.min.js"></script><script src="https://cdn.bootcdn.net/ajax/libs/butterfly-extsrc/1.1.3/metingjs/dist/Meting.min.js"></script><script src="https://cdn.bootcdn.net/ajax/libs/pjax/0.2.8/pjax.min.js"></script><script>let pjaxSelectors = ["link[rel=\"canonical\"]","meta[property=\"og:image\"]","meta[property=\"og:title\"]","meta[property=\"og:url\"]","head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener scroll 
+  window.tocScrollFn && window.removeEventListener('scroll', window.tocScrollFn)
+  window.scrollCollect && window.removeEventListener('scroll', scrollCollect)
+
+  document.getElementById('rightside').style.cssText = "opacity: ''; transform: ''"
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+  typeof disqusjs === 'object' && disqusjs.destroy()
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', (e) => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
