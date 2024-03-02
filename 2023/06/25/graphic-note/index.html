@@ -1,0 +1,324 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>图形相关 | WuRui</title><meta name="author" content="WuRui"><meta name="copyright" content="WuRui"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="openglglutglbindinggladPangolinOpenGL-Renderererhefreetype-gllibtess2ogl -&gt; www.opengl-tutorial.orgGLVraylibrayguimini3dTiny3DtinyEnginefreeglutexamples Examples for the OpenGL Red BookOpenGL-Regis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="图形相关">
+<meta property="og:url" content="https://wurui1994.github.io/2023/06/25/graphic-note/index.html">
+<meta property="og:site_name" content="WuRui">
+<meta property="og:description" content="openglglutglbindinggladPangolinOpenGL-Renderererhefreetype-gllibtess2ogl -&gt; www.opengl-tutorial.orgGLVraylibrayguimini3dTiny3DtinyEnginefreeglutexamples Examples for the OpenGL Red BookOpenGL-Regis">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wurui1994.github.io/img/avatar.jpg">
+<meta property="article:published_time" content="2023-06-25T10:57:49.000Z">
+<meta property="article:modified_time" content="2023-06-27T05:51:30.055Z">
+<meta property="article:author" content="WuRui">
+<meta property="article:tag" content="graphic">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wurui1994.github.io/img/avatar.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://wurui1994.github.io/2023/06/25/graphic-note/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.bootcdn.net/ajax/libs/flickr-justified-gallery/2.1.2/fjGallery.min.js',
+      css: 'https://cdn.bootcdn.net/ajax/libs/flickr-justified-gallery/2.1.2/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '图形相关',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-06-27 13:51:30'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">101</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">90</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 目录</span></a></div><div class="menus_item"><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img fixed" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="WuRui"><span class="site-name">WuRui</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 目录</span></a></div><div class="menus_item"><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">图形相关</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2023-06-25T10:57:49.000Z" title="发表于 2023-06-25 18:57:49">2023-06-25</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-06-27T05:51:30.055Z" title="更新于 2023-06-27 13:51:30">2023-06-27</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/graphic/">graphic</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">196</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>1分钟</span></span></div></div></div><article class="post-content" id="article-container"><h2 id="opengl"><a href="#opengl" class="headerlink" title="opengl"></a>opengl</h2><p><a target="_blank" rel="noopener" href="https://github.com/markkilgard/glut">glut</a><br><a target="_blank" rel="noopener" href="https://github.com/cginternals/glbinding">glbinding</a><br><a target="_blank" rel="noopener" href="https://github.com/Dav1dde/glad">glad</a><br><a target="_blank" rel="noopener" href="https://github.com/stevenlovegrove/Pangolin">Pangolin</a><br><a target="_blank" rel="noopener" href="https://github.com/htmlboss/OpenGL-Renderer">OpenGL-Renderer</a><br><a target="_blank" rel="noopener" href="https://github.com/tksuoran/erhe">erhe</a><br><a target="_blank" rel="noopener" href="https://github.com/rougier/freetype-gl">freetype-gl</a><br><a target="_blank" rel="noopener" href="https://github.com/memononen/libtess2">libtess2</a><br><a target="_blank" rel="noopener" href="https://github.com/opengl-tutorials/ogl">ogl</a> -&gt; <a target="_blank" rel="noopener" href="http://www.opengl-tutorial.org/">www.opengl-tutorial.org</a><br><a target="_blank" rel="noopener" href="https://github.com/AlloSphere-Research-Group/GLV">GLV</a><br><a target="_blank" rel="noopener" href="https://github.com/raysan5/raylib">raylib</a><br><a target="_blank" rel="noopener" href="https://github.com/raysan5/raygui">raygui</a><br><a target="_blank" rel="noopener" href="https://github.com/skywind3000/mini3d">mini3d</a><br><a target="_blank" rel="noopener" href="https://github.com/zhangbaochong/Tiny3D">Tiny3D</a><br><a target="_blank" rel="noopener" href="https://github.com/sdlwlxf1/tinyEngine">tinyEngine</a><br><a target="_blank" rel="noopener" href="https://github.com/FreeGLUTProject/freeglut">freeglut</a><br><a target="_blank" rel="noopener" href="https://github.com/openglredbook/examples">examples</a> Examples for the OpenGL Red Book<br><a target="_blank" rel="noopener" href="https://github.com/KhronosGroup/OpenGL-Registry">OpenGL-Registry</a><br><a target="_blank" rel="noopener" href="https://github.com/JoeyDeVries/LearnOpenGL">LearnOpenGL</a><br><a target="_blank" rel="noopener" href="https://github.com/LearnOpenGL-CN/LearnOpenGL-CN">LearnOpenGL-CN</a><br><a target="_blank" rel="noopener" href="https://github.com/gamedev-net/nehe-opengl">nehe-opengl</a><br><a target="_blank" rel="noopener" href="https://github.com/tyt2y3/vaserenderer">vaserenderer</a><br><a target="_blank" rel="noopener" href="https://github.com/patriciogonzalezvivo/ada">ada</a><br><a target="_blank" rel="noopener" href="https://github.com/sweetdark/openglex">openglex</a><br><a target="_blank" rel="noopener" href="https://github.com/AidanDelaney/antons_opengl_tutorials_book">antons_opengl_tutorials_book</a><br><a target="_blank" rel="noopener" href="https://github.com/capnramses/antons_opengl_tutorials_book">antons_opengl_tutorials_book</a><br><a target="_blank" rel="noopener" href="https://github.com/zuck/opengl-examples">opengl-examples</a><br><a target="_blank" rel="noopener" href="https://github.com/Polytonic/Glitter">Glitter</a><br><a target="_blank" rel="noopener" href="https://github.com/SaschaWillems/glCapsViewer">glCapsViewer</a><br><a target="_blank" rel="noopener" href="https://github.com/LukasBanana/LLGL">LLGL</a><br><a target="_blank" rel="noopener" href="https://github.com/duilib/duilib">duilib</a></p>
+<h2 id="vulkan"><a href="#vulkan" class="headerlink" title="vulkan"></a>vulkan</h2><p><a target="_blank" rel="noopener" href="https://github.com/zeux/volk">volk</a><br><a target="_blank" rel="noopener" href="https://github.com/jpbruyere/vkvg">vkvg</a><br><a target="_blank" rel="noopener" href="https://github.com/mackron/vkbind">vkbind</a><br><a target="_blank" rel="noopener" href="https://github.com/montychen/VulkanTutorial_GLFW">VulkanTutorial_GLFW</a><br><a target="_blank" rel="noopener" href="https://github.com/SaschaWillems/Vulkan">Vulkan</a></p>
+<h2 id="metal"><a href="#metal" class="headerlink" title="metal"></a>metal</h2><p><a target="_blank" rel="noopener" href="https://github.com/tlareywi/MetalMinimal">MetalMinimal</a></p>
+<h2 id="game"><a href="#game" class="headerlink" title="game"></a>game</h2><p><a target="_blank" rel="noopener" href="https://github.com/septag/rizz">rizz</a><br><a target="_blank" rel="noopener" href="https://github.com/floooh/pacman.c">pacman.c</a><br><a target="_blank" rel="noopener" href="https://github.com/misakamm/StandardTetris">StandardTetris</a><br><a target="_blank" rel="noopener" href="https://github.com/sp4cerat/Game-GUI">Game-GUI</a></p>
+<h2 id="render"><a href="#render" class="headerlink" title="render"></a>render</h2><p><a target="_blank" rel="noopener" href="https://github.com/ssloy/tinyrenderer">tinyrenderer</a><br><a target="_blank" rel="noopener" href="https://github.com/MethanePowered/MethaneKit">MethaneKit</a><br><a target="_blank" rel="noopener" href="https://github.com/google/filament">filament</a><br><a target="_blank" rel="noopener" href="https://github.com/pygame/pygame">pygame</a><br><a target="_blank" rel="noopener" href="https://github.com/NadirRoGue/RenderEngine">RenderEngine</a><br><a target="_blank" rel="noopener" href="https://github.com/o3de/o3de">o3de</a><br><a target="_blank" rel="noopener" href="https://github.com/matrixcascade/PainterEngine">PainterEngine</a><br><a target="_blank" rel="noopener" href="https://github.com/libsdl-org/SDL">SDL</a><br><a target="_blank" rel="noopener" href="https://github.com/syoyo/lucille">lucille</a><br><a target="_blank" rel="noopener" href="https://github.com/mortennobel/SimpleRenderEngine">SimpleRenderEngine</a><br><a target="_blank" rel="noopener" href="https://github.com/nfrechette/rtm">rtm</a><br><a target="_blank" rel="noopener" href="https://github.com/ramakarl/just_math">just_math</a><br><a target="_blank" rel="noopener" href="https://github.com/intel/xess">xess</a> Intel(R) Xe Super Sampling (XeSS)</p>
+<h2 id="trace"><a href="#trace" class="headerlink" title="trace"></a>trace</h2><p><a target="_blank" rel="noopener" href="https://github.com/apitrace/apitrace">apitrace</a><br><a target="_blank" rel="noopener" href="https://github.com/baldurk/renderdoc">renderdoc</a></p>
+<h2 id="rendergraph"><a href="#rendergraph" class="headerlink" title="rendergraph"></a>rendergraph</h2><p><a target="_blank" rel="noopener" href="https://github.com/DragonJoker/RenderGraph">RenderGraph</a><br><a target="_blank" rel="noopener" href="https://github.com/martty/vuk">vuk</a></p>
+<h2 id="visulize"><a href="#visulize" class="headerlink" title="visulize"></a>visulize</h2><p><a target="_blank" rel="noopener" href="https://github.com/datoviz/datoviz">datoviz</a><br><a target="_blank" rel="noopener" href="https://github.com/vispy/vispy">vispy</a><br><a target="_blank" rel="noopener" href="https://github.com/glumpy/glumpy">glumpy</a><br><a target="_blank" rel="noopener" href="https://github.com/sciapp/gr">gr</a><br><a target="_blank" rel="noopener" href="https://github.com/sciplot/sciplot">sciplot</a><br><a target="_blank" rel="noopener" href="https://github.com/epezent/implot">implot</a><br><a target="_blank" rel="noopener" href="https://github.com/isl-org/Open3D">Open3D</a><br><a target="_blank" rel="noopener" href="https://github.com/trase-cpp/trase">trase</a><br><a target="_blank" rel="noopener" href="https://github.com/svn2github/MathGL">MathGL</a><br><a target="_blank" rel="noopener" href="https://github.com/sintegrial/qwtplot3d">qwtplot3d</a><br><a target="_blank" rel="noopener" href="https://github.com/alandefreitas/matplotplusplus">matplotplusplus</a><br><a target="_blank" rel="noopener" href="https://github.com/jonatanolofsson/cpplot">cpplot</a><br><a target="_blank" rel="noopener" href="https://github.com/madplotlib/madplotlib">madplotlib</a><br><a target="_blank" rel="noopener" href="https://github.com/imxxw/XCustomPlot">XCustomPlot</a><br><a target="_blank" rel="noopener" href="https://github.com/jkriege2/JKQtPlotter">JKQtPlotter</a><br><a target="_blank" rel="noopener" href="https://github.com/Slicer/SlicerGitSVNArchive">Slicer</a></p>
+<h2 id="plot"><a href="#plot" class="headerlink" title="plot"></a>plot</h2><p><a target="_blank" rel="noopener" href="https://github.com/hilgenberg/cplot">cplot</a><br><a target="_blank" rel="noopener" href="https://github.com/gnuplot/gnuplot">gnuplot</a></p>
+<h2 id="skia"><a href="#skia" class="headerlink" title="skia"></a>skia</h2><p><a target="_blank" rel="noopener" href="https://github.com/google/skia">skia</a><br><a target="_blank" rel="noopener" href="https://github.com/skui-org/skia">skia</a> -&gt; cmake<br>nodejs<br><a target="_blank" rel="noopener" href="https://github.com/samizdatco/skia-canvas">skia-canvas</a><br>ui<br><a target="_blank" rel="noopener" href="https://github.com/skui-org/skui">skui</a><br>qt<br><a target="_blank" rel="noopener" href="https://github.com/QtSkia/QtSkia">QtSkia</a></p>
+<h2 id="libgdiplus"><a href="#libgdiplus" class="headerlink" title="libgdiplus"></a>libgdiplus</h2><p><a target="_blank" rel="noopener" href="https://github.com/mono/libgdiplus">libgdiplus</a></p>
+<h2 id="blend2d"><a href="#blend2d" class="headerlink" title="blend2d"></a>blend2d</h2><p><a target="_blank" rel="noopener" href="https://github.com/blend2d/blend2d">blend2d</a></p>
+<h2 id="vector-graphic"><a href="#vector-graphic" class="headerlink" title="vector graphic"></a>vector graphic</h2><p><a target="_blank" rel="noopener" href="https://github.com/tyoma/agge">agge</a><br><a target="_blank" rel="noopener" href="https://github.com/alibaba/GCanvas">GCanvas</a><br><a target="_blank" rel="noopener" href="https://github.com/thorvg/thorvg">thorvg</a><br><a target="_blank" rel="noopener" href="https://github.com/intel/fastuidraw">fastuidraw</a><br><a target="_blank" rel="noopener" href="https://github.com/styluslabs/nanovgXC">nanovgXC</a><br><a target="_blank" rel="noopener" href="https://github.com/jrmuizel/glitter-paths">glitter-paths</a><br><a target="_blank" rel="noopener" href="https://github.com/ezhangle/caskbench">caskbench</a> A Cairo&#x2F;Skia Benchmark<br><a target="_blank" rel="noopener" href="https://github.com/jpbruyere/vgperf">vgperf</a> Vector graphic libraries performances tests<br><a target="_blank" rel="noopener" href="https://github.com/fjolliton/cl-vectors">cl-vectors</a><br><a target="_blank" rel="noopener" href="https://github.com/rougier/gl-agg">gl-agg</a><br><a target="_blank" rel="noopener" href="https://github.com/ghaerr/agg-2.6">agg-2.6</a></p>
+<h2 id="rust"><a href="#rust" class="headerlink" title="rust"></a>rust</h2><p><a target="_blank" rel="noopener" href="https://github.com/servo/pathfinder">pathfinder</a><br><a target="_blank" rel="noopener" href="https://github.com/linebender/piet">piet</a><br><a target="_blank" rel="noopener" href="https://github.com/google/forma">forma</a><br><a target="_blank" rel="noopener" href="https://github.com/linebender/vello">vello</a></p>
+<h2 id="misc"><a href="#misc" class="headerlink" title="misc"></a>misc</h2><p><a target="_blank" rel="noopener" href="https://github.com/ericjang/awesome-graphics">awesome-graphics</a><br><a target="_blank" rel="noopener" href="https://github.com/PacktPublishing/3D-Graphics-Rendering-Cookbook">3D-Graphics-Rendering-Cookbook</a><br><a target="_blank" rel="noopener" href="https://github.com/PacktPublishing/OpenGL-Build-High-Performance-Graphics">OpenGL-Build-High-Performance-Graphics</a><br><a target="_blank" rel="noopener" href="https://github.com/KimuraRyo/BSDFProcessor">BSDFProcessor</a><br><a target="_blank" rel="noopener" href="https://github.com/Madsy/Computer-Graphics-Explained">Computer-Graphics-Explained</a><br><a target="_blank" rel="noopener" href="https://github.com/slackmoehrle/Computer-Graphics-Through-OpenGL-2nd">Computer-Graphics-Through-OpenGL-2nd</a><br><a target="_blank" rel="noopener" href="https://github.com/xuhongxu96/Computer-Graphics-Course">Computer-Graphics-Course</a><br><a target="_blank" rel="noopener" href="https://github.com/danginsburg/opengles3-book">opengles3-book</a><br><a target="_blank" rel="noopener" href="https://github.com/OpenGLInsights/OpenGLInsightsCode">OpenGLInsightsCode</a><br><a target="_blank" rel="noopener" href="https://github.com/dtrebilco/PreMulAlpha">PreMulAlpha</a></p>
+<h2 id="high"><a href="#high" class="headerlink" title="high"></a>high</h2><p><a target="_blank" rel="noopener" href="https://github.com/cycfi/artist">artist</a><br><a target="_blank" rel="noopener" href="https://github.com/cycfi/elements">elements</a><br><a target="_blank" rel="noopener" href="https://github.com/floooh/sokol">sokol</a><br><a target="_blank" rel="noopener" href="https://github.com/edubart/sokol_gp">sokol_gp</a></p>
+<h2 id="html-x2F-css"><a href="#html-x2F-css" class="headerlink" title="html&#x2F;css"></a>html&#x2F;css</h2><p><a target="_blank" rel="noopener" href="https://github.com/libRocket/libRocket">libRocket</a><br><a target="_blank" rel="noopener" href="https://github.com/mikke89/RmlUi">RmlUi</a></p>
+<h2 id="gui"><a href="#gui" class="headerlink" title="gui"></a>gui</h2><p><a target="_blank" rel="noopener" href="https://github.com/Immediate-Mode-UI/Nuklear">Nuklear</a><br><a target="_blank" rel="noopener" href="https://github.com/hoffstadt/DearPyGui">DearPyGui</a><br><a target="_blank" rel="noopener" href="https://github.com/rxi/microui">microui</a><br><a target="_blank" rel="noopener" href="https://github.com/cnjinhao/nana">nana</a><br><a target="_blank" rel="noopener" href="https://github.com/wjakob/nanogui">nanogui</a><br><a target="_blank" rel="noopener" href="https://github.com/libui-ng/libui-ng">libui-ng</a><br><a target="_blank" rel="noopener" href="https://github.com/ocornut/imgui">imgui</a><br><a target="_blank" rel="noopener" href="https://github.com/lc-soft/LCUI">LCUI</a><br><a target="_blank" rel="noopener" href="https://github.com/nodegui/nodegui">nodegui</a><br><a target="_blank" rel="noopener" href="https://github.com/wxWidgets/wxWidgets">wxWidgets</a><br><a target="_blank" rel="noopener" href="https://github.com/MyGUI/mygui">mygui</a><br><a target="_blank" rel="noopener" href="https://github.com/samhocevar/portable-file-dialogs">portable-file-dialogs</a><br><a target="_blank" rel="noopener" href="https://github.com/HsiangHo/XUIKit">XUIKit</a><br><a target="_blank" rel="noopener" href="https://github.com/gnustep/libs-gui">libs-gui</a><br><a target="_blank" rel="noopener" href="https://github.com/slp/gui-dirty">gui-dirty</a><br><a target="_blank" rel="noopener" href="https://github.com/AshampooSystems/boden">boden</a></p>
+<h2 id="yue"><a href="#yue" class="headerlink" title="yue"></a>yue</h2><p><a target="_blank" rel="noopener" href="https://github.com/yue/yue-sample-apps">yue-sample-apps</a><br><a target="_blank" rel="noopener" href="https://github.com/yue/node-gui">node-gui</a><br><a target="_blank" rel="noopener" href="https://github.com/yue/yackage">yackage</a><br><a target="_blank" rel="noopener" href="https://github.com/yue/yue">yue</a><br><a target="_blank" rel="noopener" href="https://github.com/yue/yode">yode</a><br><a target="_blank" rel="noopener" href="https://github.com/nodegui/qodejs">qodejs</a><br><a target="_blank" rel="noopener" href="https://github.com/facebook/yoga">yoga</a></p>
+<h2 id="winui"><a href="#winui" class="headerlink" title="winui"></a>winui</h2><p><a target="_blank" rel="noopener" href="https://github.com/microsoft/microsoft-ui-xaml">microsoft-ui-xaml</a><br><a target="_blank" rel="noopener" href="https://github.com/sotanakamura/winui3-without-xaml">winui3-without-xaml</a></p>
+<h2 id="direct-ui"><a href="#direct-ui" class="headerlink" title="direct ui"></a>direct ui</h2><p><a target="_blank" rel="noopener" href="https://github.com/mrluanma/directui">directui</a><br><a target="_blank" rel="noopener" href="https://github.com/lvgl/lvgl">lvgl</a><br><a target="_blank" rel="noopener" href="https://github.com/jameskeane/directui">directui</a></p>
+<h2 id="svg"><a href="#svg" class="headerlink" title="svg"></a>svg</h2><p><a target="_blank" rel="noopener" href="https://github.com/sammycage/lunasvg">lunasvg</a><br><a target="_blank" rel="noopener" href="https://github.com/rev22/svgl">svgl</a><br><a target="_blank" rel="noopener" href="https://github.com/cppfw/svgren">svgren</a><br><a target="_blank" rel="noopener" href="https://github.com/memononen/nanosvg">nanosvg</a></p>
+<h2 id="math-3d"><a href="#math-3d" class="headerlink" title="math 3d"></a>math 3d</h2><p><a target="_blank" rel="noopener" href="https://github.com/parisolab/mathmod">mathmod</a></p>
+<h2 id="typography-排版"><a href="#typography-排版" class="headerlink" title="typography(排版)"></a>typography(排版)</h2><p><a target="_blank" rel="noopener" href="https://github.com/harfbuzz/harfbuzz">harfbuzz</a></p>
+<h2 id="math-ml"><a href="#math-ml" class="headerlink" title="math ml"></a>math ml</h2><p><a target="_blank" rel="noopener" href="https://github.com/Nilis640/formulator-mathml">formulator-mathml</a><br><a target="_blank" rel="noopener" href="https://github.com/khaledhosny/libmathview">libmathview</a><br><a target="_blank" rel="noopener" href="https://github.com/soh534/mathML-grapher">mathML-grapher</a><br><a target="_blank" rel="noopener" href="https://github.com/uwerat/qwt-mml-dev">qwt-mml-dev</a></p>
+<h2 id="cocoa"><a href="#cocoa" class="headerlink" title="cocoa"></a>cocoa</h2><p><a target="_blank" rel="noopener" href="https://github.com/NikolaGrujic91/Cocoa-macOS-Examples">Cocoa-macOS-Examples</a><br><a target="_blank" rel="noopener" href="https://github.com/Kampfgnom/QINAppStoreMainWindow">QINAppStoreMainWindow</a><br><a target="_blank" rel="noopener" href="https://github.com/indragiek/INAppStoreWindow">INAppStoreWindow</a><br><a target="_blank" rel="noopener" href="https://github.com/mockingbot/mb_colorpicker_desktop_qt">mb_colorpicker_desktop_qt</a><br><a target="_blank" rel="noopener" href="https://github.com/dsward2/macSVG">macSVG</a><br><a target="_blank" rel="noopener" href="https://github.com/msorvig/qt-macos-examples">qt-macos-examples</a><br><a target="_blank" rel="noopener" href="https://github.com/preble/Cocoa4eSolutions">Cocoa4eSolutions</a><br><a target="_blank" rel="noopener" href="https://github.com/renmin/ChineseFontTestOC">ChineseFontTestOC</a><br><a target="_blank" rel="noopener" href="https://github.com/typcn/chromium-tabs">chromium-tabs</a><br><a target="_blank" rel="noopener" href="https://github.com/MysteryRan/RanWeChat">RanWeChat</a></p>
+<h2 id="image"><a href="#image" class="headerlink" title="image"></a>image</h2><p><a target="_blank" rel="noopener" href="https://github.com/DentonW/DevIL">DevIL</a><br><a target="_blank" rel="noopener" href="https://github.com/emoon/minifb">minifb</a><br><a target="_blank" rel="noopener" href="https://github.com/coin3d/simage">simage</a><br><a target="_blank" rel="noopener" href="https://github.com/OpenImageIO/oiio">oiio</a><br><a target="_blank" rel="noopener" href="https://github.com/python-pillow/Pillow">Pillow</a><br><a target="_blank" rel="noopener" href="https://github.com/GreycLab/CImg">CImg</a><br><a target="_blank" rel="noopener" href="https://github.com/epatel/SOIL">SOIL</a><br><a target="_blank" rel="noopener" href="https://github.com/kbranigan/Simple-OpenGL-Image-Library">Simple-OpenGL-Image-Library</a><br><a target="_blank" rel="noopener" href="https://github.com/tjko/jpeginfo">jpeginfo</a><br><a target="_blank" rel="noopener" href="https://github.com/HappySeaFox/sail">sail</a><br><a target="_blank" rel="noopener" href="https://github.com/sekrit-twc/zimg">zimg</a><br><a target="_blank" rel="noopener" href="https://github.com/vcforge/WriteAnimatedGIF">WriteAnimatedGIF</a><br><a target="_blank" rel="noopener" href="https://github.com/schani/rwimg">rwimg</a><br><a target="_blank" rel="noopener" href="https://github.com/lvandeve/lodepng">lodepng</a><br><a target="_blank" rel="noopener" href="https://github.com/bcampbell/impy">impy</a></p>
+<h2 id="shortcut"><a href="#shortcut" class="headerlink" title="shortcut"></a>shortcut</h2><p><a target="_blank" rel="noopener" href="https://github.com/hluk/qxtglobalshortcut">qxtglobalshortcut</a></p>
+<h2 id="grammer-x2F-creative"><a href="#grammer-x2F-creative" class="headerlink" title="grammer&#x2F;creative"></a>grammer&#x2F;creative</h2><p><a target="_blank" rel="noopener" href="https://github.com/MtnViewJohn/context-free">context-free</a><br><a target="_blank" rel="noopener" href="https://github.com/vectorgraphics/asymptote">asymptote</a><br><a target="_blank" rel="noopener" href="https://github.com/cinder/Cinder">Cinder</a><br><a target="_blank" rel="noopener" href="https://github.com/ivansafrin/Polycode">Polycode</a></p>
+<h2 id="ocr"><a href="#ocr" class="headerlink" title="ocr"></a>ocr</h2><p><a target="_blank" rel="noopener" href="https://github.com/tesseract-ocr/tesseract">tesseract</a></p>
+<h2 id="framework"><a href="#framework" class="headerlink" title="framework"></a>framework</h2><p><a target="_blank" rel="noopener" href="https://github.com/kivy/kivy">kivy</a><br><a target="_blank" rel="noopener" href="https://github.com/gongminmin/KlayGE">KlayGE</a><br><a target="_blank" rel="noopener" href="https://github.com/juce-framework/JUCE">JUCE</a></p>
+<h2 id="graph"><a href="#graph" class="headerlink" title="graph"></a>graph</h2><p>Force-directed graph layout with Fruchterman-Reingold<br><a target="_blank" rel="noopener" href="https://github.com/olvb/nodesoup">nodesoup</a><br><a target="_blank" rel="noopener" href="https://github.com/igraph/igraph">igraph</a></p>
+<h2 id="paint"><a href="#paint" class="headerlink" title="paint"></a>paint</h2><p><a target="_blank" rel="noopener" href="https://github.com/floooh/sokol">sokol</a><br><a target="_blank" rel="noopener" href="https://github.com/rbrich/xcikit">xcikit</a></p>
+<h2 id="basic-x2F-bgi-x2F-graphic-h"><a href="#basic-x2F-bgi-x2F-graphic-h" class="headerlink" title="basic&#x2F;bgi&#x2F;graphic.h"></a>basic&#x2F;bgi&#x2F;graphic.h</h2><p><a target="_blank" rel="noopener" href="https://github.com/swornim00/libgraphics">libgraphics</a><br><a target="_blank" rel="noopener" href="https://github.com/JulStrat/SDL_bgi">SDL_bgi</a><br><a target="_blank" rel="noopener" href="https://github.com/cschladetsch/TurtleGraphics">TurtleGraphics</a><br><a target="_blank" rel="noopener" href="https://github.com/royqh1979/raylib-drawing">raylib-drawing</a><br><a target="_blank" rel="noopener" href="https://github.com/wysaid/xege">xege</a></p>
+<h2 id="font"><a href="#font" class="headerlink" title="font"></a>font</h2><p><a target="_blank" rel="noopener" href="https://github.com/ysc3839/FontMod">FontMod</a> Simple hook tool to change Win32 program font.<br><a target="_blank" rel="noopener" href="https://github.com/memononen/fontstash">fontstash</a><br><a target="_blank" rel="noopener" href="https://github.com/stipub/stixfonts">stixfonts</a><br><a target="_blank" rel="noopener" href="https://github.com/aliftype/xits">xits</a></p>
+<h2 id="math-render"><a href="#math-render" class="headerlink" title="math render"></a>math render</h2><p><a target="_blank" rel="noopener" href="https://github.com/ForNeVeR/xaml-math">xaml-math</a></p>
+<h2 id="shader"><a href="#shader" class="headerlink" title="shader"></a>shader</h2><p><a target="_blank" rel="noopener" href="https://github.com/Rabbid76/graphics-snippets">graphics-snippets</a><br><a target="_blank" rel="noopener" href="https://github.com/lettier/3d-game-shaders-for-beginners">3d-game-shaders-for-beginners</a><br><a target="_blank" rel="noopener" href="https://github.com/patriciogonzalezvivo/glslViewer">glslViewer</a><br><a target="_blank" rel="noopener" href="https://github.com/dfranx/SHADERed">SHADERed</a><br><a target="_blank" rel="noopener" href="https://github.com/google/swiftshader">swiftshader</a><br><a target="_blank" rel="noopener" href="https://github.com/patriciogonzalezvivo/glslCanvas">glslCanvas</a><br><a target="_blank" rel="noopener" href="https://github.com/cdglabs/Shadershop">Shadershop</a><br><a target="_blank" rel="noopener" href="https://github.com/patriciogonzalezvivo/thebookofshaders">thebookofshaders</a><br><a target="_blank" rel="noopener" href="https://github.com/DragonJoker/ShaderWriter">ShaderWriter</a><br><a target="_blank" rel="noopener" href="https://github.com/microsoft/ShaderConductor">ShaderConductor</a><br><a target="_blank" rel="noopener" href="https://github.com/stevensona/shader-toy">shader-toy</a><br><a target="_blank" rel="noopener" href="https://github.com/google/shaderc">shaderc</a></p>
+<h2 id="shader-x2F-image-process"><a href="#shader-x2F-image-process" class="headerlink" title="shader&#x2F;image process"></a>shader&#x2F;image process</h2><p><a target="_blank" rel="noopener" href="https://github.com/karlssonper/gpuip">gpuip</a><br><a target="_blank" rel="noopener" href="https://github.com/goui/projetlibreopengl">projetlibreopengl</a><br><a target="_blank" rel="noopener" href="https://github.com/davous267/OpenGL-ImageProcessing-shaders">OpenGL-ImageProcessing-shaders</a><br><a target="_blank" rel="noopener" href="https://github.com/cromop/mOffscreenRendering">mOffscreenRendering</a><br><a target="_blank" rel="noopener" href="https://github.com/piellardj/post-treatment-gpu">post-treatment-gpu</a><br><a target="_blank" rel="noopener" href="https://github.com/madebyjeffrey/GrapheinPure">GrapheinPure</a><br><a target="_blank" rel="noopener" href="https://github.com/jagregory/abrash-black-book">abrash-black-book</a> Graphics Programming Black Book</p>
+<h2 id="geometry-x2F-triangle-meshes"><a href="#geometry-x2F-triangle-meshes" class="headerlink" title="geometry&#x2F;triangle meshes"></a>geometry&#x2F;triangle meshes</h2><p><a target="_blank" rel="noopener" href="https://github.com/cnr-isti-vclab/vcglib">vcglib</a><br><a target="_blank" rel="noopener" href="https://github.com/danfis/libccd">libccd</a><br><a target="_blank" rel="noopener" href="https://github.com/libigl/libigl">libigl</a><br><a target="_blank" rel="noopener" href="https://github.com/microsoft/Mesh-processing-library">Mesh-processing-library</a><br><a target="_blank" rel="noopener" href="https://github.com/PixarAnimationStudios/OpenSubdiv">OpenSubdiv</a></p>
+<h2 id="3d-volume"><a href="#3d-volume" class="headerlink" title="3d volume"></a>3d volume</h2><p><a target="_blank" rel="noopener" href="https://github.com/AaronWatters/contourist">contourist</a><br><a target="_blank" rel="noopener" href="https://github.com/mikolalysenko/mikolalysenko.github.com">mikolalysenko.github.com</a><br><a target="_blank" rel="noopener" href="https://github.com/ericentin/marching_squares_cassini">marching_squares_cassini</a><br><a target="_blank" rel="noopener" href="https://github.com/mikolalysenko/isosurface">isosurface</a><br><a target="_blank" rel="noopener" href="https://github.com/lettier/isosurface">isosurface</a></p>
+<h2 id="3d-model"><a href="#3d-model" class="headerlink" title="3d model"></a>3d model</h2><p><a target="_blank" rel="noopener" href="https://github.com/assimp/assimp">assimp</a></p>
+<h2 id="animate"><a href="#animate" class="headerlink" title="animate"></a>animate</h2><p><a target="_blank" rel="noopener" href="https://github.com/Samsung/rlottie">rlottie</a></p>
+<h2 id="physics"><a href="#physics" class="headerlink" title="physics"></a>physics</h2><p><a target="_blank" rel="noopener" href="https://github.com/bulletphysics/bullet3">bullet3</a><br><a target="_blank" rel="noopener" href="https://github.com/erincatto/box2d">box2d</a><br><a target="_blank" rel="noopener" href="https://github.com/jrouwe/JoltPhysics">JoltPhysics</a></p>
+<h2 id="pdf"><a href="#pdf" class="headerlink" title="pdf"></a>pdf</h2><p><a target="_blank" rel="noopener" href="https://github.com/libharu/libharu">libharu</a><br><a target="_blank" rel="noopener" href="https://github.com/sumatrapdfreader/sumatrapdf">sumatrapdf</a></p>
+<h2 id="path-trace-x2F-ray-trace"><a href="#path-trace-x2F-ray-trace" class="headerlink" title="path trace&#x2F;ray trace"></a>path trace&#x2F;ray trace</h2><p><a target="_blank" rel="noopener" href="https://github.com/sergcpp/Ray">Ray</a><br><a target="_blank" rel="noopener" href="https://github.com/lighttransport/nanort">nanort</a><br><a target="_blank" rel="noopener" href="https://github.com/ospray/ospray">ospray</a><br><a target="_blank" rel="noopener" href="https://github.com/POV-Ray/povray">povray</a><br><a target="_blank" rel="noopener" href="https://github.com/ssloy/tinyraytracer">tinyraytracer</a><br><a target="_blank" rel="noopener" href="https://github.com/OpenPathGuidingLibrary/openpgl">openpgl</a></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://wurui1994.github.io">WuRui</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://wurui1994.github.io/2023/06/25/graphic-note/">https://wurui1994.github.io/2023/06/25/graphic-note/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://wurui1994.github.io" target="_blank">WuRui</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/graphic/">graphic</a></div><div class="post_share"><div class="social-share" data-image="/img/avatar.jpg" data-sites="wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/butterfly-extsrc/1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.bootcdn.net/ajax/libs/butterfly-extsrc/1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechatpay.png" target="_blank"><img class="post-qr-code-img" src="/img/wechatpay.png" alt="微信"/></a><div class="post-qr-code-desc">微信</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/alipay.jpg" alt="支付宝"/></a><div class="post-qr-code-desc">支付宝</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2023/06/25/simd-lib/" title="simd库"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">simd库</div></div></a></div><div class="next-post pull-right"><a href="/2023/06/25/cmake-note/" title="cmake记录"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">cmake记录</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2023/06/26/vector-graphic/" title="矢量图相关"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-26</div><div class="title">矢量图相关</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="giscus-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">WuRui</div><div class="author-info__description">每天都是新的一天</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">101</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">90</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/wurui1994" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="/img/qq.jpg" target="_blank" title="QQ"><i class="fab fa-qq"></i></a><a class="social-icon" href="/img/wechat.jpg" target="_blank" title="微信"><i class="fab fa-weixin"></i></a><a class="social-icon" href="mailto:1341531859@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn"></i><span>公告</span></div><div class="announcement_content">这里是我的博客, <a href=https://www.cnblogs.com/wurui1994/>旧博客地址</a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#opengl"><span class="toc-number">1.</span> <span class="toc-text">opengl</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#vulkan"><span class="toc-number">2.</span> <span class="toc-text">vulkan</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#metal"><span class="toc-number">3.</span> <span class="toc-text">metal</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#game"><span class="toc-number">4.</span> <span class="toc-text">game</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#render"><span class="toc-number">5.</span> <span class="toc-text">render</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#trace"><span class="toc-number">6.</span> <span class="toc-text">trace</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#rendergraph"><span class="toc-number">7.</span> <span class="toc-text">rendergraph</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#visulize"><span class="toc-number">8.</span> <span class="toc-text">visulize</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#plot"><span class="toc-number">9.</span> <span class="toc-text">plot</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#skia"><span class="toc-number">10.</span> <span class="toc-text">skia</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#libgdiplus"><span class="toc-number">11.</span> <span class="toc-text">libgdiplus</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#blend2d"><span class="toc-number">12.</span> <span class="toc-text">blend2d</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#vector-graphic"><span class="toc-number">13.</span> <span class="toc-text">vector graphic</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#rust"><span class="toc-number">14.</span> <span class="toc-text">rust</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#misc"><span class="toc-number">15.</span> <span class="toc-text">misc</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#high"><span class="toc-number">16.</span> <span class="toc-text">high</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#html-x2F-css"><span class="toc-number">17.</span> <span class="toc-text">html&#x2F;css</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#gui"><span class="toc-number">18.</span> <span class="toc-text">gui</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#yue"><span class="toc-number">19.</span> <span class="toc-text">yue</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#winui"><span class="toc-number">20.</span> <span class="toc-text">winui</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#direct-ui"><span class="toc-number">21.</span> <span class="toc-text">direct ui</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#svg"><span class="toc-number">22.</span> <span class="toc-text">svg</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#math-3d"><span class="toc-number">23.</span> <span class="toc-text">math 3d</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#typography-%E6%8E%92%E7%89%88"><span class="toc-number">24.</span> <span class="toc-text">typography(排版)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#math-ml"><span class="toc-number">25.</span> <span class="toc-text">math ml</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#cocoa"><span class="toc-number">26.</span> <span class="toc-text">cocoa</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#image"><span class="toc-number">27.</span> <span class="toc-text">image</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#shortcut"><span class="toc-number">28.</span> <span class="toc-text">shortcut</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#grammer-x2F-creative"><span class="toc-number">29.</span> <span class="toc-text">grammer&#x2F;creative</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ocr"><span class="toc-number">30.</span> <span class="toc-text">ocr</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#framework"><span class="toc-number">31.</span> <span class="toc-text">framework</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#graph"><span class="toc-number">32.</span> <span class="toc-text">graph</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#paint"><span class="toc-number">33.</span> <span class="toc-text">paint</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#basic-x2F-bgi-x2F-graphic-h"><span class="toc-number">34.</span> <span class="toc-text">basic&#x2F;bgi&#x2F;graphic.h</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#font"><span class="toc-number">35.</span> <span class="toc-text">font</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#math-render"><span class="toc-number">36.</span> <span class="toc-text">math render</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#shader"><span class="toc-number">37.</span> <span class="toc-text">shader</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#shader-x2F-image-process"><span class="toc-number">38.</span> <span class="toc-text">shader&#x2F;image process</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#geometry-x2F-triangle-meshes"><span class="toc-number">39.</span> <span class="toc-text">geometry&#x2F;triangle meshes</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3d-volume"><span class="toc-number">40.</span> <span class="toc-text">3d volume</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3d-model"><span class="toc-number">41.</span> <span class="toc-text">3d model</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#animate"><span class="toc-number">42.</span> <span class="toc-text">animate</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#physics"><span class="toc-number">43.</span> <span class="toc-text">physics</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#pdf"><span class="toc-number">44.</span> <span class="toc-text">pdf</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#path-trace-x2F-ray-trace"><span class="toc-number">45.</span> <span class="toc-text">path trace&#x2F;ray trace</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/02/media-guide/" title="学习入门">学习入门</a><time datetime="2024-03-02T01:00:12.000Z" title="发表于 2024-03-02 09:00:12">2024-03-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/10/22/clipboard-note/" title="clipboard笔记">clipboard笔记</a><time datetime="2023-10-22T08:54:25.000Z" title="发表于 2023-10-22 16:54:25">2023-10-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/08/04/optimize-note/" title="优化相关">优化相关</a><time datetime="2023-08-04T06:51:45.000Z" title="发表于 2023-08-04 14:51:45">2023-08-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/08/04/love-note/" title="关于爱情">关于爱情</a><time datetime="2023-08-04T00:35:24.000Z" title="发表于 2023-08-04 08:35:24">2023-08-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/07/20/dopamine-note/" title="多巴胺相关">多巴胺相关</a><time datetime="2023-07-20T06:47:32.000Z" title="发表于 2023-07-20 14:47:32">2023-07-20</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By WuRui</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>function getGiscusTheme (theme) {
+  return theme === 'dark' ? 'dark' : 'light'
+}
+
+function loadGiscus () {
+  const config = Object.assign({
+    src: 'https://giscus.app/client.js',
+    'data-repo': 'wurui1994/wurui1994.github.io',
+    'data-repo-id': 'R_kgDOJzB0HA',
+    'data-category-id': 'DIC_kwDOJzB0HM4CXeHj',
+    'data-lang': 'zh-CN',
+    'data-mapping': 'pathname',
+    'data-theme': getGiscusTheme(document.documentElement.getAttribute('data-theme')),
+    'data-reactions-enabled': '1',
+    crossorigin: 'anonymous',
+    async: true
+  },null)
+
+  let ele = document.createElement('script')
+  for (let key in config) {
+    ele.setAttribute(key, config[key])
+  }
+  document.getElementById('giscus-wrap').insertAdjacentElement('afterbegin',ele)
+}
+
+function changeGiscusTheme (theme) {
+  function sendMessage(message) {
+    const iframe = document.querySelector('iframe.giscus-frame')
+    if (!iframe) return
+    iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app')
+  }
+
+  sendMessage({
+    setConfig: {
+      theme: getGiscusTheme(theme)
+    }
+  });
+}
+
+btf.addModeChange('giscus', changeGiscusTheme)
+
+if ('Giscus' === 'Giscus' || !false) {
+  if (false) btf.loadComment(document.getElementById('giscus-wrap'), loadGiscus)
+  else loadGiscus()
+} else {
+  function loadOtherComment () {
+    loadGiscus()
+  }
+}</script></div><link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/aplayer/1.10.1/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.bootcdn.net/ajax/libs/aplayer/1.10.1/APlayer.min.js"></script><script src="https://cdn.bootcdn.net/ajax/libs/butterfly-extsrc/1.1.3/metingjs/dist/Meting.min.js"></script><script src="https://cdn.bootcdn.net/ajax/libs/pjax/0.2.8/pjax.min.js"></script><script>let pjaxSelectors = ["link[rel=\"canonical\"]","meta[property=\"og:image\"]","meta[property=\"og:title\"]","meta[property=\"og:url\"]","head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener scroll 
+  window.tocScrollFn && window.removeEventListener('scroll', window.tocScrollFn)
+  window.scrollCollect && window.removeEventListener('scroll', scrollCollect)
+
+  document.getElementById('rightside').style.cssText = "opacity: ''; transform: ''"
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+  typeof disqusjs === 'object' && disqusjs.destroy()
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', (e) => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

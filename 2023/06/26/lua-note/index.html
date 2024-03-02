@@ -1,0 +1,280 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Lua相关 | WuRui</title><meta name="author" content="WuRui"><meta name="copyright" content="WuRui"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="luasol2 a C++ &lt;-&gt; Lua API wrapperluasocketnelua-langlua-protobufinspect.luamlualuajit-lang-toolkitcompletely-unscientific-benchmarkstundraluajit.ioNtLuaLuaJIT-5.3.6luatracejlua Yet another Lua i">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Lua相关">
+<meta property="og:url" content="https://wurui1994.github.io/2023/06/26/lua-note/index.html">
+<meta property="og:site_name" content="WuRui">
+<meta property="og:description" content="luasol2 a C++ &lt;-&gt; Lua API wrapperluasocketnelua-langlua-protobufinspect.luamlualuajit-lang-toolkitcompletely-unscientific-benchmarkstundraluajit.ioNtLuaLuaJIT-5.3.6luatracejlua Yet another Lua i">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wurui1994.github.io/img/avatar.jpg">
+<meta property="article:published_time" content="2023-06-26T10:52:34.000Z">
+<meta property="article:modified_time" content="2023-06-27T06:04:29.818Z">
+<meta property="article:author" content="WuRui">
+<meta property="article:tag" content="lua">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wurui1994.github.io/img/avatar.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://wurui1994.github.io/2023/06/26/lua-note/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.bootcdn.net/ajax/libs/flickr-justified-gallery/2.1.2/fjGallery.min.js',
+      css: 'https://cdn.bootcdn.net/ajax/libs/flickr-justified-gallery/2.1.2/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Lua相关',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-06-27 14:04:29'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">101</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">90</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 目录</span></a></div><div class="menus_item"><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img fixed" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="WuRui"><span class="site-name">WuRui</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 目录</span></a></div><div class="menus_item"><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">Lua相关</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2023-06-26T10:52:34.000Z" title="发表于 2023-06-26 18:52:34">2023-06-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-06-27T06:04:29.818Z" title="更新于 2023-06-27 14:04:29">2023-06-27</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">433</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>2分钟</span></span></div></div></div><article class="post-content" id="article-container"><p><a target="_blank" rel="noopener" href="https://github.com/lua/lua">lua</a><br><a target="_blank" rel="noopener" href="https://github.com/ThePhD/sol2">sol2</a> a C++ &lt;-&gt; Lua API wrapper<br><a target="_blank" rel="noopener" href="https://github.com/lunarmodules/luasocket">luasocket</a><br><a target="_blank" rel="noopener" href="https://github.com/edubart/nelua-lang">nelua-lang</a><br><a target="_blank" rel="noopener" href="https://github.com/starwing/lua-protobuf">lua-protobuf</a><br><a target="_blank" rel="noopener" href="https://github.com/kikito/inspect.lua">inspect.lua</a><br><a target="_blank" rel="noopener" href="https://github.com/khvzak/mlua">mlua</a><br><a target="_blank" rel="noopener" href="https://github.com/franko/luajit-lang-toolkit">luajit-lang-toolkit</a><br><a target="_blank" rel="noopener" href="https://github.com/frol/completely-unscientific-benchmarks">completely-unscientific-benchmarks</a><br><a target="_blank" rel="noopener" href="https://github.com/deplinenoise/tundra">tundra</a><br><a target="_blank" rel="noopener" href="https://github.com/kingluo/luajit.io">luajit.io</a><br><a target="_blank" rel="noopener" href="https://github.com/can1357/NtLua">NtLua</a><br><a target="_blank" rel="noopener" href="https://github.com/Yu2erer/LuaJIT-5.3.6">LuaJIT-5.3.6</a><br><a target="_blank" rel="noopener" href="https://github.com/geoffleyland/luatrace">luatrace</a><br><a target="_blank" rel="noopener" href="https://github.com/hsiaosiyuan0/jlua">jlua</a> Yet another Lua implementation in pure JavaScript.<br><a target="_blank" rel="noopener" href="https://github.com/Neopallium/lua-llthreads">lua-llthreads</a><br><a target="_blank" rel="noopener" href="https://github.com/stetre/moongl">moongl</a> Lua bindings for OpenGL<br><a target="_blank" rel="noopener" href="https://github.com/Neopallium/slua">slua</a> Static lua compiler - Compile Lua code into C code.<br><a target="_blank" rel="noopener" href="https://github.com/edubart/lunray">lunray</a><br><a target="_blank" rel="noopener" href="https://github.com/edubart/nelua-benchmarks">nelua-benchmarks</a><br>a small c++ direct ui library, support xml lua and css(only similar to html css)<br><a target="_blank" rel="noopener" href="https://github.com/bonescreater/bones">bones</a><br><a target="_blank" rel="noopener" href="https://github.com/creationix/weblit">weblit</a><br><a target="_blank" rel="noopener" href="https://github.com/franko/gsl-shell">gsl-shell</a><br><a target="_blank" rel="noopener" href="https://github.com/virgo-agent-toolkit/virgo-base-agent">virgo-base-agent</a><br><a target="_blank" rel="noopener" href="https://github.com/xmake-io/xmake-repo">xmake-repo</a></p>
+<h2 id="source-read"><a href="#source-read" class="headerlink" title="source read"></a>source read</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line">e78c1c54aacdd581f729214b199b2eb750a349ac 3.0-alpha</span><br><span class="line"></span><br><span class="line">7e59a8901d063dbea4eb0693c9c2d85bda1fc5f6 NEW LL(1) PARSER 重点看一下</span><br><span class="line"></span><br><span class="line">01772cefa5217a7840254d1e7ec340dea8f0747a new library <span class="keyword">for</span> debbuging</span><br><span class="line"></span><br><span class="line">29ede6aa13144ff7b69c57a87be1ee93f57ae896 first implementation of multiple states (reentrant code).</span><br><span class="line"></span><br><span class="line">2877bad4c260d11c22c3b12e633d6b1ca3415789 new debug API (first version) [near 4.0 at 2000]</span><br><span class="line"></span><br><span class="line">f9cf402fbd1ba2ab00f5aa5f7d0ff5c9c0580dd5 first implementation of FOR</span><br><span class="line"></span><br><span class="line">1de5587184eb2d8d9f379c661f77f7e450764894 <span class="string">&#x27;lua.h&#x27;</span> is included before any other Lua header file</span><br><span class="line"></span><br><span class="line">e238efc5367a8d88757dd84df0683e1d8d9f9211 default now is multi-state [LUA_SINGLESTATE]</span><br><span class="line"></span><br><span class="line">a53d9b66ca6247818acaf41e28cdf123082a272b first implementation <span class="keyword">for</span> <span class="built_in">type</span> names</span><br><span class="line"></span><br><span class="line">39b79783297bee79db9853b63d199e120a009a8f first (big) step to support wide chars  [2001]</span><br><span class="line"></span><br><span class="line">0e0e4a480e6d9b0125a96ca982a3e9571578a037 first implementation <span class="keyword">for</span> weak tables</span><br><span class="line"></span><br><span class="line">762d059a13d83eb367238a6115bbb4f5f13fcb49 new implementation <span class="keyword">for</span> the Virtual Machine</span><br><span class="line"></span><br><span class="line">fd40af92e46dcd8b7638c4108aacb1f525e8578e the parser is not LL(1) [2001.8.11]</span><br><span class="line"></span><br><span class="line">1e81da51bab87148981486a84b846399050f4ef2 new API <span class="keyword">for</span> registry and C upvalues + new implementation <span class="keyword">for</span> references</span><br><span class="line"></span><br><span class="line">72659a06050632da1a9b4c492302be46ac283f6b no more explicit support <span class="keyword">for</span> wide-chars; too much troble...</span><br><span class="line"></span><br><span class="line">592a309177edc52847b1196969ad6d49ba21f4fb tag system replaced by event tables</span><br><span class="line"></span><br><span class="line">e04f7ed4509af1577c10ead8e5d7d55c65754bf8 first version of Lua <span class="string">&quot;stackless&quot;</span> [2001.12.9]</span><br><span class="line"></span><br><span class="line">f083812c020186d0d919833100c1a0b6eda8c2c0 first implementation of coroutines</span><br><span class="line"></span><br><span class="line">d6fd33e76fdeb919fd91860aa9d0f9524e6d415a <span class="string">&#x27;eventtable&#x27;</span> renamed to <span class="string">&#x27;metatable&#x27;</span></span><br><span class="line"></span><br><span class="line">f1c43bbe19026b80b5185cbdd6dec6230028a999 new <span class="keyword">function</span> <span class="string">&#x27;xpcall&#x27;</span> (at least <span class="keyword">for</span> now...) [2002.6.6]</span><br><span class="line"></span><br><span class="line">6b8cdc9cdd545508af85d1de2013ea0fc64792b0 Lua now uses only <span class="string">&#x27;realloc&#x27;</span> <span class="keyword">for</span> all its memory management</span><br><span class="line"></span><br><span class="line">eb3de8768a6b614597f7e5f018fc31a9f52441df <span class="string">&#x27;rawcall&#x27;</span> -&gt; <span class="string">&#x27;upcall&#x27;</span> (unprotected call)</span><br><span class="line"></span><br><span class="line">35707e94f343b3f02cd642602aad00337846b9c7 <span class="string">&#x27;__weakmode&#x27;</span> -&gt; <span class="string">&#x27;__mode&#x27;</span></span><br><span class="line"></span><br><span class="line">39b2d58c39fd0cd554b27ed071926bc439338964 new interface <span class="keyword">for</span> debug hooks</span><br><span class="line"></span><br><span class="line">b0c40e240585b67902bece4569ee683296e475f4 first version of <span class="string">&#x27;loadlib&#x27;</span> [near 5.0 2003.5.17]</span><br><span class="line"></span><br><span class="line">762c7370376dbd13cd8aeb4d8c8da0bb153269c3 last changes by lhf [5.0 2003.4.11]</span><br><span class="line"></span><br><span class="line">df429f163ada6581d921e7f51b016f1abfeefddd First version of incremental GC [2003.12.10]</span><br><span class="line"></span><br><span class="line">32d4f304db365599a54b3eb30377ac6e20846749 first implementation of generational GC [2004.8.25]</span><br><span class="line"></span><br><span class="line">7dd10a1d7e0b6fa44c03060c6ce2d4de64830339 new macro LUA_USE_POSIX to control POSIX-related macros</span><br><span class="line"></span><br><span class="line">03b556b963e0d657dc455c07515cd5da3a4c4312 corrected copyright notice to 2010 [2010.1.12]</span><br><span class="line"></span><br><span class="line">7cc0e63d8a5bd45eabd328c398f02a933e07746d first implementation of <span class="string">&#x27;goto&#x27;</span> [2011.2.5]</span><br><span class="line"></span><br><span class="line">e2fc2ce8dfe107d1e2742b459c2aaf137227bbc1 new way to handle -E option (write a mark <span class="keyword">in</span> the registry to avoid [5.2.0 2011.12.13]</span><br><span class="line"></span><br><span class="line">a14992992adcaa4c60e275cb011e7832e6e796ae new version (5.3) [2013.6.8]</span><br><span class="line"></span><br><span class="line">6ccf1500396efffeb38ed54ac78d2f2d41a9b762 new library: utf8 [2014.2.7]</span><br><span class="line"></span><br><span class="line">3c55790ebee7148281cd00f44aa293e456b4da6d <span class="string">&#x27;setkey&#x27;</span> -&gt; <span class="string">&#x27;setnodekey&#x27;</span> (to avoid conflicts with POSIX) [tag 5.3.0]</span><br><span class="line"></span><br><span class="line">c25d59a6bdbc6f587310159a1975b399ad8dd079 format <span class="string">&quot;%s&quot;</span> <span class="keyword">in</span> <span class="string">&#x27;string.format&#x27;</span> accepts embedded zeros when it [tag 5.3.2 2015.11.26]</span><br><span class="line"></span><br><span class="line">08199ade4ace6addd63148df4c596d6b61def8cd release 5.3.4 (year 2017)</span><br><span class="line"></span><br><span class="line">11769b203f052f7423575c1a66901cb9eb277206 new version (5.4) [2017.7.27]</span><br><span class="line"></span><br><span class="line">9243c414d92c253edd908f438caa31e2aa16f3f4 first version of empty entries <span class="keyword">in</span> tables</span><br><span class="line"></span><br><span class="line">b6888a158b43c7391e2e4837cf4ae91e8c5e8371 New release number (5.4.1) [2020.9.16]</span><br></pre></td></tr></table></figure></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://wurui1994.github.io">WuRui</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://wurui1994.github.io/2023/06/26/lua-note/">https://wurui1994.github.io/2023/06/26/lua-note/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://wurui1994.github.io" target="_blank">WuRui</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/lua/">lua</a></div><div class="post_share"><div class="social-share" data-image="/img/avatar.jpg" data-sites="wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/butterfly-extsrc/1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.bootcdn.net/ajax/libs/butterfly-extsrc/1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechatpay.png" target="_blank"><img class="post-qr-code-img" src="/img/wechatpay.png" alt="微信"/></a><div class="post-qr-code-desc">微信</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/alipay.jpg" alt="支付宝"/></a><div class="post-qr-code-desc">支付宝</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2023/06/26/python-note/" title="Python相关"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Python相关</div></div></a></div><div class="next-post pull-right"><a href="/2023/06/26/algorithm-note/" title="算法笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">算法笔记</div></div></a></div></nav><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="giscus-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">WuRui</div><div class="author-info__description">每天都是新的一天</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">101</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">90</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/wurui1994" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="/img/qq.jpg" target="_blank" title="QQ"><i class="fab fa-qq"></i></a><a class="social-icon" href="/img/wechat.jpg" target="_blank" title="微信"><i class="fab fa-weixin"></i></a><a class="social-icon" href="mailto:1341531859@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn"></i><span>公告</span></div><div class="announcement_content">这里是我的博客, <a href=https://www.cnblogs.com/wurui1994/>旧博客地址</a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#source-read"><span class="toc-number">1.</span> <span class="toc-text">source read</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/02/media-guide/" title="学习入门">学习入门</a><time datetime="2024-03-02T01:00:12.000Z" title="发表于 2024-03-02 09:00:12">2024-03-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/10/22/clipboard-note/" title="clipboard笔记">clipboard笔记</a><time datetime="2023-10-22T08:54:25.000Z" title="发表于 2023-10-22 16:54:25">2023-10-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/08/04/optimize-note/" title="优化相关">优化相关</a><time datetime="2023-08-04T06:51:45.000Z" title="发表于 2023-08-04 14:51:45">2023-08-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/08/04/love-note/" title="关于爱情">关于爱情</a><time datetime="2023-08-04T00:35:24.000Z" title="发表于 2023-08-04 08:35:24">2023-08-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/07/20/dopamine-note/" title="多巴胺相关">多巴胺相关</a><time datetime="2023-07-20T06:47:32.000Z" title="发表于 2023-07-20 14:47:32">2023-07-20</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By WuRui</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>function getGiscusTheme (theme) {
+  return theme === 'dark' ? 'dark' : 'light'
+}
+
+function loadGiscus () {
+  const config = Object.assign({
+    src: 'https://giscus.app/client.js',
+    'data-repo': 'wurui1994/wurui1994.github.io',
+    'data-repo-id': 'R_kgDOJzB0HA',
+    'data-category-id': 'DIC_kwDOJzB0HM4CXeHj',
+    'data-lang': 'zh-CN',
+    'data-mapping': 'pathname',
+    'data-theme': getGiscusTheme(document.documentElement.getAttribute('data-theme')),
+    'data-reactions-enabled': '1',
+    crossorigin: 'anonymous',
+    async: true
+  },null)
+
+  let ele = document.createElement('script')
+  for (let key in config) {
+    ele.setAttribute(key, config[key])
+  }
+  document.getElementById('giscus-wrap').insertAdjacentElement('afterbegin',ele)
+}
+
+function changeGiscusTheme (theme) {
+  function sendMessage(message) {
+    const iframe = document.querySelector('iframe.giscus-frame')
+    if (!iframe) return
+    iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app')
+  }
+
+  sendMessage({
+    setConfig: {
+      theme: getGiscusTheme(theme)
+    }
+  });
+}
+
+btf.addModeChange('giscus', changeGiscusTheme)
+
+if ('Giscus' === 'Giscus' || !false) {
+  if (false) btf.loadComment(document.getElementById('giscus-wrap'), loadGiscus)
+  else loadGiscus()
+} else {
+  function loadOtherComment () {
+    loadGiscus()
+  }
+}</script></div><link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/aplayer/1.10.1/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.bootcdn.net/ajax/libs/aplayer/1.10.1/APlayer.min.js"></script><script src="https://cdn.bootcdn.net/ajax/libs/butterfly-extsrc/1.1.3/metingjs/dist/Meting.min.js"></script><script src="https://cdn.bootcdn.net/ajax/libs/pjax/0.2.8/pjax.min.js"></script><script>let pjaxSelectors = ["link[rel=\"canonical\"]","meta[property=\"og:image\"]","meta[property=\"og:title\"]","meta[property=\"og:url\"]","head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener scroll 
+  window.tocScrollFn && window.removeEventListener('scroll', window.tocScrollFn)
+  window.scrollCollect && window.removeEventListener('scroll', scrollCollect)
+
+  document.getElementById('rightside').style.cssText = "opacity: ''; transform: ''"
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+  typeof disqusjs === 'object' && disqusjs.destroy()
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', (e) => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

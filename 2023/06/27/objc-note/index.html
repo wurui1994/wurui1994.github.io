@@ -1,0 +1,303 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Objective-C记录 | WuRui</title><meta name="author" content="WuRui"><meta name="copyright" content="WuRui"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849Objective-C 在基本语言上做了两个扩展：范畴（categories）和协议（protocols），它们是强大的软件开发工具。这两个扩展引入了声明方法并将它们关联到某个类的技术。感觉上，categories像是方法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Objective-C记录">
+<meta property="og:url" content="https://wurui1994.github.io/2023/06/27/objc-note/index.html">
+<meta property="og:site_name" content="WuRui">
+<meta property="og:description" content="12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849Objective-C 在基本语言上做了两个扩展：范畴（categories）和协议（protocols），它们是强大的软件开发工具。这两个扩展引入了声明方法并将它们关联到某个类的技术。感觉上，categories像是方法">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wurui1994.github.io/img/avatar.jpg">
+<meta property="article:published_time" content="2023-06-27T13:45:20.000Z">
+<meta property="article:modified_time" content="2023-06-27T13:47:02.267Z">
+<meta property="article:author" content="WuRui">
+<meta property="article:tag" content="objc">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wurui1994.github.io/img/avatar.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://wurui1994.github.io/2023/06/27/objc-note/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.bootcdn.net/ajax/libs/flickr-justified-gallery/2.1.2/fjGallery.min.js',
+      css: 'https://cdn.bootcdn.net/ajax/libs/flickr-justified-gallery/2.1.2/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Objective-C记录',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: false,
+  postUpdate: '2023-06-27 21:47:02'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">101</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">90</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 目录</span></a></div><div class="menus_item"><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img fixed" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="WuRui"><span class="site-name">WuRui</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 目录</span></a></div><div class="menus_item"><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">Objective-C记录</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2023-06-27T13:45:20.000Z" title="发表于 2023-06-27 21:45:20">2023-06-27</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-06-27T13:47:02.267Z" title="更新于 2023-06-27 21:47:02">2023-06-27</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">3.7k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>11分钟</span></span></div></div></div><article class="post-content" id="article-container"><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">Objective-C 在基本语言上做了两个扩展：范畴（categories）和协议（protocols），它们是强大的软件开发工具。这两个扩展引入了声明方法并将它们关联到某个类的技术。</span><br><span class="line">感觉上，categories像是方法动态绑定，protocols像是接口而用于继承[虚方法]</span><br><span class="line">非正式协议respondsToSelector [NSObject]</span><br><span class="line">检查协议conformsToProtocol</span><br><span class="line"></span><br><span class="line">正式协议有其自己的限制。如果协议声明的方法列表随着时间而增长，协议的采纳者就会不再遵循该协议。</span><br><span class="line">因此，Cocoa 中的正式协议被用于稳定的方法集合，比如 NSCopying 和 NSCoding。如果您预期协议方法会增多，则可以声明为非正式协议，而不是正式协议。</span><br><span class="line"></span><br><span class="line">Cocoa 提供了两个根类：NSObject 和 NSProxy。Cocoa 将后者定义为抽象类，用于表示其它对象的</span><br><span class="line">替身对象。因此 NSProxy 类在分布式对象架构中是很重要的。由于作用比较特别，NSProxy 在 Cocoa</span><br><span class="line">程序中出现频率很低。Cocoa 开发者在提到根类时，几乎总是指 NSObject。</span><br><span class="line"></span><br><span class="line">NSObject</span><br><span class="line">分配、初始化、和复制 [alloc init new copy]</span><br><span class="line">对象的保持和清理 [retain release autorelease retainCount dealloc]</span><br><span class="line">内省和比较 [superclass class isKindOfClass IsMemberOfClass isSubclassOfClass conformsToProtocol isEqual description]</span><br><span class="line">对象的编码和解码 [encodeWithCoder initWithCoder classForCoder replacementObjectForCoder awakeAfterUsingCoder]</span><br><span class="line">消息的转发 forwardInvocation</span><br><span class="line">消息的派发 performSelector</span><br><span class="line"></span><br><span class="line">在 dealloc 方法中，您则在最后一步调用超类的 dealloc 实现</span><br><span class="line"></span><br><span class="line">类工厂方法的实现是为了向客户提供方便，它们将分配和初始化合在一个步骤中，返回被创建的对象，并</span><br><span class="line">进行自动释放处理。这些方法的形式是+ (type)className...（其中 className 不包括任何前缀）。</span><br><span class="line">工厂方法则可以避免为可能没有用的对象盲目分配内存</span><br><span class="line">类工厂方法约定俗成地将返回对象放到自动释放池中</span><br><span class="line"></span><br><span class="line">在碰到对象可变性的问题时，最好采纳一些防御性的编程实践</span><br><span class="line"></span><br><span class="line">为对象制作快照以备后用的问题在于开销太昂贵，您需要为同一个对象制作多个拷贝。一个更有效的选择</span><br><span class="line">是使用键-值观察协议。</span><br><span class="line"></span><br><span class="line">子类必须重载它继承的、直接访问对象实例变量的所有方法，这样的方法称为基元方法（primitive methods）。类的基元方法是其接口的基础。</span><br><span class="line"></span><br><span class="line">在接口上区分基元方法和衍生方法使子类的创建更加容易。您的子类必须重载通过继承得到的基元方法，</span><br><span class="line">而重载基元方法之后就可以保证继承而来的衍生方法可以正确地工作。</span><br><span class="line"></span><br><span class="line">Objective-C @synchronized深入理解 https://www.cnblogs.com/yangwenhuan/p/9193840.html</span><br><span class="line"></span><br><span class="line">委托者对象需要公布一个被称为非正式协议的接</span><br><span class="line">口，客户对象则必须首先注册为委托，然后实现该接口中的一个或多个方法。发布通告的对象要公布</span><br><span class="line">自己广播的通告列表，而所有的客户对象都可以自由监听其中的一个或多个公告。</span><br><span class="line">NSApplication、NSText、和 NSWindow 就是一些委托者类，而很多框架类都可以广播通告。</span><br><span class="line"></span><br><span class="line">在满足自动观察者通知的基础上，简单地保证您的对象遵循 KVC 就可以使之遵循 KVO。然而，如果您选</span><br><span class="line">择实现手工的键-值观察，就需要额外的工作。</span><br><span class="line"></span><br><span class="line">设计模式在 Cocoa 框架中的主要实现方式，特别是模型-视图-控制器和对象建模模</span><br><span class="line">式</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">协议是一个编程语言级别（Objective-C）的特性，它使定义适配器模式的实例成为可能（在 Java 中的“接口”和“协议”是同义的）。</span><br><span class="line">如果您希望一个客户对象和另一个对象进行交流，但由于它们的接口不兼容而导致困难，您就可以定义一个协议，它本质上是一系列和类不相关联的方法声明。</span><br><span class="line">这样，其它对象的类就可以正式采纳该协议，并通过实现协议中的全部方法来“遵循”该协议。结果，客户对象就可以通过协议接口向其它对象发送消息。</span><br><span class="line">协议是一组独立于类层次的方法声明，这样就有可能象类的继承那样，根据对象遵循的协议对其进行分组。</span><br><span class="line">您可以通过NSObject的 conformsToProtocol:方法来确认一个对象的协议关系。</span><br><span class="line">除了正式协议之外，Cocoa还有一个非正式协议的概念。这种类型的协议是NSObject类中的一个范畴</span><br><span class="line">（category），这样就使所有的对象都成为范畴方法的潜在实现者（参见 &quot;范畴&quot;部分）。</span><br><span class="line">非正式协议的方法可以选择性地实现。非正式协议是委托机制实现的一部分（参见 &quot;委托&quot;部分。</span><br><span class="line">请注意，协议的设计和适配器模式并不完全匹配。但它是使接口不兼容的类在得以协同工作的手段。</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">NSInvocation 对象是分布式、撤消管理、消息传递、和定时器对象编程接口的一部分。在需要去除消</span><br><span class="line">息发送对象和接收对象之间的耦合关系的类似场合下，您也可以使用。</span><br><span class="line">分布式对象是一种进程间通讯技术</span><br><span class="line"></span><br><span class="line">有点像QObject connect</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">委托是在宿主对象中嵌入一个指向另一对象（也就是委托对象）的弱引用（一个未保持的插座变量），并</span><br><span class="line">不时地向该委托对象发送消息，使其对有关的任务进行输入的机制。宿主对象一般是一个“复活”的框架对</span><br><span class="line">象（比如一个 NSWindow 或 NSXMLParser 对象），它寻求完成某项工作，但又只能以一般的方式来</span><br><span class="line">进行。委托几乎总是一个定制类的实例，它负责配合宿主对象，在有关任务的特定点（参见图 4-3）上提</span><br><span class="line">供与具体程序有关的行为。这样，委托机制使我们可以对另一个对象的行为进行修改或者扩展，而不需要</span><br><span class="line">生成子类。</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">NSImage 类为装载和使用基于位图（比如 JPEG、PNG、或者 TIFF 格式）或向量（EPS 或 PDF 格式）</span><br><span class="line">的图像提供统一的接口。NSImage 可以为同一个图像保持多个表示，不同的表示对应于不同类型的</span><br><span class="line">NSImageRep 对象。NSImage 可以自动选择适合于特定数据类型和显示设备的表示。同时，它隐藏了</span><br><span class="line">图像操作和选择的细节，使客户代码可以交替使用很多不同的表示。</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Foundation 框架中的 NSEnumerator 类实现了迭代器模式。NSEnumerator 抽象类的私有具体子类</span><br><span class="line">返回的枚举器对象可以顺序遍历不同类型的集合—数组、集合、字典（值和键）—并将集合中的对象返回</span><br><span class="line">给客户代码。</span><br><span class="line">所有的枚举器的工作方式都一样。您可以在循环中向枚举器发送 nextObject 消息，</span><br><span class="line">如果该消息返回 nil，而不是集合中的下一个对象，则退出循环。</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">在 Cocoa 中，控制器对象一般有两个类型：仲裁控制器或者协调控制器。</span><br><span class="line">仲裁控制器负责仲裁应用程序中视图对象和模型对象之间的数据流。仲裁控制器通常是 NSController 对象。</span><br><span class="line">协调控制器则负责实现应用程序的集中化通讯和控制逻辑，作为框架对象的委托和动作消息的目标。它们通常是NSWindowController 对象或定制 NSObject 子类的实例。</span><br><span class="line">由于协调控制器高度专用于特定的程序，因此不考虑重用。</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">几乎任何一对对象之间都可以建立绑定关系，只要它们遵循 NSKeyValueCoding 和</span><br><span class="line">NSKeyValueObserving 这两个非正式协议。但是，我们推荐您通过仲裁控制器来建立绑定，以得到</span><br><span class="line">NSController 及其子类为您提供的各种好处。</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">有几个 Cocoa 框架类采用单件模式，包括 NSFileManager、NSWorkspace、和 NSApplication</span><br><span class="line">类。这些类在一个进程中只能有一个实例。当客户代码向该类请求一个实例时，得到的是一个共享的实例，该实例在首次请求的时候被创建。</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">视图对象和模型对象应该是程序中最具可重用性的对象。视图对象代表操作系统及操作系统支持的应用程序的“观感”；外观和行为的一致性是很重要的，这就要求对象是高度可重用的。顾名思义，模型对象负责对问题域的关联数据进行封装，以及执行相关的操作。从设计的角度上看，最好让模型对象和视图对象彼此分离，因为这样可以增加它们的可重用性。</span><br><span class="line"></span><br><span class="line">委托几乎总是您的一个定制对象，它通过定义将应用程序具体逻辑结合到程序中，而这些逻辑是</span><br><span class="line">具有一般性的，是向外委托任务的对象自身不可能知道的。</span><br><span class="line">理解通告和委托消息的关系是很重要的。向外委托的对象自动使自己的委托成为自己发出的所有通告</span><br><span class="line">的观察者。委托需要做的是实现相关联的方法，以获取通告。</span><br><span class="line"></span><br><span class="line">由于控件开销比较大，我们就通过单元将其在屏幕上的空间划分成不同的功能区域。单元是轻</span><br><span class="line">量级的对象，我们可以将它考虑为覆盖全部或部分控件的区域。但它不仅是区域的分割，还是对任务的分</span><br><span class="line">割。单元负责一些本来由控件描画的工作，而且保有一些本来由控件保有的数据，其中的两项就是目标和</span><br><span class="line">动作的实例变量。</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">尽管常规的通告中心允许任何对象作为通告对象（也就是通告封装的对象），分布式通告中心只支持将</span><br><span class="line">NSString 对象作为它的通告对象。由于发出通告的对象和通告的观察者可能位于不同的任务中，通告</span><br><span class="line">不能包含指向任意对象的指针。因此，分布式通告中心要求通告使用字符串作为通告对象。通告的匹配就</span><br><span class="line">是基于这个字符串进行的，而不是基于对象指针。</span><br><span class="line"></span><br><span class="line">当然，当您希望通过聚结移除队列中类似的</span><br><span class="line">通告时，应该用 enqueueNotification...方法，且使用 NSPostNow 风格，而不是使用</span><br><span class="line">postNotification:方法。</span><br><span class="line"></span><br><span class="line">除了保证单件实例之外，sharedApplication 方法主要做什么呢？它还负责建立一些程序的基础设</span><br><span class="line">施，以便接收和处理来自窗口服务器的事件。在初始化全局应用程序对象的过程中，NSApplication</span><br><span class="line">通过生成一个接收事件的事件源建立一个与窗口服务器的连接（实现为一个 Mach 端口），并建立一个应</span><br><span class="line">用程序事件队列，即一个 FIFO（先进先出）的机制，使事件在到达事件源时被取出，并放入队列等待处理。</span><br><span class="line">最后，NSApplication 将事件源作为输入源，对主运行循环，即主线程的运行循环，进行初始化</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">由于有缓冲的窗口对于透明和非矩形的形状是必需的，所以几乎所有的 Cocoa 窗口都是有缓冲的。无保持的窗口适用于临时的图像或简单的连接线，比如 Interface Builder 中的目标-动作连接。</span><br><span class="line"></span><br><span class="line">窗口可以被显式地从屏幕列表中拿掉，在这种情况下，我们称之为离屏窗口。当一个窗口从列表中移走时，会从屏幕上消失；而当它被放入列表中时，就会再次回到屏幕上。事件不被派发到离屏的窗口上。应用程序对窗口进行隐藏，就是基于从屏幕列表中移走窗口来实现的。离屏窗口必需被缓冲或者保持，才能支持描画。</span><br><span class="line"></span><br><span class="line">一个视图可以锁定焦点，描画自身，然后解锁焦点。但是这种做法只在特定的场景下推荐，比如在定时器的回调函数中对视图内容进行动画显示。一般地说，您不应该绕过 Application Kit 的显示机制。</span><br><span class="line">NSView -&gt; lockFocus/unlockFocus 10.15弃用</span><br><span class="line"></span><br><span class="line">视图的描画不一定需要发生在主线程；应用程序的每一个线程都有能力锁定视图的焦点并进行描画。然而</span><br><span class="line">有下面这些限制：</span><br><span class="line">- NSView 对象属性（比如它的边框矩形）的改变应该只发生在主线程。</span><br><span class="line">- 当 NSView 的显示方法被调用时，Application Kit 会设置一个锁，以便在接收视图的窗口中描画；</span><br><span class="line">在显示方法返回之前，您不能年执行任何定制的描画。这意味着，同时只有一个线程可以在指定窗口</span><br><span class="line">中进行描画。</span><br><span class="line"></span><br><span class="line">控件是完全功能的 NSView 对象，它们可以被标识为需要显示，并负责描画自身所在的区域；也可以响应</span><br><span class="line">用户事件，属于响应者链中的对象。</span><br><span class="line">单元是一种抽象，用于简化视图中不同类型的图形对象的管理。它使我们得到一种插件设计，使控件</span><br><span class="line">可以作为不同图形对象的宿主，这些图形对象可以有自己的标识，包括目标和动作信息。</span><br><span class="line"></span><br><span class="line">和使用子视图相比，使用单元进行子区域的描画也有一些折衷的地方。由于没有视图失效的机制，控件必</span><br><span class="line">须自行计算每个单元需要描画什么。但是由于视图是用于一般目的的对象，而控件是具有专门目的的，通</span><br><span class="line">常可以更有效地完成所需的计算。</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">非正式协议为一个可以选择性实现的一系列方法列表。非正式协议虽名为协议，但实际上是挂于NSObject上的未实现分类（Unimplemented Category）的一种称谓，Objetive-C语言机制上并没有非正式协议这种东西，OSX 10.6版本之后由于引入@optional关键字，使得正式协议已具备同样的能力，所以非正式协议已经被废弃不再使用。</span><br></pre></td></tr></table></figure></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://wurui1994.github.io">WuRui</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://wurui1994.github.io/2023/06/27/objc-note/">https://wurui1994.github.io/2023/06/27/objc-note/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://wurui1994.github.io" target="_blank">WuRui</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/objc/">objc</a></div><div class="post_share"><div class="social-share" data-image="/img/avatar.jpg" data-sites="wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/butterfly-extsrc/1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.bootcdn.net/ajax/libs/butterfly-extsrc/1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechatpay.png" target="_blank"><img class="post-qr-code-img" src="/img/wechatpay.png" alt="微信"/></a><div class="post-qr-code-desc">微信</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/alipay.jpg" alt="支付宝"/></a><div class="post-qr-code-desc">支付宝</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2023/06/28/wasm-note/" title="WebAssembly记录"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">WebAssembly记录</div></div></a></div><div class="next-post pull-right"><a href="/2023/06/27/opengl-note/" title="OpenGL记录"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">OpenGL记录</div></div></a></div></nav><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="giscus-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">WuRui</div><div class="author-info__description">每天都是新的一天</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">101</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">90</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/wurui1994" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="/img/qq.jpg" target="_blank" title="QQ"><i class="fab fa-qq"></i></a><a class="social-icon" href="/img/wechat.jpg" target="_blank" title="微信"><i class="fab fa-weixin"></i></a><a class="social-icon" href="mailto:1341531859@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn"></i><span>公告</span></div><div class="announcement_content">这里是我的博客, <a href=https://www.cnblogs.com/wurui1994/>旧博客地址</a></div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/02/media-guide/" title="学习入门">学习入门</a><time datetime="2024-03-02T01:00:12.000Z" title="发表于 2024-03-02 09:00:12">2024-03-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/10/22/clipboard-note/" title="clipboard笔记">clipboard笔记</a><time datetime="2023-10-22T08:54:25.000Z" title="发表于 2023-10-22 16:54:25">2023-10-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/08/04/optimize-note/" title="优化相关">优化相关</a><time datetime="2023-08-04T06:51:45.000Z" title="发表于 2023-08-04 14:51:45">2023-08-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/08/04/love-note/" title="关于爱情">关于爱情</a><time datetime="2023-08-04T00:35:24.000Z" title="发表于 2023-08-04 08:35:24">2023-08-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/07/20/dopamine-note/" title="多巴胺相关">多巴胺相关</a><time datetime="2023-07-20T06:47:32.000Z" title="发表于 2023-07-20 14:47:32">2023-07-20</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By WuRui</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>function getGiscusTheme (theme) {
+  return theme === 'dark' ? 'dark' : 'light'
+}
+
+function loadGiscus () {
+  const config = Object.assign({
+    src: 'https://giscus.app/client.js',
+    'data-repo': 'wurui1994/wurui1994.github.io',
+    'data-repo-id': 'R_kgDOJzB0HA',
+    'data-category-id': 'DIC_kwDOJzB0HM4CXeHj',
+    'data-lang': 'zh-CN',
+    'data-mapping': 'pathname',
+    'data-theme': getGiscusTheme(document.documentElement.getAttribute('data-theme')),
+    'data-reactions-enabled': '1',
+    crossorigin: 'anonymous',
+    async: true
+  },null)
+
+  let ele = document.createElement('script')
+  for (let key in config) {
+    ele.setAttribute(key, config[key])
+  }
+  document.getElementById('giscus-wrap').insertAdjacentElement('afterbegin',ele)
+}
+
+function changeGiscusTheme (theme) {
+  function sendMessage(message) {
+    const iframe = document.querySelector('iframe.giscus-frame')
+    if (!iframe) return
+    iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app')
+  }
+
+  sendMessage({
+    setConfig: {
+      theme: getGiscusTheme(theme)
+    }
+  });
+}
+
+btf.addModeChange('giscus', changeGiscusTheme)
+
+if ('Giscus' === 'Giscus' || !false) {
+  if (false) btf.loadComment(document.getElementById('giscus-wrap'), loadGiscus)
+  else loadGiscus()
+} else {
+  function loadOtherComment () {
+    loadGiscus()
+  }
+}</script></div><link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/aplayer/1.10.1/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.bootcdn.net/ajax/libs/aplayer/1.10.1/APlayer.min.js"></script><script src="https://cdn.bootcdn.net/ajax/libs/butterfly-extsrc/1.1.3/metingjs/dist/Meting.min.js"></script><script src="https://cdn.bootcdn.net/ajax/libs/pjax/0.2.8/pjax.min.js"></script><script>let pjaxSelectors = ["link[rel=\"canonical\"]","meta[property=\"og:image\"]","meta[property=\"og:title\"]","meta[property=\"og:url\"]","head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener scroll 
+  window.tocScrollFn && window.removeEventListener('scroll', window.tocScrollFn)
+  window.scrollCollect && window.removeEventListener('scroll', scrollCollect)
+
+  document.getElementById('rightside').style.cssText = "opacity: ''; transform: ''"
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+  typeof disqusjs === 'object' && disqusjs.destroy()
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', (e) => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

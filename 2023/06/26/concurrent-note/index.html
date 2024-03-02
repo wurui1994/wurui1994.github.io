@@ -1,0 +1,337 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>并发相关 | WuRui</title><meta name="author" content="WuRui"><meta name="copyright" content="WuRui"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="https:&#x2F;&#x2F;www.boost.org&#x2F;doc&#x2F;libs&#x2F;1_79_0&#x2F;libs&#x2F;context&#x2F;doc&#x2F;html&#x2F;context&#x2F;performance.htmlhttps:&#x2F;&#x2F;www.boost.org&#x2F;doc&#x2F;libs&#x2F;1_79_0&#x2F;libs&#x2F;fiber&#x2F;doc&#x2F;html&#x2F;fiber&#x2F;overview&#x2F;implementations__fcontext_t__ucontext_t_and">
+<meta property="og:type" content="article">
+<meta property="og:title" content="并发相关">
+<meta property="og:url" content="https://wurui1994.github.io/2023/06/26/concurrent-note/index.html">
+<meta property="og:site_name" content="WuRui">
+<meta property="og:description" content="https:&#x2F;&#x2F;www.boost.org&#x2F;doc&#x2F;libs&#x2F;1_79_0&#x2F;libs&#x2F;context&#x2F;doc&#x2F;html&#x2F;context&#x2F;performance.htmlhttps:&#x2F;&#x2F;www.boost.org&#x2F;doc&#x2F;libs&#x2F;1_79_0&#x2F;libs&#x2F;fiber&#x2F;doc&#x2F;html&#x2F;fiber&#x2F;overview&#x2F;implementations__fcontext_t__ucontext_t_and">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wurui1994.github.io/img/avatar.jpg">
+<meta property="article:published_time" content="2023-06-26T07:09:16.000Z">
+<meta property="article:modified_time" content="2023-06-28T14:07:41.550Z">
+<meta property="article:author" content="WuRui">
+<meta property="article:tag" content="concurrent">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wurui1994.github.io/img/avatar.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://wurui1994.github.io/2023/06/26/concurrent-note/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.bootcdn.net/ajax/libs/flickr-justified-gallery/2.1.2/fjGallery.min.js',
+      css: 'https://cdn.bootcdn.net/ajax/libs/flickr-justified-gallery/2.1.2/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '并发相关',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-06-28 22:07:41'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">101</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">90</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 目录</span></a></div><div class="menus_item"><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img fixed" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="WuRui"><span class="site-name">WuRui</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 目录</span></a></div><div class="menus_item"><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">并发相关</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2023-06-26T07:09:16.000Z" title="发表于 2023-06-26 15:09:16">2023-06-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-06-28T14:07:41.550Z" title="更新于 2023-06-28 22:07:41">2023-06-28</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">1.2k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>7分钟</span></span></div></div></div><article class="post-content" id="article-container"><p><a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/1_79_0/libs/context/doc/html/context/performance.html">https://www.boost.org/doc/libs/1_79_0/libs/context/doc/html/context/performance.html</a><br><a target="_blank" rel="noopener" href="https://www.boost.org/doc/libs/1_79_0/libs/fiber/doc/html/fiber/overview/implementations__fcontext_t__ucontext_t_and_winfiber.html">https://www.boost.org/doc/libs/1_79_0/libs/fiber/doc/html/fiber/overview/implementations__fcontext_t__ucontext_t_and_winfiber.html</a></p>
+<p>完成了boost.asio boost.beast boost.fiber基于work_stealing调度模型的整合</p>
+<p>sched_yield()和nanosleep()对进程调度的影响<br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/arnoldlu/p/11287972.html">https://www.cnblogs.com/arnoldlu/p/11287972.html</a></p>
+<p>std::this_thread::yield()使用理解<br><a target="_blank" rel="noopener" href="https://blog.csdn.net/liuhhaiffeng/article/details/52604052">https://blog.csdn.net/liuhhaiffeng/article/details/52604052</a></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//    while(1) std::this_thread::yield();</span></span><br><span class="line"><span class="comment">//    t1.detach();</span></span><br><span class="line"><span class="type">size_t</span> cpu_number_out = <span class="number">0</span>;</span><br><span class="line"><span class="built_in">pthread_cpu_number_np</span>(&amp;cpu_number_out);</span><br><span class="line">std::cout &lt;&lt; cpu_number_out &lt;&lt; std::endl;</span><br></pre></td></tr></table></figure>
+
+<p>Windows event notification<br><a target="_blank" rel="noopener" href="https://github.com/python-trio/trio/issues/52#issuecomment-424591743">https://github.com/python-trio/trio/issues/52#issuecomment-424591743</a><br><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/41527964/is-there-any-way-to-use-iocp-to-notify-when-a-socket-is-readable-writeable">https://stackoverflow.com/questions/41527964/is-there-any-way-to-use-iocp-to-notify-when-a-socket-is-readable-writeable</a></p>
+<p>libbfd<br><a target="_blank" rel="noopener" href="https://blog.csdn.net/crazycoder8848/article/details/51456297">https://blog.csdn.net/crazycoder8848/article/details/51456297</a></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Windows does not provide sleep functionality with nanosecond resolution, so we</span></span><br><span class="line"><span class="comment">// try to approximate this with spinning combined with yielding if another thread</span></span><br><span class="line"><span class="comment">// is ready to run on the current processor.</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">os::naked_short_nanosleep</span><span class="params">(jlong ns)</span> </span>&#123;</span><br><span class="line">  <span class="built_in">assert</span>(ns &gt; <span class="number">-1</span> &amp;&amp; ns &lt; NANOUNITS, <span class="string">&quot;Un-interruptable sleep, short time use only&quot;</span>);</span><br><span class="line"></span><br><span class="line">  <span class="type">int64_t</span> start = os::<span class="built_in">javaTimeNanos</span>();</span><br><span class="line">  <span class="keyword">do</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">SwitchToThread</span>() == <span class="number">0</span>) &#123;</span><br><span class="line">      <span class="comment">// Nothing else is ready to run on this cpu, spin a little</span></span><br><span class="line">      <span class="built_in">SpinPause</span>();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">while</span> (os::<span class="built_in">javaTimeNanos</span>() - start &lt; ns);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>yield&#x2F;sched_yield&#x2F;SwitchToThread<br>cv条件变量</p>
+<p>macOS&#x2F;xnu<br>pthread_cond_wait –&gt; sched_yield –&gt; swtch_pri(0)<br>std::condition_variable –&gt; pthread_cond_wait</p>
+<p>API swtch_pri&#x2F;swtch&#x2F;thread_switch</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">std::mutex m;</span><br><span class="line"><span class="function">std::unique_lock&lt;std::mutex&gt; <span class="title">g</span><span class="params">(m)</span></span>;</span><br><span class="line">std::condition_variable cv;</span><br><span class="line"><span class="keyword">while</span>(<span class="number">1</span>) cv.<span class="built_in">wait</span>(g, []()&#123;<span class="keyword">return</span> <span class="literal">false</span>;&#125;);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">pthread_mutex_t</span> mtx=PTHREAD_MUTEX_INITIALIZER;</span><br><span class="line"><span class="type">pthread_cond_t</span> cond=PTHREAD_COND_INITIALIZER;</span><br><span class="line">pthread_mutex_lock(&amp;mtx);</span><br><span class="line"><span class="keyword">while</span>(<span class="number">1</span>) pthread_cond_wait(&amp;cond,&amp;mtx);</span><br><span class="line">pthread_mutex_unlock(&amp;mtx);</span><br></pre></td></tr></table></figure>
+
+<p>suspend or parking<br>[ref:<a target="_blank" rel="noopener" href="https://github.com/rust-lang/rust/blob/master/library/std/src/sys_common/thread_parker/mod.rs]">https://github.com/rust-lang/rust/blob/master/library/std/src/sys_common/thread_parker/mod.rs]</a><br>[<a target="_blank" rel="noopener" href="https://github.com/maracl/dpca_s/blob/master/common/fast_sync_utils.cpp]">https://github.com/maracl/dpca_s/blob/master/common/fast_sync_utils.cpp]</a></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">Win32</span><br><span class="line"><span class="comment">// while (1) WaitForSingleObject(GetCurrentThread(), INFINITE);</span></span><br><span class="line"><span class="meta">#<span class="keyword">pragma</span> comment(lib, <span class="string">&quot;Synchronization.lib&quot;</span>)</span></span><br><span class="line"><span class="keyword">while</span> (<span class="number">1</span>) <span class="built_in">WaitOnAddress</span>(argv, argv, <span class="built_in">sizeof</span>(PVOID), INFINITE); <span class="comment">// wait when not same</span></span><br><span class="line"><span class="comment">// NtWaitForKeyedEvent ?</span></span><br><span class="line"></span><br><span class="line">Linux</span><br><span class="line">pthread_cond_wait -&gt; futex_wait -&gt; schedule</span><br><span class="line"><span class="comment">// syscall(SYS_futex, address, FUTEX_WAIT | FUTEX_PRIVATE_FLAG, value, NULL);</span></span><br><span class="line"><span class="keyword">while</span>(<span class="number">1</span>) <span class="built_in">syscall</span>(SYS_futex, argv, <span class="number">0</span>, *argv, <span class="number">0</span>); <span class="comment">// wait when same</span></span><br><span class="line"></span><br><span class="line">Mac</span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;kern/waitq.h&gt;</span></span></span><br><span class="line">thread_suspend -&gt; thread_wait -&gt; <span class="built_in">assert_wait</span>(-&gt; waitq_assert_wait64 --&gt; waitq_assert_wait64_locked) / thread_block</span><br><span class="line">semaphore_wait -&gt; semaphore_wait_internal waitq_assert_wait64_locked</span><br><span class="line">pthread_cond_wait -&gt; __psynch_cvwait -&gt; ksyn_wait -&gt; thread_select/thread_block</span><br><span class="line">select -&gt; select_internal -&gt; waitq_assert_wait64_leeway -&gt; waitq_assert_wait64_locked</span><br><span class="line"></span><br><span class="line"><span class="type">thread_act_t</span>*           threads = <span class="number">0</span>;</span><br><span class="line"><span class="type">mach_msg_type_number_t</span>  thread_count = <span class="number">0</span>;</span><br><span class="line"><span class="built_in">task_threads</span>(<span class="built_in">current_task</span>(), &amp;threads, &amp;thread_count);</span><br><span class="line"><span class="keyword">while</span>(<span class="number">1</span>) <span class="built_in">thread_suspend</span>(threads[<span class="number">0</span>]);</span><br></pre></td></tr></table></figure>
+
+<p>Qt<br>mutex实现<br>UNIX sem(sysv) &gt; cond(pthread)<br>MAC semaphore<br>WIN event</p>
+<p>cond实习<br>UNIX&#x2F;MAC cond(pthread)<br>WIN event</p>
+<p>semaphores<br>linux -&gt; futex<br>win -&gt; WaitOnAddress<br>mac可以用_dispatch_wait_on_address 未实现</p>
+<p>wait_on_address</p>
+<p>Linux的libpthread属于glibc</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/puncha/article/details/8487933">https://blog.csdn.net/puncha/article/details/8487933</a><br>并发学习之：Keyed Events（没看懂，要调试下才能明白，伤心！）<br><a target="_blank" rel="noopener" href="http://undocumented.ntinternals.net/">http://undocumented.ntinternals.net/</a></p>
+<p><a target="_blank" rel="noopener" href="https://cfsamson.github.io/book-exploring-async-basics">https://cfsamson.github.io/book-exploring-async-basics</a></p>
+<p><a target="_blank" rel="noopener" href="https://repositum.tuwien.at/retrieve/8679">https://repositum.tuwien.at/retrieve/8679</a></p>
+<hr>
+<p>qmutex wait<br>system v sem -&gt; semop<br>Linux<br>#ifdef QT_UNIX_SEMAPHORE<br>sem_wait&#x2F;sem_timedwait<br>#else<br>pthread_cond_wait&#x2F;pthread_cond_timedwait<br>#endif<br>macOS<br>semaphore_wait&#x2F;semaphore_timedwait</p>
+<p>条件变量与信号量<br><a target="_blank" rel="noopener" href="http://events.jianshu.io/p/5a2b66ccb9a7">http://events.jianshu.io/p/5a2b66ccb9a7</a></p>
+<p>条件变量 -&gt; 二元信号量<br>信号量 -&gt; WaitGroup(Go)&#x2F;Barrier(libuv)&#x2F;pthread_barrier_wait<br>pthread_barrier_wait(Linux PTHREAD_BARRIER_SERIAL_THREAD)<br>Java(CountDownLatch)<br>C++ 20 std::latch&#x2F;std::barrier<br><a target="_blank" rel="noopener" href="https://zh.cppreference.com/w/cpp/thread/latch">https://zh.cppreference.com/w/cpp/thread/latch</a><br><a target="_blank" rel="noopener" href="https://zh.cppreference.com/w/cpp/thread/barrier">https://zh.cppreference.com/w/cpp/thread/barrier</a><br>多线程——CountDownLatch详解<br><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/b90309b78775">https://www.jianshu.com/p/b90309b78775</a><br>java 与 golang 并发控制 CountDownLatch CyclicBarrier Semaphore 以及 WaitGroup 的简单使用<br><a target="_blank" rel="noopener" href="https://my.oschina.net/wang520/blog/4480379">https://my.oschina.net/wang520/blog/4480379</a><br><a target="_blank" rel="noopener" href="https://www.apiref.com/java11-zh/java.base/java/util/concurrent/package-summary.html">https://www.apiref.com/java11-zh/java.base/java/util/concurrent/package-summary.html</a><br>Semaphore&#x2F;CountDownLatch&#x2F;CyclicBarrier&#x2F;Phaser&#x2F;Exchanger<br><a target="_blank" rel="noopener" href="https://www.apiref.com/java11-zh/java.base/java/util/concurrent/locks/package-summary.html">https://www.apiref.com/java11-zh/java.base/java/util/concurrent/locks/package-summary.html</a><br><a target="_blank" rel="noopener" href="https://www.apiref.com/java11-zh/java.base/java/util/concurrent/atomic/package-summary.html">https://www.apiref.com/java11-zh/java.base/java/util/concurrent/atomic/package-summary.html</a><br>C# Mutex&#x2F;Semaphore&#x2F;EventWaitHandle&#x2F;CountdownEvent&#x2F;Barrier<br><a target="_blank" rel="noopener" href="https://learn.microsoft.com/zh-cn/dotnet/api/system.threading.waithandle">https://learn.microsoft.com/zh-cn/dotnet/api/system.threading.waithandle</a><br><a target="_blank" rel="noopener" href="https://learn.microsoft.com/zh-cn/dotnet/standard/threading/overview-of-synchronization-primitives">https://learn.microsoft.com/zh-cn/dotnet/standard/threading/overview-of-synchronization-primitives</a><br><a target="_blank" rel="noopener" href="https://github.com/dotnet/runtime/blob/main/src/coreclr/pal/src/thread/threadsusp.cpp">https://github.com/dotnet/runtime/blob/main/src/coreclr/pal/src/thread/threadsusp.cpp</a><br><a target="_blank" rel="noopener" href="https://github.com/dotnet/runtime/tree/main/src/coreclr/pal/src/synchobj">https://github.com/dotnet/runtime/tree/main/src/coreclr/pal/src/synchobj</a><br>Event和Mutex区别<br><a target="_blank" rel="noopener" href="https://blog.csdn.net/anjen/article/details/4727791">https://blog.csdn.net/anjen/article/details/4727791</a></p>
+<p>libuv漫谈之线程<br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/25973650">https://zhuanlan.zhihu.com/p/25973650</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/rust-lang/rust/blob/master/library/std/src/sys/unix/locks/mod.rs">https://github.com/rust-lang/rust/blob/master/library/std/src/sys/unix/locks/mod.rs</a><br><a target="_blank" rel="noopener" href="https://github.com/rust-lang/rust/blob/master/library/std/src/sys/unix/futex.rs">https://github.com/rust-lang/rust/blob/master/library/std/src/sys/unix/futex.rs</a><br><a target="_blank" rel="noopener" href="https://github.com/rust-lang/rust/tree/master/library/std/src/sys/unix/locks">https://github.com/rust-lang/rust/tree/master/library/std/src/sys/unix/locks</a><br>pthread condvar&#x2F;mutex&#x2F;rwlock<br><a target="_blank" rel="noopener" href="https://github.com/rust-lang/rust/blob/master/library/std/src/sys/windows/locks">https://github.com/rust-lang/rust/blob/master/library/std/src/sys/windows/locks</a><br>mutex -&gt; AcquireSRWLockExclusive<br>rwlock -&gt; AcquireSRWLockShared<br>conavar -&gt; SleepConditionVariableSRW</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/rust-lang/rust/blob/master/library/std/src/sync/barrier.rs">https://github.com/rust-lang/rust/blob/master/library/std/src/sync/barrier.rs</a></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">struct</span> <span class="title class_">Barrier</span> &#123;</span><br><span class="line">    lock: Mutex&lt;BarrierState&gt;,</span><br><span class="line">    cvar: Condvar,</span><br><span class="line">    num_threads: <span class="type">usize</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="http://docs.libuv.org/en/v1.x/guide.html">http://docs.libuv.org/en/v1.x/guide.html</a><br><a target="_blank" rel="noopener" href="https://pursuitking.com/go_2/">https://pursuitking.com/go_2/</a><br><a target="_blank" rel="noopener" href="https://qinyuanpei.github.io/posts/345410188/">https://qinyuanpei.github.io/posts/345410188/</a></p>
+<p>std::future&#x2F;std::promise -&gt; std::condition_variable<br>std::promise -&gt; set_value(cv.notify_all)<br>std::future -&gt; wait(cv.wait)&#x2F;get(__sub_wait-&gt;cv.wait)<br>std::packaged_task -&gt; ::operator()(set_value-&gt;cv.notify_all)<br><a target="_blank" rel="noopener" href="https://zh.cppreference.com/w/cpp/thread/promise">https://zh.cppreference.com/w/cpp/thread/promise</a><br><a target="_blank" rel="noopener" href="https://zh.cppreference.com/w/cpp/thread/future">https://zh.cppreference.com/w/cpp/thread/future</a><br>C ++ 20中的新线程（jthread）功能<br><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/c610ad5db6b7">https://www.jianshu.com/p/c610ad5db6b7</a><br>When a program terminates (ie, main returns) the remaining detached threads executing in the background are not waited upon; instead their execution is suspended and their thread-local objects destructed.<br><a target="_blank" rel="noopener" href="https://www.itcodar.com/c-plus-1/what-is-different-between-join-and-detach-for-multi-threading-in-c.html">https://www.itcodar.com/c-plus-1/what-is-different-between-join-and-detach-for-multi-threading-in-c.html</a><br><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/22803600/when-should-i-use-stdthreaddetach">https://stackoverflow.com/questions/22803600/when-should-i-use-stdthreaddetach</a><br>thread — detach()的使用<br><a target="_blank" rel="noopener" href="https://blog.csdn.net/shunlu5586/article/details/127799458">https://blog.csdn.net/shunlu5586/article/details/127799458</a><br>使用join需要等它启动cv.wait_for<br>使用detach需要等它结束cv.wait_for?<br>响应式编程 And&#x2F;When&#x2F;Then<br>Promise -&gt; When&#x2F;Then<br><a target="_blank" rel="noopener" href="https://github.com/ReactiveX/RxCpp/blob/main/Rx/v2/src/rxcpp/rx-observable.hpp">https://github.com/ReactiveX/RxCpp/blob/main/Rx/v2/src/rxcpp/rx-observable.hpp</a></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// blocking_subscribe -&gt;</span></span><br><span class="line">std::condition_variable wake;</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://github.com/ReactiveX/RxJava/blob/3.x/src/main/java/io/reactivex/rxjava3/internal/operators/observable/BlockingObservableLatest.java">https://github.com/ReactiveX/RxJava/blob/3.x/src/main/java/io/reactivex/rxjava3/internal/operators/observable/BlockingObservableLatest.java</a><br><a target="_blank" rel="noopener" href="https://github.com/ReactiveX/RxJava/blob/3.x/src/main/java/io/reactivex/rxjava3/internal/operators/flowable/BlockingFlowableLatest.java">https://github.com/ReactiveX/RxJava/blob/3.x/src/main/java/io/reactivex/rxjava3/internal/operators/flowable/BlockingFlowableLatest.java</a></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="type">Semaphore</span> <span class="variable">notify</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Semaphore</span>(<span class="number">0</span>);</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://github.com/David-Haim/concurrencpp/#when_all-function">https://github.com/David-Haim/concurrencpp/#when_all-function</a><br><a target="_blank" rel="noopener" href="https://github.com/Naios/continuable">https://github.com/Naios/continuable</a></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Connect continuables through when_all, when_any or when_seq</span></span><br><span class="line"><span class="comment">// There are helper functions for connecting continuables:</span></span><br><span class="line"><span class="keyword">auto</span> all = cti::<span class="built_in">when_all</span>(<span class="built_in">http_request</span>(<span class="string">&quot;github.com&quot;</span>), <span class="built_in">http_request</span>(<span class="string">&quot;example.com&quot;</span>));</span><br><span class="line"><span class="keyword">auto</span> any = cti::<span class="built_in">when_any</span>(<span class="built_in">http_request</span>(<span class="string">&quot;github.com&quot;</span>), <span class="built_in">http_request</span>(<span class="string">&quot;example.com&quot;</span>));</span><br><span class="line"><span class="keyword">auto</span> seq = cti::<span class="built_in">when_seq</span>(<span class="built_in">http_request</span>(<span class="string">&quot;github.com&quot;</span>), <span class="built_in">http_request</span>(<span class="string">&quot;example.com&quot;</span>));</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://github.com/ponylang/ponyc/blob/main/src/libponyrt/platform/threads.c">https://github.com/ponylang/ponyc/blob/main/src/libponyrt/platform/threads.c</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/wuyongqiang/p/7458184.html">https://www.cnblogs.com/wuyongqiang/p/7458184.html</a></p>
+<p>setjmp 的正确使用<br><a target="_blank" rel="noopener" href="https://blog.codingnow.com/2010/05/setjmp.html">https://blog.codingnow.com/2010/05/setjmp.html</a></p>
+<ul>
+<li>setjmp&#x2F;longjmp setcontext&#x2F;getcontext</li>
+<li>ucontext swapcontext&#x2F;makecontext</li>
+<li>winfiber GetThreadContext&#x2F;SetThreadContext CreateFiber&#x2F;SwitchToFiber</li>
+<li>fcontext BOOST_JMP make_fcontext&#x2F;jump_context&#x2F;swap_fcontext asm</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://github.com/open-mpi/ompi">ompi</a><br><a target="_blank" rel="noopener" href="https://github.com/pmodels/mpich">mpich</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/JCTools/JCTools">JCTools</a> -&gt; java</p>
+<h2 id="work-stealing-in-qt"><a href="#work-stealing-in-qt" class="headerlink" title="work-stealing in qt"></a>work-stealing in qt</h2><p>QFuture: mention the work-stealing algorithm in the docs<br><a target="_blank" rel="noopener" href="https://github.com/qt/qtbase/commit/0235de994be7e04aca3456f1260b18313dd45b74">https://github.com/qt/qtbase/commit/0235de994be7e04aca3456f1260b18313dd45b74</a></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">QThreadPool::stealAndRunRunnable</span><br><span class="line"><span class="comment">// just use simple locker -&gt; steal idea</span></span><br><span class="line"><span class="function">QMutexLocker <span class="title">locker</span><span class="params">(&amp;d-&gt;mutex)</span></span>;</span><br></pre></td></tr></table></figure>
+
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://wurui1994.github.io">WuRui</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://wurui1994.github.io/2023/06/26/concurrent-note/">https://wurui1994.github.io/2023/06/26/concurrent-note/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://wurui1994.github.io" target="_blank">WuRui</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/concurrent/">concurrent</a></div><div class="post_share"><div class="social-share" data-image="/img/avatar.jpg" data-sites="wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/butterfly-extsrc/1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.bootcdn.net/ajax/libs/butterfly-extsrc/1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechatpay.png" target="_blank"><img class="post-qr-code-img" src="/img/wechatpay.png" alt="微信"/></a><div class="post-qr-code-desc">微信</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/alipay.jpg" alt="支付宝"/></a><div class="post-qr-code-desc">支付宝</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2023/06/26/ipc-note/" title="IPC相关"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">IPC相关</div></div></a></div><div class="next-post pull-right"><a href="/2023/06/26/golang-note/" title="Go语言学习"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Go语言学习</div></div></a></div></nav><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="giscus-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">WuRui</div><div class="author-info__description">每天都是新的一天</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">101</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">90</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/wurui1994" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="/img/qq.jpg" target="_blank" title="QQ"><i class="fab fa-qq"></i></a><a class="social-icon" href="/img/wechat.jpg" target="_blank" title="微信"><i class="fab fa-weixin"></i></a><a class="social-icon" href="mailto:1341531859@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn"></i><span>公告</span></div><div class="announcement_content">这里是我的博客, <a href=https://www.cnblogs.com/wurui1994/>旧博客地址</a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#work-stealing-in-qt"><span class="toc-number">1.</span> <span class="toc-text">work-stealing in qt</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/02/media-guide/" title="学习入门">学习入门</a><time datetime="2024-03-02T01:00:12.000Z" title="发表于 2024-03-02 09:00:12">2024-03-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/10/22/clipboard-note/" title="clipboard笔记">clipboard笔记</a><time datetime="2023-10-22T08:54:25.000Z" title="发表于 2023-10-22 16:54:25">2023-10-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/08/04/optimize-note/" title="优化相关">优化相关</a><time datetime="2023-08-04T06:51:45.000Z" title="发表于 2023-08-04 14:51:45">2023-08-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/08/04/love-note/" title="关于爱情">关于爱情</a><time datetime="2023-08-04T00:35:24.000Z" title="发表于 2023-08-04 08:35:24">2023-08-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/07/20/dopamine-note/" title="多巴胺相关">多巴胺相关</a><time datetime="2023-07-20T06:47:32.000Z" title="发表于 2023-07-20 14:47:32">2023-07-20</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By WuRui</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>function getGiscusTheme (theme) {
+  return theme === 'dark' ? 'dark' : 'light'
+}
+
+function loadGiscus () {
+  const config = Object.assign({
+    src: 'https://giscus.app/client.js',
+    'data-repo': 'wurui1994/wurui1994.github.io',
+    'data-repo-id': 'R_kgDOJzB0HA',
+    'data-category-id': 'DIC_kwDOJzB0HM4CXeHj',
+    'data-lang': 'zh-CN',
+    'data-mapping': 'pathname',
+    'data-theme': getGiscusTheme(document.documentElement.getAttribute('data-theme')),
+    'data-reactions-enabled': '1',
+    crossorigin: 'anonymous',
+    async: true
+  },null)
+
+  let ele = document.createElement('script')
+  for (let key in config) {
+    ele.setAttribute(key, config[key])
+  }
+  document.getElementById('giscus-wrap').insertAdjacentElement('afterbegin',ele)
+}
+
+function changeGiscusTheme (theme) {
+  function sendMessage(message) {
+    const iframe = document.querySelector('iframe.giscus-frame')
+    if (!iframe) return
+    iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app')
+  }
+
+  sendMessage({
+    setConfig: {
+      theme: getGiscusTheme(theme)
+    }
+  });
+}
+
+btf.addModeChange('giscus', changeGiscusTheme)
+
+if ('Giscus' === 'Giscus' || !false) {
+  if (false) btf.loadComment(document.getElementById('giscus-wrap'), loadGiscus)
+  else loadGiscus()
+} else {
+  function loadOtherComment () {
+    loadGiscus()
+  }
+}</script></div><link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/aplayer/1.10.1/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.bootcdn.net/ajax/libs/aplayer/1.10.1/APlayer.min.js"></script><script src="https://cdn.bootcdn.net/ajax/libs/butterfly-extsrc/1.1.3/metingjs/dist/Meting.min.js"></script><script src="https://cdn.bootcdn.net/ajax/libs/pjax/0.2.8/pjax.min.js"></script><script>let pjaxSelectors = ["link[rel=\"canonical\"]","meta[property=\"og:image\"]","meta[property=\"og:title\"]","meta[property=\"og:url\"]","head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener scroll 
+  window.tocScrollFn && window.removeEventListener('scroll', window.tocScrollFn)
+  window.scrollCollect && window.removeEventListener('scroll', scrollCollect)
+
+  document.getElementById('rightside').style.cssText = "opacity: ''; transform: ''"
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+  typeof disqusjs === 'object' && disqusjs.destroy()
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', (e) => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

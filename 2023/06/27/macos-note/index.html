@@ -1,0 +1,359 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>macOS记录 | WuRui</title><meta name="author" content="WuRui"><meta name="copyright" content="WuRui"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="UTMutmconfigs 12MallocStackLogging&#x3D;1 .&#x2F;titanagentsudo heap -guessNonObjects -sort $(pgrep titanagent)  macos_ventura_note.mdCODE_SIGNING_MONITORxnu&#x2F;bsd&#x2F;kern&#x2F;kern_codesigning.c drop 32bi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="macOS记录">
+<meta property="og:url" content="https://wurui1994.github.io/2023/06/27/macos-note/index.html">
+<meta property="og:site_name" content="WuRui">
+<meta property="og:description" content="UTMutmconfigs 12MallocStackLogging&#x3D;1 .&#x2F;titanagentsudo heap -guessNonObjects -sort $(pgrep titanagent)  macos_ventura_note.mdCODE_SIGNING_MONITORxnu&#x2F;bsd&#x2F;kern&#x2F;kern_codesigning.c drop 32bi">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wurui1994.github.io/img/avatar.jpg">
+<meta property="article:published_time" content="2023-06-27T03:55:51.000Z">
+<meta property="article:modified_time" content="2023-06-27T12:24:20.188Z">
+<meta property="article:author" content="WuRui">
+<meta property="article:tag" content="macos">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wurui1994.github.io/img/avatar.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://wurui1994.github.io/2023/06/27/macos-note/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.bootcdn.net/ajax/libs/flickr-justified-gallery/2.1.2/fjGallery.min.js',
+      css: 'https://cdn.bootcdn.net/ajax/libs/flickr-justified-gallery/2.1.2/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'macOS记录',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-06-27 20:24:20'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">101</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">90</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 目录</span></a></div><div class="menus_item"><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img fixed" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="WuRui"><span class="site-name">WuRui</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 目录</span></a></div><div class="menus_item"><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">macOS记录</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2023-06-27T03:55:51.000Z" title="发表于 2023-06-27 11:55:51">2023-06-27</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-06-27T12:24:20.188Z" title="更新于 2023-06-27 20:24:20">2023-06-27</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/macos/">macos</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">1.7k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>8分钟</span></span></div></div></div><article class="post-content" id="article-container"><p><a target="_blank" rel="noopener" href="https://github.com/utmapp/UTM">UTM</a><br><a target="_blank" rel="noopener" href="https://github.com/adespoton/utmconfigs">utmconfigs</a></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">MallocStackLogging=1 ./titanagent</span><br><span class="line">sudo heap -guessNonObjects -<span class="built_in">sort</span> $(pgrep titanagent)</span><br></pre></td></tr></table></figure>
+
+<h2 id="macos-ventura-note-md"><a href="#macos-ventura-note-md" class="headerlink" title="macos_ventura_note.md"></a>macos_ventura_note.md</h2><p>CODE_SIGNING_MONITOR<br>xnu&#x2F;bsd&#x2F;kern&#x2F;kern_codesigning.c</p>
+<p>drop 32bit arm</p>
+<p>xnu&#x2F;bsd&#x2F;sys&#x2F;constrained_ctypes.h<br>xnu&#x2F;bsd&#x2F;sys&#x2F;kdebug_triage.h<br>xnu&#x2F;bsd&#x2F;sys&#x2F;trust_caches.h</p>
+<p>xnu&#x2F;config&#x2F;MasterVersion<br>xnu&#x2F;doc&#x2F;memorystatus&#x2F;overview.md</p>
+<p>xnu&#x2F;doc&#x2F;sched_cond.md<br>Atomic Condition Variables for Thread Synchronization</p>
+<p>xnu&#x2F;osfmk&#x2F;kern&#x2F;cambria_layout.h</p>
+<p>[+] xnu&#x2F;osfmk&#x2F;kern&#x2F;iotrace.h</p>
+<p>xnu&#x2F;osfmk&#x2F;kern&#x2F;smr.c<br>SMR clocks have 3 state machines interacting at any given timea</p>
+<h2 id="kdebug-note-md"><a href="#kdebug-note-md" class="headerlink" title="kdebug_note.md"></a>kdebug_note.md</h2><p>sudo ktrace trace -sS -p 62872 | grep test</p>
+<p>export PATH&#x3D;$PATH:&#x2F;Applications&#x2F;Xcode.app&#x2F;Contents&#x2F;Applications&#x2F;Instruments.app&#x2F;Contents&#x2F;MacOS<br>instruments  -d result.trace -t ‘System Trace’ &#x2F;bin&#x2F;ls<br>open result.trace</p>
+<p>sudo .&#x2F;kdv 23960 | grep BSC_</p>
+<p>sudo ktrace trace -p 62872</p>
+<p>sudo ktrace setopt -x 62872<br>sudo ktrace dump -T1 -p 62872</p>
+<p>dump的过滤好像无效<br>ktrace dump trace001.trace<br>ktrace trace -R trace001.trace -p firefox<br>只能先dump再过滤???</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/nowsecure/fsmon">https://github.com/nowsecure/fsmon</a></p>
+<p>sudo ktrace setopt -x firefox<br>sudo ktrace dump -p firefox</p>
+<h2 id="bash-inject"><a href="#bash-inject" class="headerlink" title="bash inject"></a>bash inject</h2><p>sudo mv &#x2F;bin&#x2F;bash &#x2F;bin&#x2F;bash_old<br>Password:<br>mv: rename &#x2F;bin&#x2F;bash to &#x2F;bin&#x2F;bash_old: Operation not permitted</p>
+<p>macOS可能不具备bash注入能力</p>
+<h2 id="获取运行进程的CFBundleIdentifier"><a href="#获取运行进程的CFBundleIdentifier" class="headerlink" title="获取运行进程的CFBundleIdentifier"></a>获取运行进程的CFBundleIdentifier</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo launchctl procinfo 48339 | grep CFBundleIdentifier | <span class="built_in">head</span> -n1 | awk <span class="string">&#x27;&#123;print $3&#125;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="获取bundleid根据bundleid打开应用"><a href="#获取bundleid根据bundleid打开应用" class="headerlink" title="获取bundleid根据bundleid打开应用"></a>获取bundleid根据bundleid打开应用</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -dump | grep identifier: | awk <span class="string">&#x27;&#123;print $2&#125;&#x27;</span> | <span class="built_in">sort</span> -u</span><br><span class="line">open -b com.apple.Console <span class="comment">#控制台</span></span><br><span class="line">open -b com.apple.grapher</span><br><span class="line">open -b com.netease.163music</span><br><span class="line">open -b com.tencent.qq</span><br><span class="line">open -b com.google.Chrome</span><br><span class="line">open -b com.kingsoft.wpsoffice.mac</span><br><span class="line">open -b com.apple.Dictionary</span><br><span class="line">open -b com.apple.DigitalColorMeter</span><br><span class="line">open -b com.apple.FontBook</span><br><span class="line">open -b com.apple.Preview</span><br><span class="line">open -b com.apple.calculator</span><br><span class="line">open -b com.apple.dt.Instruments</span><br><span class="line">open -b com.apple.finder</span><br><span class="line">open -b com.xunlei.Thunder</span><br><span class="line">open -b com.apple.TextEdit</span><br></pre></td></tr></table></figure>
+
+<h2 id="macOS动态库"><a href="#macOS动态库" class="headerlink" title="macOS动态库"></a>macOS动态库</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">tapi - Text-based</span><br><span class="line">TAPI can generate text-based stub files (.tbd) from existing Mach-O</span><br><span class="line">libraries or parse the headers of a framework and infer the text-based</span><br><span class="line">stub file from it. Stubs Tool</span><br><span class="line"></span><br><span class="line">vtool – Mach-O version number utility</span><br><span class="line">The vtool utility displays and edits build and source version numbers</span><br><span class="line">embedded in the Mach-O(5) file format.</span><br></pre></td></tr></table></figure>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">vtool -show /opt/homebrew/opt/qt/lib/QtSvg.framework/QtSvg | grep minos</span><br><span class="line">vtool -show /opt/homebrew/opt/qt/lib/QtSvg.framework/QtSvg</span><br></pre></td></tr></table></figure>
+
+<h2 id="Network-framework"><a href="#Network-framework" class="headerlink" title="Network.framework"></a>Network.framework</h2><p><a target="_blank" rel="noopener" href="https://developer.apple.com/documentation/network">https://developer.apple.com/documentation/network</a><br><a target="_blank" rel="noopener" href="https://developer.apple.com/documentation/network/implementing_netcat_with_network_framework">https://developer.apple.com/documentation/network/implementing_netcat_with_network_framework</a><br><a target="_blank" rel="noopener" href="https://developer.apple.com/documentation/network/taking_advantage_of_third-party_network_debugging_tools">https://developer.apple.com/documentation/network/taking_advantage_of_third-party_network_debugging_tools</a></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">clang -framework Network -framework Security main.c -o nwcat</span><br></pre></td></tr></table></figure>
+
+<h2 id="Apple-OSS上的CF-CoreFoundation-有些没有开源-比如Notification的实现"><a href="#Apple-OSS上的CF-CoreFoundation-有些没有开源-比如Notification的实现" class="headerlink" title="Apple OSS上的CF(CoreFoundation)有些没有开源 比如Notification的实现"></a>Apple OSS上的CF(CoreFoundation)有些没有开源 比如Notification的实现</h2><h2 id="KDebug"><a href="#KDebug" class="headerlink" title="KDebug"></a>KDebug</h2><p><a target="_blank" rel="noopener" href="https://github.com/matan1008/pykdebugparser">https://github.com/matan1008/pykdebugparser</a></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">pip install pykdebugparser</span><br><span class="line">sudo ktrace dump -p pid</span><br><span class="line">pykdebugparser kevents trace001.ktrace</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># dump的过滤好像无效</span></span><br><span class="line">ktrace dump trace001.trace</span><br><span class="line">ktrace trace -R trace001.trace -p firefox</span><br><span class="line"><span class="comment"># 只能先dump再过滤???</span></span><br></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://github.com/per-gron/shuriken/tree/master/src/shk-trace">https://github.com/per-gron/shuriken/tree/master/src/shk-trace</a><br><a target="_blank" rel="noopener" href="https://github.com/dlevi309/kdebugView">https://github.com/dlevi309/kdebugView</a><br><a target="_blank" rel="noopener" href="https://github.com/nowsecure/fsmon">https://github.com/nowsecure/fsmon</a></p>
+<p><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/72549332/macos-ktrace-t-c-system-call-tracing-available-on-newer-macos">https://stackoverflow.com/questions/72549332/macos-ktrace-t-c-system-call-tracing-available-on-newer-macos</a></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo ktrace trace -s -S -t c -p 25317 | grep <span class="built_in">test</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">io</span>.<span class="built_in">open</span>(<span class="string">&quot;test.txt&quot;</span>,<span class="string">&#x27;w&#x27;</span>)</span><br><span class="line">python</span><br><span class="line"><span class="built_in">open</span>(<span class="string">&quot;test.txt&quot;</span>,<span class="string">&#x27;w&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://etcnotes.com/posts/system-call/">https://etcnotes.com/posts/system-call/</a></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$PATH</span>:/Applications/Xcode.app/Contents/Applications/Instruments.app/Contents/MacOS</span><br><span class="line">instruments  -d result.trace -t <span class="string">&#x27;System Trace&#x27;</span> /bin/ls</span><br><span class="line">open result.trace</span><br><span class="line"><span class="comment"># 选择ls主线程 然后选择Events：System Calls</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="osquery-endpointsecurity"><a href="#osquery-endpointsecurity" class="headerlink" title="osquery endpointsecurity"></a>osquery endpointsecurity</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo osqueryi --disable_events=<span class="literal">false</span> --disable_audit=<span class="literal">false</span> --disable_endpointsecurity=<span class="literal">false</span> --audit_allow_config</span><br></pre></td></tr></table></figure>
+
+<h2 id="recovery-mode-old-system"><a href="#recovery-mode-old-system" class="headerlink" title="recovery mode (old system)"></a>recovery mode (old system)</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo usr/sbin/nvram internet-recovery-mode=RecoveryModeNetwork</span><br><span class="line">sudo /usr/sbin/nvram -d internet-recovery-mode</span><br></pre></td></tr></table></figure>
+
+<h2 id="WPS-Office"><a href="#WPS-Office" class="headerlink" title="WPS Office"></a>WPS Office</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">4.1.2 1.67G</span><br><span class="line">4.2.0 2.14G</span><br></pre></td></tr></table></figure>
+
+<h2 id="OpenJDK-Symlink"><a href="#OpenJDK-Symlink" class="headerlink" title="OpenJDK Symlink"></a>OpenJDK Symlink</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo <span class="built_in">ln</span> -sfn /opt/homebrew/opt/openjdk/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk</span><br></pre></td></tr></table></figure>
+
+<h2 id="system-profiler"><a href="#system-profiler" class="headerlink" title="system_profiler"></a>system_profiler</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">system_profiler -json SPMemoryDataType</span><br><span class="line">system_profiler -listDataTypes</span><br></pre></td></tr></table></figure>
+
+<h2 id="redirect"><a href="#redirect" class="headerlink" title="redirect"></a>redirect</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">macOS</span><br><span class="line">这就是你如何将 stderr 重定向到 /dev/null</span><br><span class="line">command 2&gt; /dev/null</span><br><span class="line">例如</span><br><span class="line">ls -l 2&gt; /dev/null</span><br></pre></td></tr></table></figure>
+
+<h2 id="brew-services-命令解析"><a href="#brew-services-命令解析" class="headerlink" title="brew services 命令解析"></a>brew services 命令解析</h2><p><a target="_blank" rel="noopener" href="https://qiujunya.com/article/2019/6/23/23.html">https://qiujunya.com/article/2019/6/23/23.html</a></p>
+<h2 id="mdutil"><a href="#mdutil" class="headerlink" title="mdutil"></a>mdutil</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">https://zhuanlan.zhihu.com/p/231076209</span><br><span class="line">关掉方法：sudo mdutil -a -i off</span><br><span class="line">打开方法: sudo mdutil -a -i on</span><br><span class="line"></span><br><span class="line">关闭mds_stores的命令：</span><br><span class="line">sudo launchctl unload -w /System/Library/LaunchDaemons/com.apple.metadata.mds.plist</span><br><span class="line">[开启是：sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.metadata.mds.plist]</span><br><span class="line"></span><br><span class="line">关闭spotlight的命令：</span><br><span class="line">sudo launchctl unload -w /System/Library/LaunchAgents/com.apple.Spotlight.plist</span><br><span class="line">[开启是：sudo launchctl load -w /System/Library/LaunchAgents/com.apple.Spotlight.plist]</span><br></pre></td></tr></table></figure>
+
+<h2 id="macos13-Ventura虚拟机安装无网络问题"><a href="#macos13-Ventura虚拟机安装无网络问题" class="headerlink" title="macos13 Ventura虚拟机安装无网络问题"></a>macos13 Ventura虚拟机安装无网络问题</h2><p><a target="_blank" rel="noopener" href="https://www.dhzy.fun/archives/4263.html">https://www.dhzy.fun/archives/4263.html</a></p>
+<h2 id="set-hostname"><a href="#set-hostname" class="headerlink" title="set hostname"></a>set hostname</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo scutil --<span class="built_in">set</span> HostName wurui</span><br></pre></td></tr></table></figure>
+
+<h2 id="ibtool"><a href="#ibtool" class="headerlink" title="ibtool"></a>ibtool</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ibtool Window.xib --compile test.nib</span><br><span class="line">ibtool test.nib --upgrade --write test.xib</span><br><span class="line"><span class="comment"># [&lt;string&gt;Interface Builder cannot open compiled nibs.&lt;/string&gt;]</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="PlistBuddy简单使用"><a href="#PlistBuddy简单使用" class="headerlink" title="PlistBuddy简单使用"></a>PlistBuddy简单使用</h2><p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/2167f755c47e">https://www.jianshu.com/p/2167f755c47e</a></p>
+<h2 id="csrutil"><a href="#csrutil" class="headerlink" title="csrutil"></a>csrutil</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[-bash-3.2# csrutil disable</span><br><span class="line">Turning off System Integrity Protection requires modifying system security.</span><br><span class="line">Allow booting unsigned operating systems and any kernel extensions for os &quot;Macin</span><br><span class="line">tosh HD&quot;? [y/nl: y</span><br><span class="line">Authorized user: wurui</span><br><span class="line">[Password</span><br><span class="line">System Integrity Protection is off.</span><br><span class="line">Restart the machine for the changes to take effect.</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">M1芯片电脑添加系统扩展时提示：若要启用系统扩展，您需要在“恢复” </span><br><span class="line">https://www.bilibili.com/read/cv19689455</span><br><span class="line">https://www.jianshu.com/p/e459da1c8680</span><br></pre></td></tr></table></figure>
+
+<h2 id="关闭-OSX-10-11-SIP-System-Integrity-Protection-功能"><a href="#关闭-OSX-10-11-SIP-System-Integrity-Protection-功能" class="headerlink" title="关闭 OSX 10.11 SIP (System Integrity Protection) 功能"></a>关闭 OSX 10.11 SIP (System Integrity Protection) 功能</h2><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/lsgxeva/p/11872185.html">https://www.cnblogs.com/lsgxeva/p/11872185.html</a></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> /System/Library/Sandbox/rootless.conf</span><br></pre></td></tr></table></figure>
+
+<h2 id="10-15关闭SIP后升级到12-0的情况"><a href="#10-15关闭SIP后升级到12-0的情况" class="headerlink" title="10.15关闭SIP后升级到12.0的情况"></a>10.15关闭SIP后升级到12.0的情况</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ csrutil status</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">System Integrity Protection status: unknown (Custom Configuration).</span><br><span class="line"></span><br><span class="line">Configuration:</span><br><span class="line"> Apple Internal: disabled</span><br><span class="line"> Kext Signing: disabled</span><br><span class="line"> Filesystem Protections: disabled</span><br><span class="line"> Debugging Restrictions: disabled</span><br><span class="line"> DTrace Restrictions: disabled</span><br><span class="line"> NVRAM Protections: disabled</span><br><span class="line"> BaseSystem Verification: enabled</span><br><span class="line"></span><br><span class="line">This is an unsupported configuration, likely to break in the future and leave your machine in an unknown state.</span><br></pre></td></tr></table></figure>
+
+<h2 id="macOS-12-进程注入漏洞破坏所有安全层"><a href="#macOS-12-进程注入漏洞破坏所有安全层" class="headerlink" title="macOS 12 进程注入漏洞破坏所有安全层"></a>macOS 12 进程注入漏洞破坏所有安全层</h2><p><a target="_blank" rel="noopener" href="https://www.oschina.net/news/206685/process-injection-breaking-all-macos-security-layers">https://www.oschina.net/news/206685/process-injection-breaking-all-macos-security-layers</a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">在 macOS 12.0.1 Monterey 中，苹果修复了编号为 CVE-2021-30873 的进程注入漏洞 (process injection)，此漏洞影响所有基于 macOS AppKit 的应用。</span><br><span class="line"></span><br><span class="line">进程注入</span><br><span class="line"></span><br><span class="line">进程注入是一个进程在不同进程中执行代码的能力。 在 Windows 中，使用它的一个原因是逃避防病毒扫描程序的检测，例如通过称为 DLL 劫持的技术。 这允许恶意代码伪装成不同可执行文件的一部分。 在 macOS 中，由于两个应用程序可以拥有的权限不同，这种技术的影响要大得多。</span><br><span class="line"></span><br><span class="line">在经典的 Unix 安全模型中，每个进程都以特定用户身份运行。 每个文件都有一个所有者、组和标志，这些标志确定允许哪些用户读取、写入或执行该文件。 以同一用户身份运行的两个进程具有相同的权限：假设它们之间没有安全边界。 用户是安全边界，流程不是。 如果两个进程作为同一个用户运行，那么一个进程可以作为调试器附加到另一个进程，允许它读取或写入另一个进程的内存和寄存器。 root 用户是一个例外，因为它可以访问所有文件和进程。 因此，root 始终可以访问计算机上的所有数据，无论是在磁盘上还是在 RAM 中。</span><br><span class="line"></span><br><span class="line">从本质上讲，在引入 SIP（​​也称为“无根”）之前，这与 macOS 的安全模型相同。 这个名称并不意味着不再有 root 用户，但现在它本身的功能已经不那么强大了。 例如，某些文件不能再被 root 用户读取，除非该进程也具有特定的权利。 权利是为可执行文件生成代码签名时包含的元数据。 检查进程是否具有特定权利是 macOS 中许多安全措施的重要组成部分。 Unix 所有权规则仍然存在，这是在它们之上的额外权限检查层。 某些敏感文件（例如 Mail.app 数据库）和功能（例如网络摄像头）不再仅具有 root 权限，但需要额外的权利。 换句话说，权限提升不足以完全破坏 Mac 上的敏感数据。 </span><br></pre></td></tr></table></figure>
+
+<h1 id="xcdebug"><a href="#xcdebug" class="headerlink" title="xcdebug"></a>xcdebug</h1><p>Start a debugging session in Xcode.</p>
+<h1 id="xcode-select"><a href="#xcode-select" class="headerlink" title="xcode-select"></a>xcode-select</h1><p>Manages the active developer directory for Xcode and BSD tools</p>
+<h1 id="xctrace"><a href="#xctrace" class="headerlink" title="xctrace"></a>xctrace</h1><p>Record, import, export and symbolicate Instruments .trace files.</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">xctrace list devices</span><br><span class="line">xctrace list instruments</span><br><span class="line">xctrace list templates</span><br></pre></td></tr></table></figure></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://wurui1994.github.io">WuRui</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://wurui1994.github.io/2023/06/27/macos-note/">https://wurui1994.github.io/2023/06/27/macos-note/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://wurui1994.github.io" target="_blank">WuRui</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/macos/">macos</a></div><div class="post_share"><div class="social-share" data-image="/img/avatar.jpg" data-sites="wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/butterfly-extsrc/1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.bootcdn.net/ajax/libs/butterfly-extsrc/1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechatpay.png" target="_blank"><img class="post-qr-code-img" src="/img/wechatpay.png" alt="微信"/></a><div class="post-qr-code-desc">微信</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/alipay.jpg" alt="支付宝"/></a><div class="post-qr-code-desc">支付宝</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2023/06/27/cpp-note/" title="C++笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">C++笔记</div></div></a></div><div class="next-post pull-right"><a href="/2023/06/27/ai-note/" title="AI相关"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">AI相关</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2023/06/27/macos-cmds/" title="macOS命令行"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-27</div><div class="title">macOS命令行</div></div></a></div><div><a href="/2023/06/26/macos-image/" title="macOS镜像"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-26</div><div class="title">macOS镜像</div></div></a></div><div><a href="/2023/06/27/macos-ios-internals-vol-one/" title="深入解析MacOS和iOS 卷一 笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-27</div><div class="title">深入解析MacOS和iOS 卷一 笔记</div></div></a></div><div><a href="/2023/06/27/macos-ios-internals-vol-three/" title="深入解析MacOS和iOS 卷三 笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-27</div><div class="title">深入解析MacOS和iOS 卷三 笔记</div></div></a></div><div><a href="/2023/06/27/macos-ios-internals-vol-two/" title="深入解析MacOS和iOS 卷二 笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-27</div><div class="title">深入解析MacOS和iOS 卷二 笔记</div></div></a></div><div><a href="/2023/06/26/macos-kernel/" title="macOS内核"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-26</div><div class="title">macOS内核</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="giscus-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">WuRui</div><div class="author-info__description">每天都是新的一天</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">101</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">90</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/wurui1994" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="/img/qq.jpg" target="_blank" title="QQ"><i class="fab fa-qq"></i></a><a class="social-icon" href="/img/wechat.jpg" target="_blank" title="微信"><i class="fab fa-weixin"></i></a><a class="social-icon" href="mailto:1341531859@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn"></i><span>公告</span></div><div class="announcement_content">这里是我的博客, <a href=https://www.cnblogs.com/wurui1994/>旧博客地址</a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#macos-ventura-note-md"><span class="toc-number">1.</span> <span class="toc-text">macos_ventura_note.md</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#kdebug-note-md"><span class="toc-number">2.</span> <span class="toc-text">kdebug_note.md</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#bash-inject"><span class="toc-number">3.</span> <span class="toc-text">bash inject</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E8%BF%90%E8%A1%8C%E8%BF%9B%E7%A8%8B%E7%9A%84CFBundleIdentifier"><span class="toc-number">4.</span> <span class="toc-text">获取运行进程的CFBundleIdentifier</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96bundleid%E6%A0%B9%E6%8D%AEbundleid%E6%89%93%E5%BC%80%E5%BA%94%E7%94%A8"><span class="toc-number">5.</span> <span class="toc-text">获取bundleid根据bundleid打开应用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#macOS%E5%8A%A8%E6%80%81%E5%BA%93"><span class="toc-number">6.</span> <span class="toc-text">macOS动态库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Network-framework"><span class="toc-number">7.</span> <span class="toc-text">Network.framework</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Apple-OSS%E4%B8%8A%E7%9A%84CF-CoreFoundation-%E6%9C%89%E4%BA%9B%E6%B2%A1%E6%9C%89%E5%BC%80%E6%BA%90-%E6%AF%94%E5%A6%82Notification%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="toc-number">8.</span> <span class="toc-text">Apple OSS上的CF(CoreFoundation)有些没有开源 比如Notification的实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#KDebug"><span class="toc-number">9.</span> <span class="toc-text">KDebug</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#osquery-endpointsecurity"><span class="toc-number">10.</span> <span class="toc-text">osquery endpointsecurity</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#recovery-mode-old-system"><span class="toc-number">11.</span> <span class="toc-text">recovery mode (old system)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#WPS-Office"><span class="toc-number">12.</span> <span class="toc-text">WPS Office</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#OpenJDK-Symlink"><span class="toc-number">13.</span> <span class="toc-text">OpenJDK Symlink</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#system-profiler"><span class="toc-number">14.</span> <span class="toc-text">system_profiler</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#redirect"><span class="toc-number">15.</span> <span class="toc-text">redirect</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#brew-services-%E5%91%BD%E4%BB%A4%E8%A7%A3%E6%9E%90"><span class="toc-number">16.</span> <span class="toc-text">brew services 命令解析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#mdutil"><span class="toc-number">17.</span> <span class="toc-text">mdutil</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#macos13-Ventura%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%AE%89%E8%A3%85%E6%97%A0%E7%BD%91%E7%BB%9C%E9%97%AE%E9%A2%98"><span class="toc-number">18.</span> <span class="toc-text">macos13 Ventura虚拟机安装无网络问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#set-hostname"><span class="toc-number">19.</span> <span class="toc-text">set hostname</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ibtool"><span class="toc-number">20.</span> <span class="toc-text">ibtool</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PlistBuddy%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8"><span class="toc-number">21.</span> <span class="toc-text">PlistBuddy简单使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#csrutil"><span class="toc-number">22.</span> <span class="toc-text">csrutil</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E9%97%AD-OSX-10-11-SIP-System-Integrity-Protection-%E5%8A%9F%E8%83%BD"><span class="toc-number">23.</span> <span class="toc-text">关闭 OSX 10.11 SIP (System Integrity Protection) 功能</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-15%E5%85%B3%E9%97%ADSIP%E5%90%8E%E5%8D%87%E7%BA%A7%E5%88%B012-0%E7%9A%84%E6%83%85%E5%86%B5"><span class="toc-number">24.</span> <span class="toc-text">10.15关闭SIP后升级到12.0的情况</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#macOS-12-%E8%BF%9B%E7%A8%8B%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E%E7%A0%B4%E5%9D%8F%E6%89%80%E6%9C%89%E5%AE%89%E5%85%A8%E5%B1%82"><span class="toc-number">25.</span> <span class="toc-text">macOS 12 进程注入漏洞破坏所有安全层</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#xcdebug"><span class="toc-number"></span> <span class="toc-text">xcdebug</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#xcode-select"><span class="toc-number"></span> <span class="toc-text">xcode-select</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#xctrace"><span class="toc-number"></span> <span class="toc-text">xctrace</span></a></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/02/media-guide/" title="学习入门">学习入门</a><time datetime="2024-03-02T01:00:12.000Z" title="发表于 2024-03-02 09:00:12">2024-03-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/10/22/clipboard-note/" title="clipboard笔记">clipboard笔记</a><time datetime="2023-10-22T08:54:25.000Z" title="发表于 2023-10-22 16:54:25">2023-10-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/08/04/optimize-note/" title="优化相关">优化相关</a><time datetime="2023-08-04T06:51:45.000Z" title="发表于 2023-08-04 14:51:45">2023-08-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/08/04/love-note/" title="关于爱情">关于爱情</a><time datetime="2023-08-04T00:35:24.000Z" title="发表于 2023-08-04 08:35:24">2023-08-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/07/20/dopamine-note/" title="多巴胺相关">多巴胺相关</a><time datetime="2023-07-20T06:47:32.000Z" title="发表于 2023-07-20 14:47:32">2023-07-20</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By WuRui</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>function getGiscusTheme (theme) {
+  return theme === 'dark' ? 'dark' : 'light'
+}
+
+function loadGiscus () {
+  const config = Object.assign({
+    src: 'https://giscus.app/client.js',
+    'data-repo': 'wurui1994/wurui1994.github.io',
+    'data-repo-id': 'R_kgDOJzB0HA',
+    'data-category-id': 'DIC_kwDOJzB0HM4CXeHj',
+    'data-lang': 'zh-CN',
+    'data-mapping': 'pathname',
+    'data-theme': getGiscusTheme(document.documentElement.getAttribute('data-theme')),
+    'data-reactions-enabled': '1',
+    crossorigin: 'anonymous',
+    async: true
+  },null)
+
+  let ele = document.createElement('script')
+  for (let key in config) {
+    ele.setAttribute(key, config[key])
+  }
+  document.getElementById('giscus-wrap').insertAdjacentElement('afterbegin',ele)
+}
+
+function changeGiscusTheme (theme) {
+  function sendMessage(message) {
+    const iframe = document.querySelector('iframe.giscus-frame')
+    if (!iframe) return
+    iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app')
+  }
+
+  sendMessage({
+    setConfig: {
+      theme: getGiscusTheme(theme)
+    }
+  });
+}
+
+btf.addModeChange('giscus', changeGiscusTheme)
+
+if ('Giscus' === 'Giscus' || !false) {
+  if (false) btf.loadComment(document.getElementById('giscus-wrap'), loadGiscus)
+  else loadGiscus()
+} else {
+  function loadOtherComment () {
+    loadGiscus()
+  }
+}</script></div><link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/aplayer/1.10.1/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.bootcdn.net/ajax/libs/aplayer/1.10.1/APlayer.min.js"></script><script src="https://cdn.bootcdn.net/ajax/libs/butterfly-extsrc/1.1.3/metingjs/dist/Meting.min.js"></script><script src="https://cdn.bootcdn.net/ajax/libs/pjax/0.2.8/pjax.min.js"></script><script>let pjaxSelectors = ["link[rel=\"canonical\"]","meta[property=\"og:image\"]","meta[property=\"og:title\"]","meta[property=\"og:url\"]","head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener scroll 
+  window.tocScrollFn && window.removeEventListener('scroll', window.tocScrollFn)
+  window.scrollCollect && window.removeEventListener('scroll', scrollCollect)
+
+  document.getElementById('rightside').style.cssText = "opacity: ''; transform: ''"
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+  typeof disqusjs === 'object' && disqusjs.destroy()
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', (e) => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

@@ -1,0 +1,628 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>深入解析MacOS和iOS 卷三 笔记 | WuRui</title><meta name="author" content="WuRui"><meta name="copyright" content="WuRui"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="MacOS and iOS Internals, Volume III : Security &amp; Insecurity.md Part I: Defensive Techniques and Technologie1. AuthenticationIt’s important to emphasize - at the lowest level of the kernel - UNIX o">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入解析MacOS和iOS 卷三 笔记">
+<meta property="og:url" content="https://wurui1994.github.io/2023/06/27/macos-ios-internals-vol-three/index.html">
+<meta property="og:site_name" content="WuRui">
+<meta property="og:description" content="MacOS and iOS Internals, Volume III : Security &amp; Insecurity.md Part I: Defensive Techniques and Technologie1. AuthenticationIt’s important to emphasize - at the lowest level of the kernel - UNIX o">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wurui1994.github.io/img/avatar.jpg">
+<meta property="article:published_time" content="2023-06-27T06:12:34.000Z">
+<meta property="article:modified_time" content="2023-06-27T06:16:40.660Z">
+<meta property="article:author" content="WuRui">
+<meta property="article:tag" content="macos">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wurui1994.github.io/img/avatar.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://wurui1994.github.io/2023/06/27/macos-ios-internals-vol-three/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.bootcdn.net/ajax/libs/flickr-justified-gallery/2.1.2/fjGallery.min.js',
+      css: 'https://cdn.bootcdn.net/ajax/libs/flickr-justified-gallery/2.1.2/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '深入解析MacOS和iOS 卷三 笔记',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-06-27 14:16:40'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">101</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">90</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 目录</span></a></div><div class="menus_item"><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img fixed" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="WuRui"><span class="site-name">WuRui</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 目录</span></a></div><div class="menus_item"><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">深入解析MacOS和iOS 卷三 笔记</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2023-06-27T06:12:34.000Z" title="发表于 2023-06-27 14:12:34">2023-06-27</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-06-27T06:16:40.660Z" title="更新于 2023-06-27 14:16:40">2023-06-27</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/macos/">macos</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">3k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>18分钟</span></span></div></div></div><article class="post-content" id="article-container"><p>MacOS and iOS Internals, Volume III : Security &amp; Insecurity.md</p>
+<h1 id="Part-I-Defensive-Techniques-and-Technologie"><a href="#Part-I-Defensive-Techniques-and-Technologie" class="headerlink" title="Part I: Defensive Techniques and Technologie"></a>Part I: Defensive Techniques and Technologie</h1><h2 id="1-Authentication"><a href="#1-Authentication" class="headerlink" title="1. Authentication"></a>1. Authentication</h2><p>It’s important to emphasize - at the lowest level of the kernel - UNIX only sees<br>user ids and group, not names. The name “root” is meaningless - it is the uid of 0 which<br>is all powerful.</p>
+<h3 id="Password-Files-OS"><a href="#Password-Files-OS" class="headerlink" title="Password Files (*OS)"></a>Password Files (<code>*OS</code>)</h3><p>&#x2F;etc&#x2F;master.passwd</p>
+<h3 id="SetUID-and-SetGID-MacOS"><a href="#SetUID-and-SetGID-MacOS" class="headerlink" title="SetUID and SetGID (MacOS)"></a>SetUID and SetGID (MacOS)</h3><p>Darwin has steadily been reducing its setuid&#x2F;setgid club membership. With the move to<br>opendirectory, passwd(1) could be made a standard binary again. Other binaries likewise<br>benefitted from the move to XPC and (as discussed later in this book) entitlements.</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># The list of setuid root programs on MacOS</span></span><br><span class="line">find / -user root -perm -4000 2&gt; /dev/null</span><br></pre></td></tr></table></figure>
+<h3 id="The-Pluggable-Authentication-Module-MacOS"><a href="#The-Pluggable-Authentication-Module-MacOS" class="headerlink" title="The Pluggable Authentication Module (MacOS)"></a>The Pluggable Authentication Module (MacOS)</h3><p>The Pluggable Authentication Module (PAM) is a standard UNIX library which aims to<br>abstract and modularize the UNIX authentication APIs.<br>logging, auditing, or poliy enforcers.<br>Most importantly, PAM decouples portions of the authentication logic from the processes<br>themselves, enabling external configuration through files.</p>
+<ul>
+<li>Function classes<br>auth&#x2F;account&#x2F;session&#x2F;password</li>
+<li>Control flags<br>requisite&#x2F;required&#x2F;sufficient&#x2F;binding&#x2F;optional<br>&#x2F;etc&#x2F;pam.d&#x2F;su</li>
+</ul>
+<h3 id="opendirectoryd-MacOS"><a href="#opendirectoryd-MacOS" class="headerlink" title="opendirectoryd (MacOS)"></a>opendirectoryd (MacOS)</h3><p>[&#x2F;Library&#x2F;Preferences&#x2F;OpenDirectory]<br>[&#x2F;System&#x2F;Library&#x2F;OpenDirectory&#x2F;Modules&#x2F;]<br>Module exist for ActiveDirectory and NetLogon (Windows) integration<br>Kerberosv5 (RFC1510), FDESupport, keychain integration, ConfigurationProfiles (MCX) and more.<br>[&#x2F;var&#x2F;log&#x2F;opendirectoryd.log]</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">odutil <span class="built_in">set</span> <span class="built_in">log</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>Maintaining permissons<br>[&#x2F;System&#x2F;Library&#x2F;OpenDirectory&#x2F;permissions.plist]</li>
+<li>The data stores<br>[&#x2F;System&#x2F;Library&#x2F;OpenDirectory&#x2F;Configurations&#x2F;Local.plist]<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">defaults <span class="built_in">read</span> /System/Library/OpenDirectory/Configurations/Local.plist modules</span><br></pre></td></tr></table></figure>
+&#x2F;var&#x2F;db&#x2F;dslocal&#x2F;nodes&#x2F;Default<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo defaults <span class="built_in">read</span> /var/db/dslocal/nodes/Default/users/root.plist</span><br></pre></td></tr></table></figure>
+Directory Utility.app -&gt; Directory Editor<br>dscl(1)<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">dscl . -list Users</span><br><span class="line">dscl . -<span class="built_in">read</span> /Users/root</span><br><span class="line">dscl . -<span class="built_in">read</span> /Users/`<span class="built_in">whoami</span>` Password</span><br><span class="line">sudo dscl . -<span class="built_in">read</span> /Users/`<span class="built_in">whoami</span>` ShadowHashData</span><br></pre></td></tr></table></figure></li>
+<li>Communicating with clients<br>finger &#x2F;var&#x2F;utmpx<br>ports</li>
+</ul>
+<ul>
+<li>com.apple.system.opendirectoryd.libinfo</li>
+<li>com.apple.system.opendirectoryd.membership</li>
+<li>com.apple.system.opendirectoryd.api<br> odutil</li>
+<li>com.apple.system.opendirectoryd.rpc</li>
+</ul>
+<h3 id="The-LocalAuthentication-Framework"><a href="#The-LocalAuthentication-Framework" class="headerlink" title="The LocalAuthentication Framework"></a>The LocalAuthentication Framework</h3><ul>
+<li>coreauthd<br>In iOS the daemon is started as a LaunchDaemon, but in MacOS an additional instance is started<br>as a LaunchAgent, as well.</li>
+<li>XPC protocol<br>com.apple.CoreAuthentication.[daemon&#x2F;agent]</li>
+<li>Entitlements</li>
+</ul>
+<h3 id="Apple-IDs"><a href="#Apple-IDs" class="headerlink" title="Apple IDs"></a>Apple IDs</h3><ul>
+<li>AppleIDAuthAgent<br>&#x2F;System&#x2F;Library&#x2F;CoreServices</li>
+</ul>
+<h3 id="External-Account"><a href="#External-Account" class="headerlink" title="External Account"></a>External Account</h3><p>Accounts.framework<br>accountsd</p>
+<ul>
+<li>External Providers<br>[&#x2F;Library&#x2F;Preferences&#x2F;SystemConfiguration&#x2F;com.apple.accounts.exists.plist] (MacOS)</li>
+</ul>
+<h2 id="2-Auditing-MacOS"><a href="#2-Auditing-MacOS" class="headerlink" title="2. Auditing (MacOS)"></a>2. Auditing (MacOS)</h2><h3 id="Design"><a href="#Design" class="headerlink" title="Design"></a>Design</h3><ul>
+<li>A little history</li>
+<li>Auditing Concepts (a refresher)<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ls</span> /etc/security</span><br><span class="line">sudo <span class="built_in">ls</span> /var/audit</span><br></pre></td></tr></table></figure>
+&#x2F;dev&#x2F;auditpipe<br>The device node intentionally desugbed to be clonebale, in order to allow multiple consumers<br>to work concurrently and get events.<br>praudit&#x2F;auditreduce</li>
+</ul>
+<h3 id="Audit-Sessions"><a href="#Audit-Sessions" class="headerlink" title="Audit Sessions"></a>Audit Sessions</h3><h3 id="Implementation"><a href="#Implementation" class="headerlink" title="Implementation"></a>Implementation</h3><p>AUDIT_MACH_SYSCALL_ENTER<br>[bsd&#x2F;security&#x2F;audit&#x2F;audit.h]<br>audit_syscall_entry()<br>[bsd&#x2F;security&#x2F;audit&#x2F;audit_worker.c]<br>audit_worker_cv&#x2F;audit_commit</p>
+<ul>
+<li>auditd<br>[&#x2F;usr&#x2F;sbin&#x2F;auditd]<br>com.apple.auditd.plist<br>HOST_AUDIT_CONTROL_PORT<br>audit_send_trigger() [bsd&#x2F;security&#x2F;audit&#x2F;audit_bsd.c]<br><code>&lt;mach/audit_triggers.defs&gt;</code></li>
+</ul>
+<h3 id="System-call-interface"><a href="#System-call-interface" class="headerlink" title="System call interface"></a>System call interface</h3><ul>
+<li>audit (#350)<br>[bsd&#x2F;security&#x2F;audit&#x2F;audit_syscalls.c]</li>
+<li>auditon (#351)<br>The auditon(2) syscall provides a way to configure various audit parameters from userspace.</li>
+<li>[get&#x2F;set]auid (#353, #354)</li>
+<li>[get&#x2F;set]audit_addr (#357, #358)</li>
+<li>auditctl (#359)</li>
+</ul>
+<h3 id="OpenBSM-APIs"><a href="#OpenBSM-APIs" class="headerlink" title="OpenBSM APIs"></a>OpenBSM APIs</h3><ul>
+<li>Querying the policy</li>
+<li>Reading Audit Records<br>Audit consumers may tap audit records by enumerating and reading from the audit files<br>in &#x2F;var&#x2F;audit, or the “live stream” of &#x2F;dev&#x2F;auditpipe.<br>au_read_rec(3)&#x2F;au_fetch_tok(3)<br>struct tokenstr [<code>&lt;bsm/libbsm.h&gt;</code>]<br>au_print_tok(3)&#x2F;au_print_flags_tok(3) AU_OFLAG_[RAW&#x2F;SHORT&#x2F;XML]</li>
+<li>Writinng Audit Records</li>
+</ul>
+<h3 id="Auditing-Considerations"><a href="#Auditing-Considerations" class="headerlink" title="Auditing Considerations"></a>Auditing Considerations</h3><p>The main drawback to keep in mind, however, is that auditing reports events post factum.</p>
+<h2 id="3-Authorization-KAuth"><a href="#3-Authorization-KAuth" class="headerlink" title="3. Authorization (KAuth)"></a>3. Authorization (KAuth)</h2><p>MacOS 10.4 (Tiger)</p>
+<h3 id="Design-1"><a href="#Design-1" class="headerlink" title="Design"></a>Design</h3><p>kauth_authorize_action()&#x2F;kauth_cred_get()</p>
+<h3 id="Implementation-1"><a href="#Implementation-1" class="headerlink" title="Implementation"></a>Implementation</h3><p>[bsd&#x2F;kern&#x2F;kauth_authorization.c]<br>kauth_register_scope()</p>
+<ul>
+<li>KAUTH_SCOPE_GENERIC com.apple.kauth.generic<br>kauth_cred_getuid()</li>
+<li>KAUTH_SCOPE_PROCESS com.apple.kauth.process<br>KAUTH_PROCESS_CANTRACE&#x2F;KAUTH_PROCES_CANSIGNAL<br>ptrace (PT_ATTACH) -&gt; task port</li>
+<li>KAUTH_SCOPE_FILEOP</li>
+<li>KAUTH_SCOPE_VNODE com.apple.kauth.vnode<br> vnode_authorize()</li>
+</ul>
+<ul>
+<li>Authorizing vnode operations</li>
+</ul>
+<h3 id="KAuth-Credentials"><a href="#KAuth-Credentials" class="headerlink" title="KAuth Credentials"></a>KAuth Credentials</h3><h3 id="KAuth-Identity-Resolvers-MacOS"><a href="#KAuth-Identity-Resolvers-MacOS" class="headerlink" title="KAuth Identity Resolvers (MacOS)"></a>KAuth Identity Resolvers (MacOS)</h3><p>identitysvc() (#293)</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">procexp opendirectoryd threads</span><br></pre></td></tr></table></figure>
+<h3 id="Debugging-KAuth"><a href="#Debugging-KAuth" class="headerlink" title="Debugging KAuth"></a>Debugging KAuth</h3><p>KAUTH_DEBUG</p>
+<h2 id="3-Mandatory-Access-Control-Framework"><a href="#3-Mandatory-Access-Control-Framework" class="headerlink" title="3. Mandatory Access Control Framework"></a>3. Mandatory Access Control Framework</h2><h3 id="Background"><a href="#Background" class="headerlink" title="Background"></a>Background</h3><p>FreeBSD 6.0</p>
+<ul>
+<li>Nomenclature<br>MAC is enforced by the Administrator (or, at times, the operating system itself), and user are<br>constrained by it. Only the Administrator (and, in <code>*OS</code>, not even the Administrator - only<br>Apple itself) can override or toggle the MAC settings.<br>A key conecpt in MAC is that of labels.<br>struct label [security&#x2F;_label.h]<br>cr_label field of KAuth’s struct ucred</li>
+<li>MACFramework.kext<br>com.apple.kpi.dsep<br>&#x2F;System&#x2F;Library&#x2F;Extensions&#x2F;System.kext&#x2F;Plugins&#x2F;MACFramework.kext<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kextstat | grep -B1 dsep</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="MACF-Policies"><a href="#MACF-Policies" class="headerlink" title="MACF Policies"></a>MACF Policies</h3><p>mac_policy_conf&#x2F;mac_policy_register<br>The heart of the policy is in two fields: the mpc_ops, specifying the operations the policy<br>wished to filter, and mpc_labelnames, which are the label namespace to which the policy applies.<br>struct mac_policy_ops [security&#x2F;mac_policy.h]</p>
+<h3 id="Setting-up-MACF"><a href="#Setting-up-MACF" class="headerlink" title="Setting up MACF"></a>Setting up MACF</h3><p>mac_policy_init()</p>
+<h3 id="MACF-Callouts"><a href="#MACF-Callouts" class="headerlink" title="MACF Callouts"></a>MACF Callouts</h3><p>[bsd&#x2F;kern&#x2F;kern_mman.c]</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sysctl security.mac | grep enforc</span><br></pre></td></tr></table></figure>
+<ul>
+<li>expos_task (MacOS 10.11)</li>
+<li>priv_check<br>[bsd&#x2F;sys&#x2F;priv.h]</li>
+</ul>
+<h3 id="MACF-System-Calls"><a href="#MACF-System-Calls" class="headerlink" title="MACF System Calls"></a>MACF System Calls</h3><p><code>&lt;security/mac.h&gt;</code><br>__mac_syscall<br>The Sanbox.kext makes heavy use of this, as described later in Chaper 8.</p>
+<h3 id="Final-Notes"><a href="#Final-Notes" class="headerlink" title="Final Notes"></a>Final Notes</h3><p>Unfortunately, if you have any plans of getting Apple’s blessing - forget about using this.</p>
+<h2 id="5-Code-Signing"><a href="#5-Code-Signing" class="headerlink" title="5. Code Signing"></a>5. Code Signing</h2><h3 id="The-Code-Signature-Format"><a href="#The-Code-Signature-Format" class="headerlink" title="The Code Signature Format"></a>The Code Signature Format</h3><ul>
+<li>LC_CODE_SIGNATURE and the SuperBlob<br>[bsd&#x2F;sys&#x2F;codesign.h]</li>
+<li>The Code Directory Blob<br>[osfmk&#x2F;kern&#x2F;cs_blobs.h]</li>
+<li>Code Page Slots<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">codesign -d -vvvvvv /bin/ls</span><br></pre></td></tr></table></figure></li>
+<li>Special Slots</li>
+<li>Ad-Hoc Signatures</li>
+<li>Code Signing Flags</li>
+</ul>
+<h3 id="Code-Signature-Requiements"><a href="#Code-Signature-Requiements" class="headerlink" title="Code Signature Requiements"></a>Code Signature Requiements</h3><ul>
+<li>The Requirements Grammer</li>
+<li>Encoding requirements<br>The SecReuirementCreateWithString[AndErrors] functions are the “compiler”, and the “decompiler”<br>is SecRequirementsCopyString.<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">codesign -dr- /Applications/Xcode.app/Contents/MacOS/Xcode</span><br><span class="line">codesign -dr- /Applications/wpsoffice.app/Contents/MacOS/wpsoffice</span><br><span class="line">codesign -d /Applications/wpsoffice.app/Contents/MacOS/wpsoffice</span><br><span class="line">man csreq</span><br></pre></td></tr></table></figure></li>
+<li>Requirement validation<br>Apple’s PKI page</li>
+</ul>
+<h3 id="Entitlements"><a href="#Entitlements" class="headerlink" title="Entitlements"></a>Entitlements</h3><p>Code signatures may optionallu contain an entitlement blob.<br>The entitlement blob is, in effect, nothing more than a property list in XML form.</p>
+<h3 id="Code-Signature-Enforcement"><a href="#Code-Signature-Enforcement" class="headerlink" title="Code Signature Enforcement"></a>Code Signature Enforcement</h3><p>kernel mode<br>load_code_signature()<br>mac_vnode_check_signature</p>
+<ul>
+<li>Exceptions</li>
+</ul>
+<ul>
+<li>JIT CONFIG_DYNAMIC_CODE_SIGNING</li>
+<li>Resilient Code Signing</li>
+</ul>
+<ul>
+<li>Debugging</li>
+<li>Code Signing Weaknesses</li>
+</ul>
+<ul>
+<li>Jekyll Apps</li>
+<li>Bait-and-Switch inode reuse (&lt; iOS 9)</li>
+<li>Locked memory</li>
+<li>Lack of validation on __DATA sections and writable memory</li>
+<li>Exploiting kernel bugs</li>
+</ul>
+<ul>
+<li>The struct cs_blob<br>csb_entitelments*</li>
+</ul>
+<h3 id="Code-Signing-APIs"><a href="#Code-Signing-APIs" class="headerlink" title="Code Signing APIs"></a>Code Signing APIs</h3><ul>
+<li>System Calls<br>fnctl -&gt; F_ADDSIGS, F_FINDSIGS and F_ADD_FILEISGS[_RETURN]</li>
+<li>Framework-Level Wrappers<br>Security.framework<br>sysctl vm.cs_*<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sysctl vm. | grep cs_</span><br></pre></td></tr></table></figure></li>
+<li>DTrace probes (MacOS)<br>csops[_audittoken]</li>
+</ul>
+<h2 id="6-Software-Restrictions-MacOS"><a href="#6-Software-Restrictions-MacOS" class="headerlink" title="6. Software Restrictions (MacOS)"></a>6. Software Restrictions (MacOS)</h2><h3 id="Authorizations"><a href="#Authorizations" class="headerlink" title="Authorizations"></a>Authorizations</h3><p>Rather than being defined at the object level, authorizationas are associated with particular<br>actions, which are generally sensitive.</p>
+<ul>
+<li>The authorization database<br>&#x2F;var&#x2F;db&#x2F;auth.db<br>&#x2F;System&#x2F;Library&#x2F;Security&#x2F;authorization.plist<br>rules defined in Security’s [libsecurity_authorization&#x2F;lib&#x2F;AuthorizationTagsPriv.h]<br>allow-root&#x2F;timeout&#x2F;shared&#x2F;requirement&#x2F;comment&#x2F;class<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Dumping the authorization rules</span></span><br><span class="line">sudo sqlite3 /var/db/auth.db <span class="string">&quot;select name, comment from rules&quot;</span></span><br><span class="line"><span class="comment"># Listing a particular authorization</span></span><br><span class="line">security authorizationdb <span class="built_in">read</span> com.apple.activitymonitor.kill | plutil -p -</span><br><span class="line"><span class="comment"># Viewing ActivityMonitor&#x27;s entitlements</span></span><br><span class="line">codesign --display --entitlements - /System/Applications/Utilities/Activity\ Monitor.app/Contents/MacOS/Activity\ Monitor </span><br><span class="line">codesign --display --entitlements - --xml /System/Applications/Utilities/Activity\ Monitor.app/Contents/MacOS/Activity\ Monitor | plutil -p -</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="authd"><a href="#authd" class="headerlink" title="authd"></a>authd</h3><ul>
+<li>Protocol<br>&#x2F;System&#x2F;Library&#x2F;LaunchDaemons&#x2F;com.apple.security.authtrampoline.plist<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">plutil -p /System/Library/LaunchDaemons/com.apple.*.plist</span><br><span class="line">plutil -p /System/Library/LaunchDaemons/com.apple.security.authtrampoline.plist</span><br></pre></td></tr></table></figure>
+Elevating privileges requires security to fork(2) and exec(2) &#x2F;usr&#x2F;libexec&#x2F;security_authtrampoline.<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo sqlite3 /var/db/auth.db .dump | grep system.privilege.admin</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="GateKeeper-MacOS"><a href="#GateKeeper-MacOS" class="headerlink" title="GateKeeper (MacOS)"></a>GateKeeper (MacOS)</h3><p>MacOS 10.7.5</p>
+<ul>
+<li>Precursor: Quarantine<br>com.apple.quarentine -&gt; LaunchServices.framework’s LSQuarentine.h<br>Quarantine.kext</li>
+<li>libquarantine<br>&#x2F;usr&#x2F;lib&#x2F;system&#x2F;libquarantine.dylib</li>
+<li>Quarantine.kext<br>com.apple.security.quarantine<br>as a MACF kext<br>&#x2F;System&#x2F;Library&#x2F;Extensions&#x2F;Quarantine.kext&#x2F;Contents&#x2F;MacOS&#x2F;Quarantine</li>
+<li>User mode interface</li>
+</ul>
+<ul>
+<li>quarantine mount option</li>
+<li>sysctl MIBs</li>
+</ul>
+<h3 id="Quarantine-in-action"><a href="#Quarantine-in-action" class="headerlink" title="Quarantine in action"></a>Quarantine in action</h3><p>~&#x2F;Library&#x2F;Preferences&#x2F;com.apple.LaunchServices.QuarantineEventsV2</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlite3 ~/Library/Preferences/com.apple.LaunchServices.QuarantineEventsV2 .dump</span><br></pre></td></tr></table></figure>
+<ul>
+<li>CoreServicesUIAgent<br>&#x2F;System&#x2F;Library&#x2F;CoreServices&#x2F;CoreServicesUIAgent.app<br>-&gt; com.apple.coreservices.quarantine-resolve XPC servive<br>in the com.apple.coreservices.uiagent.plist<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">plutil -p /System/Library/LaunchAgents/com.apple.coreservices.uiagent.plist</span><br></pre></td></tr></table></figure>
+Xprotectframework.framework<br>XProtect.plist<br>Xprotect.yara -&gt; VirusTotal’s yara<br>XprotectService -&gt; com.apple.XprotectFramework.AnalysisService</li>
+</ul>
+<h3 id="syspolicyd"><a href="#syspolicyd" class="headerlink" title="syspolicyd"></a>syspolicyd</h3><p>&#x2F;var&#x2F;db&#x2F;SystemPolicy</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo sqlite3 /var/db/SystemPolicy .dump</span><br></pre></td></tr></table></figure>
+<p>[OSX&#x2F;libsecurity_codesigning&#x2F;lib&#x2F;policydb.cpp]<br>[OSX&#x2F;libsecurity_codesigning&#x2F;lib&#x2F;syspolicy.sql]</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo sqlite3 /var/db/SystemPolicy <span class="string">&quot;select id, label from authority where disabled=1&quot;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>MacOS 13: Secure Kernel Extension Loading<br>&#x2F;var&#x2F;db&#x2F;SystemPolicyConfiguration<br>Default.plist&#x2F;migration.plist&#x2F;KextPolicy<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sqlite3 /var/db/SystemPolicyConfiguration/KextPolicy <span class="string">&quot;.headers on&quot;</span> <span class="string">&quot;select * from kext_policy&quot;</span></span><br><span class="line">sudo sqlite3 /var/db/SystemPolicyConfiguration/KextPolicy .dump</span><br></pre></td></tr></table></figure></li>
+<li>XPC protocol<br>NSXPC -&gt; com.apple.security.syspolicy.kext<br>private SystemPolicy.framework (MacOS 13)</li>
+<li>spctl(8)<br>One of the mose useful options of spctl(8), –list, is actually undocumented.<br>The spctl(8) utility is nothing more than a command line front-end to an XPC client,<br>which connects to syspolicyd(8) for purposes of querying the policy database.<br>spctl -a -t exec -vv binary<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">spctl -a -t <span class="built_in">exec</span> -vv /System/Applications/Calculator.app</span><br><span class="line">spctl -a -t <span class="built_in">exec</span> -vv /Applications/wpsoffice.app</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="App-Translocation"><a href="#App-Translocation" class="headerlink" title="App Translocation"></a>App Translocation</h3><p>offically called “Gatekeeper Path Randimization” by Apple<br>App translocation depends on the com.apple.quarantine extend attribute, so if the attribute<br>is manually removed, or the Application is moved using Finder, it is no longer translocated.</p>
+<ul>
+<li>Test Translocation</li>
+</ul>
+<h3 id="Managed-Clients-MacOS"><a href="#Managed-Clients-MacOS" class="headerlink" title="Managed Clients (MacOS)"></a>Managed Clients (MacOS)</h3><p>like Windows with its Group Policy Objects (GPO)<br>&#x2F;var&#x2F;db&#x2F;ConfigurationProfiles -&gt; profiles(1)</p>
+<ul>
+<li>parentalcontrolsd</li>
+<li>mdmclient<br>&#x2F;usr&#x2F;libexec&#x2F;mdmclient<br>private ConfigurationProfiles.framework</li>
+<li>Startup</li>
+</ul>
+<ul>
+<li>As a LaunchDaemon</li>
+<li>As a LaunchAgent</li>
+</ul>
+<ul>
+<li>Arguments</li>
+<li>Entitlements</li>
+<li>ManagedClient</li>
+<li>ManagedClientAgent<br>ManagedClient.framework<br>&#x2F;usr&#x2F;libexec&#x2F;mcxalr<br>mcxalr.kext<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sysctl -a | grep mcx</span><br></pre></td></tr></table></figure>
+Plugins<br>[&#x2F;System&#x2F;Library&#x2F;CoreServices&#x2F;SecurityAgentPlugins&#x2F;MCXMechanism.bundle]<br>[&#x2F;System&#x2F;Library&#x2F;DirectoryServices&#x2F;dscl&#x2F;mcxcl.dsclext]</li>
+</ul>
+<h2 id="7-AppleMobileFileIntegrity"><a href="#7-AppleMobileFileIntegrity" class="headerlink" title="7. AppleMobileFileIntegrity"></a>7. AppleMobileFileIntegrity</h2><h3 id="AppleMobileFileIntegrity-kext"><a href="#AppleMobileFileIntegrity-kext" class="headerlink" title="AppleMobileFileIntegrity.kext"></a>AppleMobileFileIntegrity.kext</h3><p>&#x2F;usr&#x2F;libexec&#x2F;amfid<br>Though AMFI’s inclusion was puzzling at first, the reasoning for it became painfully apparent<br>with the advent of System Integrity Protection (SIP), in 10.11</p>
+<ul>
+<li>Initialization<br>AMFI is a MACF policy kext</li>
+<li>boot-args</li>
+</ul>
+<h3 id="The-MACF-Policy"><a href="#The-MACF-Policy" class="headerlink" title="The MACF Policy"></a>The MACF Policy</h3><ul>
+<li>proc_check_cpumon (<code>*OS</code>)</li>
+<li>proc_check_inherit_ipc_ports</li>
+<li>proc_check_get_task</li>
+<li>proc_check_map_anon (<code>*OS</code>)<br>In cases where MAP_JIT is indicated, therefore, AMFI checks for the dynamic-codesigning<br>entitlement.</li>
+<li>file_check_mmap</li>
+<li>proc_check_library_validation</li>
+<li>proc_check_mprotect (<code>*OS</code>)</li>
+<li>proc_check_run_cs_invalid (<code>*OS</code>)</li>
+<li>vnode_check_exec (<code>*OS</code>)</li>
+<li>vnode_check_signature<br>loadEntitlementsFromVnode<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nm /System/Library/Extensions/AppleMobileFileIntegrity.kext/Contents/MacOS/AppleMobileFileIntegrity</span><br></pre></td></tr></table></figure></li>
+<li>cred_label_update_execve</li>
+</ul>
+<h3 id="Exception-Handling-hooks-MacOS-12"><a href="#Exception-Handling-hooks-MacOS-12" class="headerlink" title="Exception Handling hooks (MacOS 12+)"></a>Exception Handling hooks (MacOS 12+)</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nm /System/Library/Extensions/AppleMobileFileIntegrity.kext/Contents/MacOS/AppleMobileFileIntegrity -Cj | grep amfi_exc | <span class="built_in">sort</span> -u</span><br></pre></td></tr></table></figure>
+<p>Debugging is enabled under any of the follow conditions</p>
+<ul>
+<li>The target process is unsigned</li>
+<li>System Integrity Protection (SIP) is disabled</li>
+<li>The victim process possesses the get_task_allow entitlement</li>
+<li>The victim process is not marked restricted</li>
+<li>The handling process is entitled with com.apple.private.amfi.can-set-execption-ports</li>
+</ul>
+<ul>
+<li>Kernel APIs</li>
+</ul>
+<h3 id="amfid"><a href="#amfid" class="headerlink" title="amfid"></a>amfid</h3><ul>
+<li>Daemon-Kext communication<br>HOST_AMFID_PORT -&gt; mach_host_special_port_description</li>
+<li>MIG subsystem 1000</li>
+<li>1000: verify_code_directory<br>MacOS 10.12 &#x2F;usr&#x2F;lib&#x2F;libdz.dylib<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nm /usr/lib/libdz.dylib -UCgj</span><br></pre></td></tr></table></figure>
+dz_check_policy_exec</li>
+<li>1001: permit_unrestricted_debugging (<code>*OS</code>)</li>
+<li>1001&#x2F;1002: check_lv_denial (MacOS)</li>
+<li>1003: check_platform_identifiler_mismatch_override (MacOS 12 only)</li>
+<li>1004: check_broken_signature_with_teamid_fatal (MacOS 12+)</li>
+<li>1005: device_lock_state (<code>*OS</code> 10 only)</li>
+</ul>
+<h3 id="Provisoning-Profiles"><a href="#Provisoning-Profiles" class="headerlink" title="Provisoning Profiles"></a>Provisoning Profiles</h3><ul>
+<li>A certificate, signing the developer’s public key</li>
+<li>Restrictive entitlements<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Dumping a sample embedded.mobileprovision</span></span><br><span class="line">openssl asn1parse -inform der -<span class="keyword">in</span> embedded.mobileprovision</span><br></pre></td></tr></table></figure></li>
+<li>libmis.dylib<br>&#x2F;usr&#x2F;lib&#x2F;libmis.dylib<br>In MacOS, libmis is statically compiled into Apple’s private MobileDevice.framework, and<br>signature validation is provided directly by the Security.framework.</li>
+<li>misagent<br>&#x2F;usr&#x2F;libexec&#x2F;misagent</li>
+<li>Protocol<br>com.apple.misagent</li>
+<li>online-auth-agent</li>
+</ul>
+<h3 id="The-AMFI-Trust-Caches"><a href="#The-AMFI-Trust-Caches" class="headerlink" title="The AMFI Trust Caches"></a>The AMFI Trust Caches</h3><h3 id="The-AMFI-User-Client"><a href="#The-AMFI-User-Client" class="headerlink" title="The AMFI User Client"></a>The AMFI User Client</h3><h3 id="Final-Notes-1"><a href="#Final-Notes-1" class="headerlink" title="Final Notes"></a>Final Notes</h3><h2 id="8-The-Sandbox"><a href="#8-The-Sandbox" class="headerlink" title="8. The Sandbox"></a>8. The Sandbox</h2><h3 id="The-Evolution-of-the-Sandbox"><a href="#The-Evolution-of-the-Sandbox" class="headerlink" title="The Evolution of the Sandbox"></a>The Evolution of the Sandbox</h3><p>Apple’s Sandbox was introduced as “SeatBelt” in MacOS 10.5 (“Leopard”) along side the MAC<br>framework, and provided the first full fledged implementation of a MACF policy.</p>
+<h3 id="App-Sandbox-MacOS"><a href="#App-Sandbox-MacOS" class="headerlink" title="App Sandbox (MacOS)"></a>App Sandbox (MacOS)</h3><p>The AppSandbox is supported by the AppSandbox private framework, which itself relies on the<br>private AppContainer.framework.<br>&#x2F;usr&#x2F;libexec&#x2F;AppSandbox</p>
+<ul>
+<li>(semi)-Voluntary confinement<br>Sandboxing is enabled by the com.apple.security.app-sandbox entitlement, embedded in<br>the code signature by Apple.<br>libsystem_secinit -&gt; &#x2F;usr&#x2F;libexec&#x2F;secinitd</li>
+<li>Diagnosing and controlling the App Sandbox</li>
+</ul>
+<h3 id="Mobile-Containers-OS"><a href="#Mobile-Containers-OS" class="headerlink" title="Mobile Containers (*OS)"></a>Mobile Containers (<code>*OS</code>)</h3><h3 id="Sandbox-Profiles"><a href="#Sandbox-Profiles" class="headerlink" title="Sandbox Profiles"></a>Sandbox Profiles</h3><p>Apple’s Sandbox is dynamic, in that it can generate and apply sandbox restrictions on the fly.</p>
+<ul>
+<li>Sandbox profile language<br>The sandbox profile language (SBPL) is a derivative of Scheme (which is itself a dialect of Lisp).<br>&#x2F;usr&#x2F;lib&#x2F;sandbox.dylib is staticlly compiled with TinySCHEME (apparently version 1.38 or higher).<br>&#x2F;System&#x2F;Library&#x2F;Sandbox&#x2F;Profiles<br>&#x2F;Library&#x2F;Sandbox&#x2F;Profiles<br>sandbox-exec -t trace_file -p “(version 1)” &#x2F;bin&#x2F;ls</li>
+<li>Sandbox operations</li>
+<li>Compiling profiles<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Compiling and dumping a profile using the open source sandbox-exec</span></span><br></pre></td></tr></table></figure></li>
+<li>Extensions</li>
+</ul>
+<h3 id="User-mode-APIs"><a href="#User-mode-APIs" class="headerlink" title="User mode APIs"></a>User mode APIs</h3><ul>
+<li>sandbox_check</li>
+<li>sandbox_[un]suspend</li>
+<li>sandbox tracing (460+)<br>sandbox_set_trace_path()<br>sandbox_vtrace_enable&#x2F;sandbox_vtrace_report</li>
+<li>Inspection (460+)<br>sandbox_inspect_pid</li>
+<li>User state items (570+)</li>
+</ul>
+<h3 id="mac-syscall"><a href="#mac-syscall" class="headerlink" title="mac_syscall"></a>mac_syscall</h3><p>__sandbox_ms</p>
+<h3 id="Sandbox-kext"><a href="#Sandbox-kext" class="headerlink" title="Sandbox.kext"></a>Sandbox.kext</h3><ul>
+<li>Flow<br>platform_start&#x2F;amfi_register_mac_policy&#x2F;mac_policy_register</li>
+<li>hook_policy_init</li>
+<li>hook_policy_initbsd</li>
+<li>hook_policy_syscall</li>
+</ul>
+<h3 id="The-Sandbox-MACF-Hooks"><a href="#The-Sandbox-MACF-Hooks" class="headerlink" title="The Sandbox MACF Hooks"></a>The Sandbox MACF Hooks</h3><p>cred_sb_evaluate</p>
+<ul>
+<li>Handling process execution<br>cred_set_sandbox</li>
+</ul>
+<h3 id="Profile-Evaluation"><a href="#Profile-Evaluation" class="headerlink" title="Profile Evaluation"></a>Profile Evaluation</h3><h3 id="sandboxed-MacOS"><a href="#sandboxed-MacOS" class="headerlink" title="sandboxed (MacOS)"></a>sandboxed (MacOS)</h3><p>&#x2F;usr&#x2F;libexec&#x2F;sandboxed<br>&#x2F;System&#x2F;Library&#x2F;LaunchDaemons&#x2F;com.apple.sandboxd.plist<br>HOST_SEATBELT_PORT</p>
+<ul>
+<li>Daemon-Kext communication</li>
+</ul>
+<h2 id="9-MacOS-System-Integrity-Protection-SIP"><a href="#9-MacOS-System-Integrity-Protection-SIP" class="headerlink" title="9. MacOS System Integrity Protection (SIP)"></a>9. MacOS System Integrity Protection (SIP)</h2><p>MacOS 10.11<br>The term “rootless”, therefore, likely means that root, while it still exists, can do less.<br>Internally, you can find many references to CSR, an acronym which stands for<br>Configurable Software Restrictions.</p>
+<h3 id="Design-2"><a href="#Design-2" class="headerlink" title="Design"></a>Design</h3><p>The “restricted” objects, however, now get a level of protection which shields them even from root -<br>as files, they cannot be modified or removed. As processes, they cannot be debugged or tampered with.</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">launchctl hostinfo | grep allows</span><br></pre></td></tr></table></figure>
+<h3 id="Implementation-2"><a href="#Implementation-2" class="headerlink" title="Implementation"></a>Implementation</h3><p>Internally, the implementation of SIP boils down to a sandbox profile. This profile - appropriately<br>called the platform_profile - is effectively the default profile for nearly all applications in the<br>system. Even when applications are reportedly unsandboxed, this profile holds (with few execptions).<br>&#x2F;usr&#x2F;libexec&#x2F;rootless-init<br>&#x2F;System&#x2F;Library&#x2F;Sandbox&#x2F;rootless.conf</p>
+<ul>
+<li>Filesystem protections</li>
+</ul>
+<ul>
+<li>The restricted flag</li>
+<li>The com.apple.rootless extended attribute</li>
+</ul>
+<ul>
+<li>Debugging protections<br>task_for_pid&#x2F;check_debug</li>
+<li>Protecting launchd services</li>
+<li>Entitlements</li>
+<li>Enablement&#x2F;Disablement<br>The solution here is to use the recovery operating system. The recovery operating system boots from<br>a separate partion, and there is no programmatic way to force boot into it.<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">codesign -d --entitlements - --xml /usr/bin/csrutil | plutil -p -</span><br></pre></td></tr></table></figure>
+The csrutil also possesses the special com.apple.private.iokit.nvram-csr entitlement.</li>
+</ul>
+<h3 id="APIs"><a href="#APIs" class="headerlink" title="APIs"></a>APIs</h3><p>csrctl (#483) [bsd&#x2F;kern&#x2F;kern_csr.c]<br>rootless_* APIs -&gt; libsystem_sandbox.dylib</p>
+<h2 id="10-Privacy"><a href="#10-Privacy" class="headerlink" title="10. Privacy"></a>10. Privacy</h2><h3 id="Transparency-Consent-and-Control"><a href="#Transparency-Consent-and-Control" class="headerlink" title="Transparency, Consent and Control"></a>Transparency, Consent and Control</h3><ul>
+<li>The TCC daemons(s)<br>Apply employs a dedicated daemon - tccd - to handle potentially sensitive operations.<br>MacOS is a multi-user system, so usually you can find tccd runs in 2+ instances, one for each logged<br>on user, and another as uid 0, with an argument of “system”. The per-user instances are started from<br>&#x2F;System&#x2F;Library&#x2F;LaunchAgents, and the system-wide from &#x2F;System&#x2F;Library&#x2F;LaunchDaemons.</li>
+<li>Protected Information<br>kTCCService</li>
+<li>The TCC Database(s)<br>[$HOME&#x2F;Library&#x2F;Application Support&#x2F;com.apple.TCC&#x2F;tcc.db]<br>[&#x2F;Library&#x2F;Application Support&#x2F;com.apple.TCC&#x2F;tcc.db]</li>
+<li>Prompting for access<br>On MacOS, this is done by posting a Mach message to the com.apple.notificationcenterui,<br>which eventually brings up the UserNotificationCenter.app (in &#x2F;System&#x2F;Library&#x2F;CoreServices).</li>
+<li>XPC API<br>The MacOS daemons register the com.apple.tccd and com.apple.tccd.system Mach XPC ports (respectively),<br>over which they provide service to clients.</li>
+<li>TCCAccess APIs<br>private TCC.framework<br>Apple provides a vert basic tccutil(1) as part of MacOS, which is even documented in its own manual page,<br>but only supports a “reset” functionality.</li>
+<li>Entitlements</li>
+<li>Debugging Options<br>&#x2F;var&#x2F;db&#x2F;.debug_tccdsync</li>
+</ul>
+<h3 id="Unique-Device-Identifiers"><a href="#Unique-Device-Identifiers" class="headerlink" title="Unique Device Identifiers"></a>Unique Device Identifiers</h3><h3 id="Differential-Privacy-MacOS-12-x2F-iOS-10"><a href="#Differential-Privacy-MacOS-12-x2F-iOS-10" class="headerlink" title="Differential Privacy (MacOS 12&#x2F;iOS 10)"></a>Differential Privacy (MacOS 12&#x2F;iOS 10)</h3><ul>
+<li>Implementation<br>private DifferentialPrivacy.framework<br>&#x2F;usr&#x2F;libexec&#x2F;dprivacyd<br>Surprisingly, the framework also contains a hidden dprivacytool(!).<br>The daemon registers the com.apple.dprivacyd XPC service, and maintains a database at<br>&#x2F;var&#x2F;db&#x2F;DifferentialPrivacy&#x2F;.</li>
+</ul>
+<h2 id="11-Data-Protection"><a href="#11-Data-Protection" class="headerlink" title="11. Data Protection"></a>11. Data Protection</h2><p>For MacOS, Apple provides FileVault 2 as of 10.7, as a “Full Disk Encryption” (FPD) solution.<br>More accurately, this is a special case of Volume-Level Encryption, which enables booting the<br>system and provides access to data only when an authorized user’s password is validated. For iOS,<br>granularity is even finder, through the use of File-Level Encryption.</p>
+<h3 id="Volume-level-Encryption-MacOS"><a href="#Volume-level-Encryption-MacOS" class="headerlink" title="Volume-level Encryption (MacOS)"></a>Volume-level Encryption (MacOS)</h3><p>FileVault fdesetup(8)</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo fdesetup list</span><br><span class="line">diskutil list</span><br><span class="line">diskutil corestorage list</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Mounting Encrypted Volumes<br>When an encrypted volume is detected, the system brings up a prompt for the password via the<br>SecurityAgent using its DiskUnlock.bundle.</li>
+<li>corestorage daemons<br>corestoraged<br>&#x2F;usr&#x2F;libexec&#x2F;corestoreaged -&gt; com.apple.corestoreage.corestoraged<br>FDERecoveryAgent<br>corestoragehelperd</li>
+<li>CSFDE* APIs<br>libCoreStorage.dylib and libcsfde.dylib</li>
+</ul>
+<h3 id="File-level-Encryption-OS"><a href="#File-level-Encryption-OS" class="headerlink" title="File-level Encryption (*OS)"></a>File-level Encryption (<code>*OS</code>)</h3><ul>
+<li>com.apple.system.cprotect and protection classes<br>[bsd&#x2F;hfs&#x2F;hfs_cprotect.h]</li>
+<li>Effaceable Storage</li>
+<li>Device Lock&#x2F;Unlock</li>
+</ul>
+<h3 id="mobile-obliterator"><a href="#mobile-obliterator" class="headerlink" title="mobile_obliterator"></a>mobile_obliterator</h3><h3 id="KeyBags"><a href="#KeyBags" class="headerlink" title="KeyBags"></a>KeyBags</h3><ul>
+<li>KeyBagd<br>The &#x2F;usr&#x2F;libexec&#x2F;keybagd is a <code>*OS</code> daemon which handles the keystore on the device.</li>
+<li>MobileKeyBag.framework</li>
+</ul>
+<h3 id="The-AppleKeyStore-kext"><a href="#The-AppleKeyStore-kext" class="headerlink" title="The AppleKeyStore.kext"></a>The AppleKeyStore.kext</h3><ul>
+<li>Entitlements</li>
+<li>Hardware backing</li>
+</ul>
+<h3 id="Keychains"><a href="#Keychains" class="headerlink" title="Keychains"></a>Keychains</h3><ul>
+<li>System Keychain<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ls</span> -l /Library/Keychains</span><br><span class="line"><span class="built_in">ls</span> -l /System/Library/Keychains</span><br></pre></td></tr></table></figure></li>
+<li>The Login keychain<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ls</span> -l ~/Library/Keychains/ | <span class="built_in">head</span> -n4</span><br><span class="line"><span class="built_in">ls</span> -l ~/Library/Keychains/6E002C5E-E99D-5CD3-9532-BEEB74F3E778</span><br></pre></td></tr></table></figure></li>
+<li>The iOS Keychain<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ls</span> -F /private/var/Keychains</span><br></pre></td></tr></table></figure></li>
+<li>Programmatic API<br>[Security&#x2F;SecKeyChain.h]<br>&#x2F;usr&#x2F;libexec&#x2F;securityd<br>[OSX&#x2F;sec&#x2F;ipc&#x2F;securityd_client.h]</li>
+<li>KeyChain structure<br>[OSX&#x2F;sec&#x2F;Security&#x2F;SecItemConstants.c]<br>[OSX&#x2F;libsecurity_keychain&#x2F;lib&#x2F;SecItemPriv.h]</li>
+</ul>
+<h3 id="Final-Notes-2"><a href="#Final-Notes-2" class="headerlink" title="Final Notes"></a>Final Notes</h3><h1 id="Part-II-Vulnerabilities-and-Exploitation"><a href="#Part-II-Vulnerabilities-and-Exploitation" class="headerlink" title="Part II: Vulnerabilities and Exploitation"></a>Part II: Vulnerabilities and Exploitation</h1><h2 id="12-MacOS-Vulnerabilities"><a href="#12-MacOS-Vulnerabilities" class="headerlink" title="12. MacOS Vulnerabilities"></a>12. MacOS Vulnerabilities</h2><p>OSX</p>
+<h3 id="10-1-The-ntpd-remote-root-CVE-2014-9295"><a href="#10-1-The-ntpd-remote-root-CVE-2014-9295" class="headerlink" title="10.1 The ntpd remote root (CVE-2014-9295)"></a>10.1 The ntpd remote root (CVE-2014-9295)</h3><h3 id="10-2-The-rootpipe-privilege-escalation-CVE-2015-1130"><a href="#10-2-The-rootpipe-privilege-escalation-CVE-2015-1130" class="headerlink" title="10.2 The rootpipe privilege escalation (CVE-2015-1130)"></a>10.2 The rootpipe privilege escalation (CVE-2015-1130)</h3><h3 id="10-3-Racing-Kextd-CVE-2015-3708"><a href="#10-3-Racing-Kextd-CVE-2015-3708" class="headerlink" title="10.3 Racing Kextd (CVE-2015-3708)"></a>10.3 Racing Kextd (CVE-2015-3708)</h3><h3 id="10-4-DYLD-PRINT-TO-FILE-privilege-escalation-CVE-2015-3760"><a href="#10-4-DYLD-PRINT-TO-FILE-privilege-escalation-CVE-2015-3760" class="headerlink" title="10.4 DYLD_PRINT_TO_FILE privilege escalation (CVE-2015-3760)"></a>10.4 DYLD_PRINT_TO_FILE privilege escalation (CVE-2015-3760)</h3><h3 id="10-5-DYLD-ROOT-PATH-privilege-escalation"><a href="#10-5-DYLD-ROOT-PATH-privilege-escalation" class="headerlink" title="10.5 DYLD_ROOT_PATH privilege escalation"></a>10.5 DYLD_ROOT_PATH privilege escalation</h3><h3 id="11-0-tpwn-privilege-escalation-and-x2F-or-SIP-neuering"><a href="#11-0-tpwn-privilege-escalation-and-x2F-or-SIP-neuering" class="headerlink" title="11.0 tpwn privilege escalation and&#x2F;or SIP neuering"></a>11.0 tpwn privilege escalation and&#x2F;or SIP neuering</h3><h3 id="11-3-“Mach-Race”-local-priilege-escalaion-CVE-2016-1757"><a href="#11-3-“Mach-Race”-local-priilege-escalaion-CVE-2016-1757" class="headerlink" title="11.3 “Mach Race” local priilege escalaion (CVE-2016-1757)"></a>11.3 “Mach Race” local priilege escalaion (CVE-2016-1757)</h3><h3 id="11-4-LokiHardt’s-Trifecta-CVE-2016-1796-1797-1806"><a href="#11-4-LokiHardt’s-Trifecta-CVE-2016-1796-1797-1806" class="headerlink" title="11.4 LokiHardt’s Trifecta (CVE-2016-1796, 1797, 1806)"></a>11.4 LokiHardt’s Trifecta (CVE-2016-1796, 1797, 1806)</h3><h2 id="13-Jailbreaking"><a href="#13-Jailbreaking" class="headerlink" title="13. Jailbreaking"></a>13. Jailbreaking</h2><h3 id="Mythbusting"><a href="#Mythbusting" class="headerlink" title="Mythbusting"></a>Mythbusting</h3><ul>
+<li>Terminology</li>
+</ul>
+<h3 id="The-jailbreaking-process"><a href="#The-jailbreaking-process" class="headerlink" title="The jailbreaking process"></a>The jailbreaking process</h3><h3 id="Kernel-Patches"><a href="#Kernel-Patches" class="headerlink" title="Kernel Patches"></a>Kernel Patches</h3><p>setreuid</p>
+<h3 id="Kernel-Patch-Protection"><a href="#Kernel-Patch-Protection" class="headerlink" title="Kernel Patch Protection"></a>Kernel Patch Protection</h3><h3 id="Evolution-of-iOS-Jailbreaks"><a href="#Evolution-of-iOS-Jailbreaks" class="headerlink" title="Evolution of iOS Jailbreaks"></a>Evolution of iOS Jailbreaks</h3><h2 id="14-Evasi0n"><a href="#14-Evasi0n" class="headerlink" title="14. Evasi0n"></a>14. Evasi0n</h2><h3 id="The-Loader"><a href="#The-Loader" class="headerlink" title="The Loader"></a>The Loader</h3><p>…….</p>
+<h2 id="Appendix-MacOS-Hardening-Guide"><a href="#Appendix-MacOS-Hardening-Guide" class="headerlink" title="Appendix: MacOS Hardening Guide"></a>Appendix: MacOS Hardening Guide</h2><h3 id="Patching-Patching-and-Patching"><a href="#Patching-Patching-and-Patching" class="headerlink" title="Patching, Patching and Patching"></a>Patching, Patching and Patching</h3><h3 id="Logging-and-Auditing"><a href="#Logging-and-Auditing" class="headerlink" title="Logging and Auditing"></a>Logging and Auditing</h3><ul>
+<li>syslog&#x2F;acl</li>
+<li>log (MacOS 12)</li>
+<li>Enabling Auditing</li>
+</ul>
+<h3 id="User-level-Security"><a href="#User-level-Security" class="headerlink" title="User-level Security"></a>User-level Security</h3><ul>
+<li>Login banner</li>
+<li>Password Hints</li>
+<li>Login&#x2F;Logout hooks</li>
+<li>Password Policies</li>
+<li>Screen Saver locking</li>
+<li>disable su</li>
+<li>Harden sudo</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://wurui1994.github.io">WuRui</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://wurui1994.github.io/2023/06/27/macos-ios-internals-vol-three/">https://wurui1994.github.io/2023/06/27/macos-ios-internals-vol-three/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://wurui1994.github.io" target="_blank">WuRui</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/macos/">macos</a></div><div class="post_share"><div class="social-share" data-image="/img/avatar.jpg" data-sites="wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/butterfly-extsrc/1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.bootcdn.net/ajax/libs/butterfly-extsrc/1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechatpay.png" target="_blank"><img class="post-qr-code-img" src="/img/wechatpay.png" alt="微信"/></a><div class="post-qr-code-desc">微信</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/alipay.jpg" alt="支付宝"/></a><div class="post-qr-code-desc">支付宝</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2023/06/27/docker-note/" title="Docker记录"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Docker记录</div></div></a></div><div class="next-post pull-right"><a href="/2023/06/27/macos-ios-internals-vol-two/" title="深入解析MacOS和iOS 卷二 笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">深入解析MacOS和iOS 卷二 笔记</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2023/06/27/macos-cmds/" title="macOS命令行"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-27</div><div class="title">macOS命令行</div></div></a></div><div><a href="/2023/06/26/macos-image/" title="macOS镜像"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-26</div><div class="title">macOS镜像</div></div></a></div><div><a href="/2023/06/27/macos-ios-internals-vol-one/" title="深入解析MacOS和iOS 卷一 笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-27</div><div class="title">深入解析MacOS和iOS 卷一 笔记</div></div></a></div><div><a href="/2023/06/27/macos-ios-internals-vol-two/" title="深入解析MacOS和iOS 卷二 笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-27</div><div class="title">深入解析MacOS和iOS 卷二 笔记</div></div></a></div><div><a href="/2023/06/26/macos-kernel/" title="macOS内核"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-26</div><div class="title">macOS内核</div></div></a></div><div><a href="/2023/06/27/macos-kext/" title="macOS内核扩展"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-27</div><div class="title">macOS内核扩展</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="giscus-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">WuRui</div><div class="author-info__description">每天都是新的一天</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">101</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">90</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/wurui1994" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="/img/qq.jpg" target="_blank" title="QQ"><i class="fab fa-qq"></i></a><a class="social-icon" href="/img/wechat.jpg" target="_blank" title="微信"><i class="fab fa-weixin"></i></a><a class="social-icon" href="mailto:1341531859@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn"></i><span>公告</span></div><div class="announcement_content">这里是我的博客, <a href=https://www.cnblogs.com/wurui1994/>旧博客地址</a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Part-I-Defensive-Techniques-and-Technologie"><span class="toc-number">1.</span> <span class="toc-text">Part I: Defensive Techniques and Technologie</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-Authentication"><span class="toc-number">1.1.</span> <span class="toc-text">1. Authentication</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Password-Files-OS"><span class="toc-number">1.1.1.</span> <span class="toc-text">Password Files (*OS)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SetUID-and-SetGID-MacOS"><span class="toc-number">1.1.2.</span> <span class="toc-text">SetUID and SetGID (MacOS)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#The-Pluggable-Authentication-Module-MacOS"><span class="toc-number">1.1.3.</span> <span class="toc-text">The Pluggable Authentication Module (MacOS)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#opendirectoryd-MacOS"><span class="toc-number">1.1.4.</span> <span class="toc-text">opendirectoryd (MacOS)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#The-LocalAuthentication-Framework"><span class="toc-number">1.1.5.</span> <span class="toc-text">The LocalAuthentication Framework</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Apple-IDs"><span class="toc-number">1.1.6.</span> <span class="toc-text">Apple IDs</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#External-Account"><span class="toc-number">1.1.7.</span> <span class="toc-text">External Account</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-Auditing-MacOS"><span class="toc-number">1.2.</span> <span class="toc-text">2. Auditing (MacOS)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Design"><span class="toc-number">1.2.1.</span> <span class="toc-text">Design</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Audit-Sessions"><span class="toc-number">1.2.2.</span> <span class="toc-text">Audit Sessions</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Implementation"><span class="toc-number">1.2.3.</span> <span class="toc-text">Implementation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#System-call-interface"><span class="toc-number">1.2.4.</span> <span class="toc-text">System call interface</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#OpenBSM-APIs"><span class="toc-number">1.2.5.</span> <span class="toc-text">OpenBSM APIs</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Auditing-Considerations"><span class="toc-number">1.2.6.</span> <span class="toc-text">Auditing Considerations</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Authorization-KAuth"><span class="toc-number">1.3.</span> <span class="toc-text">3. Authorization (KAuth)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Design-1"><span class="toc-number">1.3.1.</span> <span class="toc-text">Design</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Implementation-1"><span class="toc-number">1.3.2.</span> <span class="toc-text">Implementation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#KAuth-Credentials"><span class="toc-number">1.3.3.</span> <span class="toc-text">KAuth Credentials</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#KAuth-Identity-Resolvers-MacOS"><span class="toc-number">1.3.4.</span> <span class="toc-text">KAuth Identity Resolvers (MacOS)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Debugging-KAuth"><span class="toc-number">1.3.5.</span> <span class="toc-text">Debugging KAuth</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Mandatory-Access-Control-Framework"><span class="toc-number">1.4.</span> <span class="toc-text">3. Mandatory Access Control Framework</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Background"><span class="toc-number">1.4.1.</span> <span class="toc-text">Background</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MACF-Policies"><span class="toc-number">1.4.2.</span> <span class="toc-text">MACF Policies</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Setting-up-MACF"><span class="toc-number">1.4.3.</span> <span class="toc-text">Setting up MACF</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MACF-Callouts"><span class="toc-number">1.4.4.</span> <span class="toc-text">MACF Callouts</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MACF-System-Calls"><span class="toc-number">1.4.5.</span> <span class="toc-text">MACF System Calls</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Final-Notes"><span class="toc-number">1.4.6.</span> <span class="toc-text">Final Notes</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-Code-Signing"><span class="toc-number">1.5.</span> <span class="toc-text">5. Code Signing</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#The-Code-Signature-Format"><span class="toc-number">1.5.1.</span> <span class="toc-text">The Code Signature Format</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Code-Signature-Requiements"><span class="toc-number">1.5.2.</span> <span class="toc-text">Code Signature Requiements</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Entitlements"><span class="toc-number">1.5.3.</span> <span class="toc-text">Entitlements</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Code-Signature-Enforcement"><span class="toc-number">1.5.4.</span> <span class="toc-text">Code Signature Enforcement</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Code-Signing-APIs"><span class="toc-number">1.5.5.</span> <span class="toc-text">Code Signing APIs</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-Software-Restrictions-MacOS"><span class="toc-number">1.6.</span> <span class="toc-text">6. Software Restrictions (MacOS)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Authorizations"><span class="toc-number">1.6.1.</span> <span class="toc-text">Authorizations</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#authd"><span class="toc-number">1.6.2.</span> <span class="toc-text">authd</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GateKeeper-MacOS"><span class="toc-number">1.6.3.</span> <span class="toc-text">GateKeeper (MacOS)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Quarantine-in-action"><span class="toc-number">1.6.4.</span> <span class="toc-text">Quarantine in action</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#syspolicyd"><span class="toc-number">1.6.5.</span> <span class="toc-text">syspolicyd</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#App-Translocation"><span class="toc-number">1.6.6.</span> <span class="toc-text">App Translocation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Managed-Clients-MacOS"><span class="toc-number">1.6.7.</span> <span class="toc-text">Managed Clients (MacOS)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-AppleMobileFileIntegrity"><span class="toc-number">1.7.</span> <span class="toc-text">7. AppleMobileFileIntegrity</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#AppleMobileFileIntegrity-kext"><span class="toc-number">1.7.1.</span> <span class="toc-text">AppleMobileFileIntegrity.kext</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#The-MACF-Policy"><span class="toc-number">1.7.2.</span> <span class="toc-text">The MACF Policy</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Exception-Handling-hooks-MacOS-12"><span class="toc-number">1.7.3.</span> <span class="toc-text">Exception Handling hooks (MacOS 12+)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#amfid"><span class="toc-number">1.7.4.</span> <span class="toc-text">amfid</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Provisoning-Profiles"><span class="toc-number">1.7.5.</span> <span class="toc-text">Provisoning Profiles</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#The-AMFI-Trust-Caches"><span class="toc-number">1.7.6.</span> <span class="toc-text">The AMFI Trust Caches</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#The-AMFI-User-Client"><span class="toc-number">1.7.7.</span> <span class="toc-text">The AMFI User Client</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Final-Notes-1"><span class="toc-number">1.7.8.</span> <span class="toc-text">Final Notes</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-The-Sandbox"><span class="toc-number">1.8.</span> <span class="toc-text">8. The Sandbox</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#The-Evolution-of-the-Sandbox"><span class="toc-number">1.8.1.</span> <span class="toc-text">The Evolution of the Sandbox</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#App-Sandbox-MacOS"><span class="toc-number">1.8.2.</span> <span class="toc-text">App Sandbox (MacOS)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Mobile-Containers-OS"><span class="toc-number">1.8.3.</span> <span class="toc-text">Mobile Containers (*OS)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Sandbox-Profiles"><span class="toc-number">1.8.4.</span> <span class="toc-text">Sandbox Profiles</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#User-mode-APIs"><span class="toc-number">1.8.5.</span> <span class="toc-text">User mode APIs</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#mac-syscall"><span class="toc-number">1.8.6.</span> <span class="toc-text">mac_syscall</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Sandbox-kext"><span class="toc-number">1.8.7.</span> <span class="toc-text">Sandbox.kext</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#The-Sandbox-MACF-Hooks"><span class="toc-number">1.8.8.</span> <span class="toc-text">The Sandbox MACF Hooks</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Profile-Evaluation"><span class="toc-number">1.8.9.</span> <span class="toc-text">Profile Evaluation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#sandboxed-MacOS"><span class="toc-number">1.8.10.</span> <span class="toc-text">sandboxed (MacOS)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-MacOS-System-Integrity-Protection-SIP"><span class="toc-number">1.9.</span> <span class="toc-text">9. MacOS System Integrity Protection (SIP)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Design-2"><span class="toc-number">1.9.1.</span> <span class="toc-text">Design</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Implementation-2"><span class="toc-number">1.9.2.</span> <span class="toc-text">Implementation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#APIs"><span class="toc-number">1.9.3.</span> <span class="toc-text">APIs</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-Privacy"><span class="toc-number">1.10.</span> <span class="toc-text">10. Privacy</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Transparency-Consent-and-Control"><span class="toc-number">1.10.1.</span> <span class="toc-text">Transparency, Consent and Control</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Unique-Device-Identifiers"><span class="toc-number">1.10.2.</span> <span class="toc-text">Unique Device Identifiers</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Differential-Privacy-MacOS-12-x2F-iOS-10"><span class="toc-number">1.10.3.</span> <span class="toc-text">Differential Privacy (MacOS 12&#x2F;iOS 10)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-Data-Protection"><span class="toc-number">1.11.</span> <span class="toc-text">11. Data Protection</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Volume-level-Encryption-MacOS"><span class="toc-number">1.11.1.</span> <span class="toc-text">Volume-level Encryption (MacOS)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#File-level-Encryption-OS"><span class="toc-number">1.11.2.</span> <span class="toc-text">File-level Encryption (*OS)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#mobile-obliterator"><span class="toc-number">1.11.3.</span> <span class="toc-text">mobile_obliterator</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#KeyBags"><span class="toc-number">1.11.4.</span> <span class="toc-text">KeyBags</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#The-AppleKeyStore-kext"><span class="toc-number">1.11.5.</span> <span class="toc-text">The AppleKeyStore.kext</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Keychains"><span class="toc-number">1.11.6.</span> <span class="toc-text">Keychains</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Final-Notes-2"><span class="toc-number">1.11.7.</span> <span class="toc-text">Final Notes</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Part-II-Vulnerabilities-and-Exploitation"><span class="toc-number">2.</span> <span class="toc-text">Part II: Vulnerabilities and Exploitation</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#12-MacOS-Vulnerabilities"><span class="toc-number">2.1.</span> <span class="toc-text">12. MacOS Vulnerabilities</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#10-1-The-ntpd-remote-root-CVE-2014-9295"><span class="toc-number">2.1.1.</span> <span class="toc-text">10.1 The ntpd remote root (CVE-2014-9295)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-2-The-rootpipe-privilege-escalation-CVE-2015-1130"><span class="toc-number">2.1.2.</span> <span class="toc-text">10.2 The rootpipe privilege escalation (CVE-2015-1130)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-3-Racing-Kextd-CVE-2015-3708"><span class="toc-number">2.1.3.</span> <span class="toc-text">10.3 Racing Kextd (CVE-2015-3708)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-4-DYLD-PRINT-TO-FILE-privilege-escalation-CVE-2015-3760"><span class="toc-number">2.1.4.</span> <span class="toc-text">10.4 DYLD_PRINT_TO_FILE privilege escalation (CVE-2015-3760)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-5-DYLD-ROOT-PATH-privilege-escalation"><span class="toc-number">2.1.5.</span> <span class="toc-text">10.5 DYLD_ROOT_PATH privilege escalation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-0-tpwn-privilege-escalation-and-x2F-or-SIP-neuering"><span class="toc-number">2.1.6.</span> <span class="toc-text">11.0 tpwn privilege escalation and&#x2F;or SIP neuering</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-3-%E2%80%9CMach-Race%E2%80%9D-local-priilege-escalaion-CVE-2016-1757"><span class="toc-number">2.1.7.</span> <span class="toc-text">11.3 “Mach Race” local priilege escalaion (CVE-2016-1757)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-4-LokiHardt%E2%80%99s-Trifecta-CVE-2016-1796-1797-1806"><span class="toc-number">2.1.8.</span> <span class="toc-text">11.4 LokiHardt’s Trifecta (CVE-2016-1796, 1797, 1806)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#13-Jailbreaking"><span class="toc-number">2.2.</span> <span class="toc-text">13. Jailbreaking</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Mythbusting"><span class="toc-number">2.2.1.</span> <span class="toc-text">Mythbusting</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#The-jailbreaking-process"><span class="toc-number">2.2.2.</span> <span class="toc-text">The jailbreaking process</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Kernel-Patches"><span class="toc-number">2.2.3.</span> <span class="toc-text">Kernel Patches</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Kernel-Patch-Protection"><span class="toc-number">2.2.4.</span> <span class="toc-text">Kernel Patch Protection</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Evolution-of-iOS-Jailbreaks"><span class="toc-number">2.2.5.</span> <span class="toc-text">Evolution of iOS Jailbreaks</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#14-Evasi0n"><span class="toc-number">2.3.</span> <span class="toc-text">14. Evasi0n</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#The-Loader"><span class="toc-number">2.3.1.</span> <span class="toc-text">The Loader</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Appendix-MacOS-Hardening-Guide"><span class="toc-number">2.4.</span> <span class="toc-text">Appendix: MacOS Hardening Guide</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Patching-Patching-and-Patching"><span class="toc-number">2.4.1.</span> <span class="toc-text">Patching, Patching and Patching</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Logging-and-Auditing"><span class="toc-number">2.4.2.</span> <span class="toc-text">Logging and Auditing</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#User-level-Security"><span class="toc-number">2.4.3.</span> <span class="toc-text">User-level Security</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/02/media-guide/" title="学习入门">学习入门</a><time datetime="2024-03-02T01:00:12.000Z" title="发表于 2024-03-02 09:00:12">2024-03-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/10/22/clipboard-note/" title="clipboard笔记">clipboard笔记</a><time datetime="2023-10-22T08:54:25.000Z" title="发表于 2023-10-22 16:54:25">2023-10-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/08/04/optimize-note/" title="优化相关">优化相关</a><time datetime="2023-08-04T06:51:45.000Z" title="发表于 2023-08-04 14:51:45">2023-08-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/08/04/love-note/" title="关于爱情">关于爱情</a><time datetime="2023-08-04T00:35:24.000Z" title="发表于 2023-08-04 08:35:24">2023-08-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/07/20/dopamine-note/" title="多巴胺相关">多巴胺相关</a><time datetime="2023-07-20T06:47:32.000Z" title="发表于 2023-07-20 14:47:32">2023-07-20</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By WuRui</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>function getGiscusTheme (theme) {
+  return theme === 'dark' ? 'dark' : 'light'
+}
+
+function loadGiscus () {
+  const config = Object.assign({
+    src: 'https://giscus.app/client.js',
+    'data-repo': 'wurui1994/wurui1994.github.io',
+    'data-repo-id': 'R_kgDOJzB0HA',
+    'data-category-id': 'DIC_kwDOJzB0HM4CXeHj',
+    'data-lang': 'zh-CN',
+    'data-mapping': 'pathname',
+    'data-theme': getGiscusTheme(document.documentElement.getAttribute('data-theme')),
+    'data-reactions-enabled': '1',
+    crossorigin: 'anonymous',
+    async: true
+  },null)
+
+  let ele = document.createElement('script')
+  for (let key in config) {
+    ele.setAttribute(key, config[key])
+  }
+  document.getElementById('giscus-wrap').insertAdjacentElement('afterbegin',ele)
+}
+
+function changeGiscusTheme (theme) {
+  function sendMessage(message) {
+    const iframe = document.querySelector('iframe.giscus-frame')
+    if (!iframe) return
+    iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app')
+  }
+
+  sendMessage({
+    setConfig: {
+      theme: getGiscusTheme(theme)
+    }
+  });
+}
+
+btf.addModeChange('giscus', changeGiscusTheme)
+
+if ('Giscus' === 'Giscus' || !false) {
+  if (false) btf.loadComment(document.getElementById('giscus-wrap'), loadGiscus)
+  else loadGiscus()
+} else {
+  function loadOtherComment () {
+    loadGiscus()
+  }
+}</script></div><link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/aplayer/1.10.1/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.bootcdn.net/ajax/libs/aplayer/1.10.1/APlayer.min.js"></script><script src="https://cdn.bootcdn.net/ajax/libs/butterfly-extsrc/1.1.3/metingjs/dist/Meting.min.js"></script><script src="https://cdn.bootcdn.net/ajax/libs/pjax/0.2.8/pjax.min.js"></script><script>let pjaxSelectors = ["link[rel=\"canonical\"]","meta[property=\"og:image\"]","meta[property=\"og:title\"]","meta[property=\"og:url\"]","head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener scroll 
+  window.tocScrollFn && window.removeEventListener('scroll', window.tocScrollFn)
+  window.scrollCollect && window.removeEventListener('scroll', scrollCollect)
+
+  document.getElementById('rightside').style.cssText = "opacity: ''; transform: ''"
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+  typeof disqusjs === 'object' && disqusjs.destroy()
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', (e) => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

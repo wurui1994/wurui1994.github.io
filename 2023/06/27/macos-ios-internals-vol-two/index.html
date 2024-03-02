@@ -1,0 +1,878 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>深入解析MacOS和iOS 卷二 笔记 | WuRui</title><meta name="author" content="WuRui"><meta name="copyright" content="WuRui"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="MacOS and iOS Internals, Volume II : Kernel Modechapter 1Welcome to the Machine: Hardware DevicesMac Models Numbers and code names 12sysctl hw.modelioreg -l -f | grep IOPlatformExpertDevice Processors">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入解析MacOS和iOS 卷二 笔记">
+<meta property="og:url" content="https://wurui1994.github.io/2023/06/27/macos-ios-internals-vol-two/index.html">
+<meta property="og:site_name" content="WuRui">
+<meta property="og:description" content="MacOS and iOS Internals, Volume II : Kernel Modechapter 1Welcome to the Machine: Hardware DevicesMac Models Numbers and code names 12sysctl hw.modelioreg -l -f | grep IOPlatformExpertDevice Processors">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wurui1994.github.io/img/avatar.jpg">
+<meta property="article:published_time" content="2023-06-27T06:12:29.000Z">
+<meta property="article:modified_time" content="2023-06-28T03:29:52.668Z">
+<meta property="article:author" content="WuRui">
+<meta property="article:tag" content="macos">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wurui1994.github.io/img/avatar.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://wurui1994.github.io/2023/06/27/macos-ios-internals-vol-two/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.bootcdn.net/ajax/libs/flickr-justified-gallery/2.1.2/fjGallery.min.js',
+      css: 'https://cdn.bootcdn.net/ajax/libs/flickr-justified-gallery/2.1.2/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '深入解析MacOS和iOS 卷二 笔记',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-06-28 11:29:52'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">101</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">90</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 目录</span></a></div><div class="menus_item"><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img fixed" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="WuRui"><span class="site-name">WuRui</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 目录</span></a></div><div class="menus_item"><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">深入解析MacOS和iOS 卷二 笔记</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2023-06-27T06:12:29.000Z" title="发表于 2023-06-27 14:12:29">2023-06-27</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-06-28T03:29:52.668Z" title="更新于 2023-06-28 11:29:52">2023-06-28</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/macos/">macos</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">4.5k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>28分钟</span></span></div></div></div><article class="post-content" id="article-container"><h1 id="MacOS-and-iOS-Internals-Volume-II-Kernel-Mode"><a href="#MacOS-and-iOS-Internals-Volume-II-Kernel-Mode" class="headerlink" title="MacOS and iOS Internals, Volume II : Kernel Mode"></a>MacOS and iOS Internals, Volume II : Kernel Mode</h1><h2 id="chapter-1"><a href="#chapter-1" class="headerlink" title="chapter 1"></a>chapter 1</h2><p>Welcome to the Machine: Hardware</p>
+<h3 id="Devices"><a href="#Devices" class="headerlink" title="Devices"></a>Devices</h3><p>Mac Models Numbers and code names</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sysctl hw.model</span><br><span class="line">ioreg -l -f | grep IOPlatformExpertDevice</span><br></pre></td></tr></table></figure>
+<p>Processors<br>“Rosetta”<br>Processor Code Names<br>“A”-series chips<br>“n+n” “p-cores” “e-cores”</p>
+<h3 id="Ports"><a href="#Ports" class="headerlink" title="Ports"></a>Ports</h3><p>Serial ports<br>Firewire -&gt; IEEE1394 fwkdp(1)<br>ThunderBolt -&gt; Intel’s ThunderBolt standard<br>-&gt; MiniDisplay Port and PCIe<br>USB usbkdp(1)</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ioreg -p IOUSB</span><br><span class="line">system_profiler SPUSBDataType</span><br></pre></td></tr></table></figure>
+<p>USB Restricted Mode</p>
+<h3 id="iDevice-Connectors"><a href="#iDevice-Connectors" class="headerlink" title="iDevice Connectors"></a>iDevice Connectors</h3><p>30-pin<br>Lightning</p>
+<h3 id="NVRAM"><a href="#NVRAM" class="headerlink" title="NVRAM"></a>NVRAM</h3><p>MacOS: GUID Namespaces<br><code>*OS</code>: the nvrm namespace<br>MacOS: THe System Management BIOS<br>-&gt; Intel architectures<br><code>*OS</code>: SysCfg</p>
+<h3 id="The-Device-Tree"><a href="#The-Device-Tree" class="headerlink" title="The Device Tree"></a>The Device Tree</h3><h3 id="Dedicated-Processors"><a href="#Dedicated-Processors" class="headerlink" title="Dedicated Processors"></a>Dedicated Processors</h3><p>Common Code: RTKit<br>The <code>*OS</code> Side: RTBuddy<br>AOP&#x2F;AGX</p>
+<h2 id="chapter-2"><a href="#chapter-2" class="headerlink" title="chapter 2"></a>chapter 2</h2><p>Use the source, Luke: The XNU Codebase</p>
+<h3 id="The-XNU-Source"><a href="#The-XNU-Source" class="headerlink" title="The XNU Source"></a>The XNU Source</h3><p>Kernel Address SANitizer (KASAN)</p>
+<h3 id="Compiling-the-kernel"><a href="#Compiling-the-kernel" class="headerlink" title="Compiling the kernel"></a>Compiling the kernel</h3><p>AvailabilityVersions<br>DTrace<br>libplatform<br>libdispatch (firehose)<br>Early during startup, this structure is saved by the Platform Expert, and PE* APIs -<br>specifically, PE_parse_boot_argn or PE_parse_boot_arg_str - can be used to query the<br>string and retrieve numeric or string arguments.</p>
+<h3 id="Kernel-Debugging"><a href="#Kernel-Debugging" class="headerlink" title="Kernel Debugging"></a>Kernel Debugging</h3><p>Kernel Debug Protocol (kdp)</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * Well-known UDP port, debugger side.</span></span><br><span class="line"><span class="comment"> * <span class="doctag">FIXME:</span> This is what the 68K guys use, but beats me how they chose it...</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> KDP_REMOTE_PORT         41139   <span class="comment">/* pick one and register it */</span></span></span><br></pre></td></tr></table></figure>
+<h3 id="Don’t-panic"><a href="#Don’t-panic" class="headerlink" title="Don’t panic"></a>Don’t panic</h3><p>PESavePanicInfo</p>
+<h4 id="The-Panic-report"><a href="#The-Panic-report" class="headerlink" title="The Panic report"></a>The Panic report</h4><p>&#x2F;Library&#x2F;Logs&#x2F;DiagnosticReports[&#x2F;Retired]&#x2F;Kernel_YYYY-MM-DD-HHMMSS_Hostname.panic</p>
+<h4 id="Kernel-Core-Dumps"><a href="#Kernel-Core-Dumps" class="headerlink" title="Kernel Core Dumps"></a>Kernel Core Dumps</h4><p>kern_dump() kdumpd(8)</p>
+<h4 id="Coredump-helpers"><a href="#Coredump-helpers" class="headerlink" title="Coredump helpers"></a>Coredump helpers</h4><p>kern_register_coredump_helper</p>
+<h2 id="chapter-3"><a href="#chapter-3" class="headerlink" title="chapter 3"></a>chapter 3</h2><p>EXTEND: Kernel Extensions<br>XNU is no different in this regard: What in Windows are drivers and in Linux kernel modules are in Darwin kernel extensions. But similarities end very quickly, as the<br>architectureal support and design of the extensions is quite different.<br>kextload&#x2F;kextutil&#x2F;kext_logging&#x2F;kextd&#x2F;kextlibs</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kextstat | grep com.apple.kpi</span><br></pre></td></tr></table></figure>
+<h3 id="The-Kernel-Programming-Interface"><a href="#The-Kernel-Programming-Interface" class="headerlink" title="The Kernel Programming Interface"></a>The Kernel Programming Interface</h3><p>MACFramework</p>
+<h3 id="The-kernelcache"><a href="#The-kernelcache" class="headerlink" title="The kernelcache"></a>The kernelcache</h3><p>&#x2F;System&#x2F;Library&#x2F;PrelinkedKernels<br>Kernelcache structure<br>__PRELINK_INFO.__info</p>
+<h3 id="Kext-Loading-The-user-mode-perspective"><a href="#Kext-Loading-The-user-mode-perspective" class="headerlink" title="Kext Loading: The user mode perspective"></a>Kext Loading: The user mode perspective</h3><p>Kext Security Requirements<br>&#x2F;System&#x2F;Library&#x2F;Extensions<br>&#x2F;Library&#x2F;Extensions<br>Kext code signing</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sqlite3 /var/db/SystemPolicyConfiguration/KextPolicy -header <span class="string">&quot;select * from settings&quot;</span></span><br><span class="line">sqlite3 /var/db/SystemPolicyConfiguration/KextPolicy -header <span class="string">&quot;select * from kext_policy&quot;</span></span><br></pre></td></tr></table></figure>
+<p>Kextd HOST_KEXTD_PORT<br>MacOS 13: logkextloaded<br>MacOS 14: BridgeOS kext_audit<br>The OSKext* APIs<br>kext_request<br>Multikexts</p>
+<h3 id="Kext-Loading-The-kernel-perspective"><a href="#Kext-Loading-The-kernel-perspective" class="headerlink" title="Kext Loading: The kernel perspective"></a>Kext Loading: The kernel perspective</h3><p>vm_map_copyout<br>OSKext::load<br>Darwin 13 -&gt; mac_kext_check_load<br>kxld Kernel extension loader<br>-&gt; kxld_link_file()<br>Unloading a kext</p>
+<h3 id="kext-metadata-management"><a href="#kext-metadata-management" class="headerlink" title="kext metadata management"></a>kext metadata management</h3><h3 id="MacOS-15-System-Extensions-and-DriverKit"><a href="#MacOS-15-System-Extensions-and-DriverKit" class="headerlink" title="MacOS 15: System Extensions and DriverKit"></a>MacOS 15: System Extensions and DriverKit</h3><p>Darwin 19, however, provides an alternative - allowing developers to create,<br>what are in effect, user-mode extensions and drivers, through two new frameworks</p>
+<ul>
+<li>SystemExtensions and DriverKit.<br>The idea is not unlike that of Windows’ User Mode Driver Framewrok(UMDF), in which<br>kernel code calls out to some user process, in order to perform some operations.<br>NECP(Network Exetnsions model)<br>NKE(Network Kernel Extensions)<br>Darwin’s port of FUSE(Filesystem in USEr mode)<br>Apple classifies Driver Extensions as those extensions which seek to replace(now legacy)<br>IOKit drivers, and System Extensions for all other traditions in-kernel functionlity,<br>such as Network Extensions (for packet filtering, tunneling, etc), and Endpoint Security Extensions.<br>System Extensions -&gt; sysextd<br>Driver Extensions<br>As with IOKit, developers can use C++, but unlike it, this is a full C++17 compatible runtime, rather than IOKit’s restricted C++.</li>
+</ul>
+<h2 id="chapter-4"><a href="#chapter-4" class="headerlink" title="chapter 4"></a>chapter 4</h2><p>Some Assembly Required: Kernel Primitives &amp; Paradigms</p>
+<h3 id="Data-Structures"><a href="#Data-Structures" class="headerlink" title="Data Structures"></a>Data Structures</h3><p>Queues (Mach)* osfmk&#x2F;kern&#x2F;queue.h<br>struct queue_entry<br>Linked Lists &amp; Queues (BSD) bsd&#x2F;sys&#x2F;queue.h<br>Tree data structures<br>splay trees(slef-adjusting binary search)<br>Red-Black trees</p>
+<h3 id="Concurrent-resource-access"><a href="#Concurrent-resource-access" class="headerlink" title="Concurrent resource access"></a>Concurrent resource access</h3><p>Atomic operations<br>hwlocks<br>Spinlocks -&gt; busy wait<br>Read-Write Locks<br>Mutex locks<br>Lock Groups<br>Lock Debugging&#x2F;Tracing -&gt; &#x2F;dev&#x2F;lockstat (legacy) or lockstat provider</p>
+<h4 id="Per-CPU-data"><a href="#Per-CPU-data" class="headerlink" title="Per-CPU data"></a>Per-CPU data</h4><p>osfmk&#x2F;machine&#x2F;cpu_data.h</p>
+<h3 id="Processor-execution-modes"><a href="#Processor-execution-modes" class="headerlink" title="Processor execution modes"></a>Processor execution modes</h3><p>Intel Ring0&#x2F;Ring3<br>ARM64 Exception Levels<br>EL0 is user mode, EL1 is kernel mode, EL2 is reserved for the hypervisor (if any),<br>and EL3 for secure monitor (if any).</p>
+<h3 id="Mode-Traversal"><a href="#Mode-Traversal" class="headerlink" title="Mode Traversal"></a>Mode Traversal</h3><p>Voluntary Traversals<br>Involuntary traversals<br>Intel: SYSENTER(Vol)<br>Intel: IDT(Invol)<br>ARM: Exception Vectors</p>
+<h4 id="Returning-to-user-mode"><a href="#Returning-to-user-mode" class="headerlink" title="Returning to user mode"></a>Returning to user mode</h4><p>thread_exception_return()</p>
+<h4 id="Context-Switching"><a href="#Context-Switching" class="headerlink" title="Context Switching"></a>Context Switching</h4><p>machine_switch_context()<br>osfmk&#x2F;arch&#x2F;cswitch.s<br>kernel_bootstrap_thread<br>osfmk&#x2F;kern&#x2F;startup.c</p>
+<h4 id="Accessing-user-mode-memory"><a href="#Accessing-user-mode-memory" class="headerlink" title="Accessing user mode memory"></a>Accessing user mode memory</h4><p>Unlike kernel memory, which is normally wired(resident), user-space memory<br>may be swappwd. If that is the case, access will trigger a page fault. [bcopy]<br>copyin* and copyout<br>vm_fault()</p>
+<h4 id="Memory-Access-Protections"><a href="#Memory-Access-Protections" class="headerlink" title="Memory Access Protections"></a>Memory Access Protections</h4><p>Intel architectures define Secure Mode Access Prevention (SMAP), and ARM(v8.1 and later)<br>architectures similary have Privileged Access Never (PAN).</p>
+<h3 id="Interrupt-Handling"><a href="#Interrupt-Handling" class="headerlink" title="Interrupt Handling"></a>Interrupt Handling</h3><p>x86_64 uses the Advanced Programmer Interrupt Controller (APIC), which (as of Nehalem) is known as x2APIC.<br>ARM recignizes two types of interrupts - the regular interrupt requests (IRQ) and “fast<br>interrupts requests” (FIQ).</p>
+<ul>
+<li>Enabling&#x2F;disabling interrupts -&gt; Asynchronous Software Traps</li>
+<li>Machine Level handling of interrupts<br>x86_64 hndl_allintrs -&gt; osfmk&#x2F;x86_64&#x2F;idt64.s<br>arm exception vectors -&gt; <code>[fleh/sleh]_[irq/fiq]</code><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo powermetrics --samplers interrupts</span><br></pre></td></tr></table></figure></li>
+<li>XNU’s Handling of Interrupts<br>Intel -&gt; interrupt() osfmk&#x2F;i386&#x2F;trap.c<br>ARM -&gt; fleh_[irq&#x2F;fiq] osfmk&#x2F;arm[64]&#x2F;locore.s<br>  -&gt; sleh_[irq&#x2F;fiq] osfmk&#x2F;arm64&#x2F;sleh.c</li>
+</ul>
+<h3 id="System-call-personalities"><a href="#System-call-personalities" class="headerlink" title="System call personalities"></a>System call personalities</h3><ul>
+<li>The BSD Personality<br>Auditing&#x2F;KDebug&#x2F;Arguments&#x2F;Noreturn</li>
+<li>The Mach Personality</li>
+<li>Machine Sepcific Syscalls<br>platform_syscall</li>
+<li>Hypervisor support (MacOS)</li>
+</ul>
+<h2 id="chapter-5"><a href="#chapter-5" class="headerlink" title="chapter 5"></a>chapter 5</h2><p>Alone in the Dark: The Boot Process</p>
+<h3 id="MacOS-EFI"><a href="#MacOS-EFI" class="headerlink" title="MacOS: EFI"></a>MacOS: EFI</h3><p>Basic Concepts<br>Unlike BIOS, EFI is in some respects a mini operating system.</p>
+<ul>
+<li>The Boot Services</li>
+<li>The Runtime Services<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nm /System/Library/Extensions/AppleEFIRuntime.kext/Contents/MacOS/AppleEFIRuntime -UCgj</span><br></pre></td></tr></table></figure>
+EFI Protocols<br>-&gt; Clover bootloader<br>The EFI System Partition<br>Software capsules<br>EFI Binaries<br>As Microsoft owned the dominat platform at the time, it made sense to choose<br>Windows Portable Executable (PE) as the binary format.<br>MacOS’s boot.efi<br>MacOS’s boot.efi is rare biard - a PE32+ binary among all the other Mach-Os.<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">file /usr/standalone/i386/boot.efi</span><br></pre></td></tr></table></figure>
+Blessed Art Thou<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo bless --info --verbose <span class="comment"># only Intel Arch, not for M1</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="OS-iBoot"><a href="#OS-iBoot" class="headerlink" title="*OS: iBoot"></a><code>*OS</code>: iBoot</h3><h3 id="MacBook-Pro-2018-and-later-iBoot-EFI"><a href="#MacBook-Pro-2018-and-later-iBoot-EFI" class="headerlink" title="MacBook Pro (2018) and later: iBoot + EFI"></a>MacBook Pro (2018) and later: iBoot + EFI</h3><p>Secure Boot</p>
+<h3 id="Kernel-Boot-Process"><a href="#Kernel-Boot-Process" class="headerlink" title="Kernel Boot Process"></a>Kernel Boot Process</h3><p>x86_64: <code>_start -&gt; _vstart</code><br>ARM64: <code>_start -&gt; start_first_cpu</code><br>i386_init() and arm_init()<br>kernel_early_bootstrap() -&gt; osfmk&#x2F;kern&#x2F;startup.c<br>machine_startup&#x2F;kernel_bootstrap<br>kernel_bootstrap_log</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// osfmk/arm/start.s</span></span><br><span class="line"><span class="built_in">LOAD_ADDR</span>(lr, arm_init)</span><br><span class="line"><span class="comment">// osfmk/arm/arm_init.c</span></span><br><span class="line"><span class="function">__startup_func</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">arm_init</span><span class="params">(boot_args *args)</span></span></span><br><span class="line"><span class="function"><span class="comment">// osfmk/kern/startup.c</span></span></span><br><span class="line"><span class="function">__startup_func</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">kernel_startup_bootstrap</span><span class="params">(<span class="type">void</span>)</span></span></span><br></pre></td></tr></table></figure>
+<p>kernel_bootstrap_thread()<br>-&gt; idle_thread_create -&gt; kernel_thread_create<br>-&gt; idle_thread -&gt; processor_idle -&gt; thread_run<br>-&gt; thread_invoke -&gt; thread_dispatch(self, thread)&#x2F;call_continuation</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">thread_run</span><span class="params">(<span class="type">thread_t</span> self, <span class="type">thread_continue_t</span> continuation, <span class="type">void</span> *parameter, <span class="type">thread_t</span> new_thread)</span></span>;</span><br><span class="line"><span class="built_in">thread_run</span>(processor-&gt;idle_thread,</span><br><span class="line">    idle_thread, <span class="literal">NULL</span>, new_thread);</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// LOAD_ADDR(lr, arm_init_cpu)</span></span><br><span class="line"><span class="built_in">slave_main</span>(<span class="literal">NULL</span>);</span><br><span class="line"><span class="comment">// -&gt; </span></span><br><span class="line"><span class="function">processor_start_thread </span></span><br><span class="line"><span class="function"><span class="title">thread_block</span><span class="params">(idle_thread)</span></span>;</span><br><span class="line">-&gt; processor_start</span><br></pre></td></tr></table></figure>
+<h4 id="SMP-Considerations"><a href="#SMP-Considerations" class="headerlink" title="SMP Considerations"></a>SMP Considerations</h4><p>man hostinfo<br>processor_start -&gt; cpu_start -&gt; slave_main<br>x86_64 i386_init_slave<a href="">_fast</a><br>ARM64 arm_init_cpu()</p>
+<h3 id="Kernel-Threads"><a href="#Kernel-Threads" class="headerlink" title="Kernel Threads"></a>Kernel Threads</h3><p>kernel_task -&gt; pid 0</p>
+<h4 id="Kernel-Shutdown"><a href="#Kernel-Shutdown" class="headerlink" title="Kernel Shutdown"></a>Kernel Shutdown</h4><p>reboot&#x2F;halt&#x2F;shutdown mac_system_check_reboot<br>reboot_kernel -&gt; host_reboot -&gt; halt_all_cpus&#x2F;PEHaltRestart</p>
+<h2 id="chapter-6"><a href="#chapter-6" class="headerlink" title="chapter 6"></a>chapter 6</h2><p>BS’’D: The BSD Layer</p>
+<h3 id="A-Tour-of-BSD"><a href="#A-Tour-of-BSD" class="headerlink" title="A Tour of BSD"></a>A Tour of BSD</h3><p>NeXT wanted to conform to it as well, which required adding another layer,<br>on top of Mach, for the POSIX compatible APIs. Rather than implement something<br>from scratch, the choice was made to adopt FreeBSD implementation.<br>FreeBSD 6.0<br>bsd_init()&#x2F;bsd_init_kprintf()<br>throttle&#x2F;kmeminit&#x2F;dev_kmen_init<br>kauth_init&#x2F;procinit&#x2F;tty_init&#x2F;mac_policy_initbsd<br>ulock_initialize<br>audit_init<br>aio_init&#x2F;pipeinit&#x2F;sys v ipc locks<br>pthread_init&#x2F;select_waitq_init<br>Memorystatus<br>sysctl_mib_init<br>bsd_autoconf<br>dtrace_postinit<br>network inits<br>root filesystem mounted<br>siginit</p>
+<h4 id="Launching-launchd-8"><a href="#Launching-launchd-8" class="headerlink" title="Launching launchd(8)"></a>Launching launchd(8)</h4><p>bsd_utaskbootstrap<br>cloneproc()<br>bsdinit_task()</p>
+<h3 id="Processes"><a href="#Processes" class="headerlink" title="Processes"></a>Processes</h3><p>Mach defines tasks, but the BSD layer provides the highter level constructs<br>that are processes.</p>
+<ul>
+<li>The struct proc<br>Process Control Block(PCB)</li>
+<li>The kernproc</li>
+<li>Process lists<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">extern</span> <span class="keyword">struct</span> <span class="title class_">proclist</span> allproc;         <span class="comment">/* List of all processes. */</span></span><br><span class="line"><span class="keyword">extern</span> <span class="keyword">struct</span> <span class="title class_">proclist</span> zombproc;        <span class="comment">/* List of zombie processes. */</span></span><br></pre></td></tr></table></figure></li>
+<li>Process data in user mode<br>sysctl kern.proc<br>proc_info</li>
+</ul>
+<h3 id="U-Threads"><a href="#U-Threads" class="headerlink" title="(U)Threads"></a>(U)Threads</h3><p>The struct uthread [bsd&#x2F;sys&#x2F;user.h]</p>
+<ul>
+<li>Syscall information</li>
+<li>Exception information</li>
+<li>Continuation support select&#x2F;kevent&#x2F;wait</li>
+<li>The wait channel</li>
+<li>Pointers</li>
+<li>Flags UT_* flags</li>
+<li>Signal handling information</li>
+<li>VFS context</li>
+<li>Audit record<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">if</span> CONFIG_AUDIT</span></span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">kaudit_record</span>    *uu_ar;                 <span class="comment">/* audit record */</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure></li>
+<li>Throttling info</li>
+<li>DTrace information</li>
+<li>Document tombstone information</li>
+<li>Exit reason</li>
+<li>Thread name</li>
+<li>Thread list connectors<br>Note that BSD level threads have no identifier which can be globally visible in user mode.<br>There is the underlying Mach thread’s ID, but there is no BSD style API to retrieve it.</li>
+</ul>
+<h4 id="Pthread-shims-and-callbacks-Darwin-13"><a href="#Pthread-shims-and-callbacks-Darwin-13" class="headerlink" title="Pthread shims and callbacks (Darwin 13)"></a>Pthread shims and callbacks (Darwin 13)</h4><p>pthread_kext_register pthread.kext</p>
+<h4 id="Work-Queue-threads-the-kernel-side-portion-of-GCD"><a href="#Work-Queue-threads-the-kernel-side-portion-of-GCD" class="headerlink" title="Work Queue threads (the kernel-side portion of GCD)"></a>Work Queue threads (the kernel-side portion of GCD)</h4><p>in-kernel thread-pool<br>workq_open()&#x2F;workq_kernreturn() bsd&#x2F;pthread&#x2F;pthread_workqueue.c</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">workqueue</span></span><br></pre></td></tr></table></figure>
+<p>Parked thread block on workq_unpark_continue(), a continuation which allows quick resumption.<br>workq_reqthreads -&gt; workq_pop_idle_thread<br>workq_add_new_idle_thread -&gt; workq_create_threadstack&#x2F;thread_create_workq_waiting</p>
+<h4 id="BSD-sleep-nad-wakeup"><a href="#BSD-sleep-nad-wakeup" class="headerlink" title="BSD *sleep nad wakeup*"></a>BSD <code>*sleep</code> nad <code>wakeup*</code></h4><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">extern</span> <span class="type">int</span>      <span class="title">msleep</span><span class="params">(<span class="type">void</span> *chan, <span class="type">lck_mtx_t</span> *mtx, <span class="type">int</span> pri, <span class="type">const</span> <span class="type">char</span> *wmesg, <span class="keyword">struct</span> timespec * ts )</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">extern</span> <span class="type">int</span>      <span class="title">msleep0</span><span class="params">(<span class="type">void</span> *chan, <span class="type">lck_mtx_t</span> *mtx, <span class="type">int</span> pri, <span class="type">const</span> <span class="type">char</span> *wmesg, <span class="type">int</span> timo, <span class="type">int</span> (*continuation)(<span class="type">int</span>))</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">extern</span> <span class="type">void</span>     <span class="title">wakeup</span><span class="params">(<span class="type">void</span> *chan)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">extern</span> <span class="type">void</span> <span class="title">wakeup_one</span><span class="params">(<span class="type">caddr_t</span> chan)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>All the sleep variants require a kernel address, referred to as a wait channel,<br>which is used as a token to wake up the sleepers.<br>The chan and wmesg arguments are stored on the uuthread’s uu_wchan and uu_wmesg.</p>
+<h3 id="Process-Lifecycle"><a href="#Process-Lifecycle" class="headerlink" title="Process Lifecycle"></a>Process Lifecycle</h3><p>fork&#x2F;vfork&#x2F;posix_spawn<br><code>[__mac_]execve/posix_spawn</code></p>
+<ul>
+<li>Image Activation: exec_activate_image()</li>
+<li>Mach-O Image Activator: exec_mach_imgact</li>
+<li>Loading Mach-O: load_machfile()<br>pmap_create&#x2F;vm_map_create</li>
+<li>Parsing Mach-O: parse_machfile()</li>
+<li>Post Load: exec_mach_imgact()</li>
+</ul>
+<h4 id="Process-Termination"><a href="#Process-Termination" class="headerlink" title="Process Termination"></a>Process Termination</h4><p>Exit reasons -&gt; exit_with_reason (Darwin 16)<br>os_reason bsd&#x2F;sys&#x2F;reason.h</p>
+<h4 id="Core-dumps"><a href="#Core-dumps" class="headerlink" title="Core dumps"></a>Core dumps</h4><p>kern.coredump</p>
+<h4 id="Crash-Reports"><a href="#Crash-Reports" class="headerlink" title="Crash Reports"></a>Crash Reports</h4><p>EXC_CRASH Mach exception<br>task_exception_notify [osfmk&#x2F;kern&#x2F;exception.c]<br>-&gt; exception_triage -&gt; exception_triage_thread<br>-&gt; exception_deliver</p>
+<ul>
+<li>Corpses</li>
+</ul>
+<h3 id="File-Descriptors"><a href="#File-Descriptors" class="headerlink" title="File Descriptors"></a>File Descriptors</h3><ul>
+<li>The struct filedesc [bsd&#x2F;sys&#x2F;filedecs.h]</li>
+<li>The struct fileproc<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">__options_decl(<span class="type">fileproc_flags_t</span>, <span class="type">uint16_t</span>, &#123;</span><br><span class="line">	FP_NONE         = <span class="number">0</span>,</span><br><span class="line">	FP_CLOEXEC      = <span class="number">0x01</span>,</span><br><span class="line">	FP_CLOFORK      = <span class="number">0x02</span>,</span><br><span class="line">	FP_INSELECT     = <span class="number">0x04</span>,</span><br><span class="line">	FP_AIOISSUED    = <span class="number">0x08</span>,</span><br><span class="line">	FP_SELCONFLICT  = <span class="number">0x10</span>,  <span class="comment">/* select conflict on an individual fp */</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+<li>The struct fileglob</li>
+</ul>
+<h4 id="File-Types"><a href="#File-Types" class="headerlink" title="File Types"></a>File Types</h4><ul>
+<li>POSIX Shared Memory<br>shm_open&#x2F;mmap</li>
+<li>KQueues<br>XNU supports dynamic kqueues, which are maintained at the filedec level in the fd_kqhash table.<br>struct knote [bsd&#x2F;sys&#x2F;event.h]</li>
+<li>Pipes<br>struct pipe [bsd&#x2F;sys&#x2F;pipe.h]&#x2F;[bsd&#x2F;kern&#x2F;sys_pipe.c]<br>A pipe dies when its read end is closed, in which case the writer gets a SIGPIPE when attempting a write (unless suppressed).</li>
+</ul>
+<h3 id="File-I-x2F-O"><a href="#File-I-x2F-O" class="headerlink" title="File I&#x2F;O"></a>File I&#x2F;O</h3><p>open&#x2F;openat[_nocancel] -&gt; openat_internal [bsd&#x2F;vfs&#x2F;vfs_syscalls.c]</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span></span></span><br><span class="line"><span class="function"><span class="title">openat</span><span class="params">(<span class="type">proc_t</span> p, <span class="keyword">struct</span> openat_args *uap, <span class="type">int32_t</span> *retval)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	__pthread_testcancel(<span class="number">1</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="built_in">openat_nocancel</span>(p, (<span class="keyword">struct</span> openat_nocancel_args *)uap, retval);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>read[_nocancel] -&gt; bsd&#x2F;kern&#x2F;sys_generic.c<br>The struct uio<br>User mode I&#x2F;O requests are standardized into struct uio, which represents the metadata<br>detailing an I&#x2F;O request.<br>uio_create&#x2F;uio_createwithbuffer<br>Handling uios<br>readv&#x2F;writev -&gt; iovec</p>
+<h4 id="Asynchronous-I-x2F-O"><a href="#Asynchronous-I-x2F-O" class="headerlink" title="Asynchronous I&#x2F;O"></a>Asynchronous I&#x2F;O</h4><p>POSIX aio* interfaces -&gt; bsd&#x2F;kern&#x2F;kern_aio.c<br>aio_<a href="aiocbp">read&#x2F;write</a> &#x2F; aio_fsync<br>-&gt; aio_queue_async_request<br>aio_max_requests_per_process</p>
+<h3 id="BSD-Memory-Zones"><a href="#BSD-Memory-Zones" class="headerlink" title="BSD Memory Zones"></a>BSD Memory Zones</h3><p>BSD provides the notion of memory zones: Zones are preallocated arrays of objects of an<br>identical size.<br>kmzones [bsd&#x2F;kern&#x2F;kern_malloc.c]<br>vm_allocation_site Darwin15</p>
+<h3 id="sysctl"><a href="#sysctl" class="headerlink" title="sysctl"></a>sysctl</h3><p>sysctl_register_oid</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sysctl net</span><br><span class="line">sysctl net.inet.tcp</span><br><span class="line">sysctl net.inet.tcp.pcbcount</span><br><span class="line">sysctl -X net.inet.tcp.pcblist</span><br><span class="line">sysctl -X net.inet.tcp.pcblist_n</span><br><span class="line">sysctl -X | <span class="built_in">wc</span> -l</span><br></pre></td></tr></table></figure>
+<p>kern&#x2F;vm&#x2F;net&#x2F;debug&#x2F;hw&#x2F;machdep&#x2F;user<br>sysctlbyname -&gt; name2oid<br>__DATA.__sysctl_set</p>
+<h3 id="DTrace"><a href="#DTrace" class="headerlink" title="DTrace"></a>DTrace</h3><p>dtrace_init &lt;- bsd_autoconf<br>dtrace_cpu_state_changed<br>Providers -&gt; dtrace_register<br>dtrace&#x2F;profile&#x2F;syscall&#x2F;mach_trap&#x2F;lockstat&#x2F;sdt&#x2F;fbt<br>Probes -&gt; dtrace_probe_create<br>Case Study: The fbt provider<br>fbt_provide_probe<br>The function inspects the instruction stream at the address, trying to find the familiar<br>PUSH RBP in Intel, and an STP FP, LR, .. (the frame pointeer and link register) in ARM.</p>
+<h2 id="chapter-7"><a href="#chapter-7" class="headerlink" title="chapter 7"></a>chapter 7</h2><p>Fee, Fi-fo, File - the Virtual Filesystem Switch</p>
+<h3 id="VFS-Concepts"><a href="#VFS-Concepts" class="headerlink" title="VFS Concepts"></a>VFS Concepts</h3><ul>
+<li>Filesystems<br>nfs&#x2F;devfs&#x2F;nullfs&#x2F;mockfs&#x2F;routefs [bsd&#x2F;vfs&#x2F;vfs_conf.c]<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">man lsvfs</span><br></pre></td></tr></table></figure></li>
+<li>Mounts &#x2F;System&#x2F;Library&#x2F;FileSystems<br>The system maintains all its mounts in the mountlist.<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">extern</span> <span class="title">TAILQ_HEAD</span><span class="params">(mntlist, mount)</span> mountlist</span>;</span><br></pre></td></tr></table></figure>
+f_mntonname (name of mount point) and f_mntfromname (mounted filesystem)</li>
+<li>vnodes<br>A vnode is a representation of a file or special object, independent of the underlying<br>the system. HFS+ and APFS use the number as a B-Tree node identifier.</li>
+<li>The ubc_info (V_REG vnodes)<br>The Unifide Buffer Cache (UBC) is a concept first introduced into NetBSD.<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">ubc_info</span></span><br></pre></td></tr></table></figure></li>
+<li>Buffers<br>struct buf [bsd&#x2F;sys&#x2F;buf_internal.j]</li>
+<li>File System Attributes<br>[bsd&#x2F;vfs&#x2F;vfs_attrlist.c]</li>
+</ul>
+<h3 id="Apple-Extensions"><a href="#Apple-Extensions" class="headerlink" title="Apple Extensions"></a>Apple Extensions</h3><ul>
+<li>Resource Forks<br>com.apple.ResourceFork</li>
+<li>File compression<br>com.apple.decmpfs<br>decmpfs_file_is_compressed</li>
+<li>Restricted (MacOS)<br>com.apple.rootless</li>
+<li>Data Vault (Darwin 17)<br>com.apple.rootless.datavault.controller</li>
+<li>Data Protection<br>com.apple.system.cprotect</li>
+<li>FSEvents</li>
+<li>Document IDs</li>
+<li>Object IDs</li>
+<li>Disk Conditioning (Darwin 17)</li>
+<li>Triggers (MacOS)</li>
+<li>EVFILT_VNODE kevent(2) notifications</li>
+<li>&#x2F;dev&#x2F;vn## (conditional)</li>
+<li>File Providers<br>nspace_resolver_init &lt;- vfsinit<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">man fileproviderctl</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="VFS-KPIs"><a href="#VFS-KPIs" class="headerlink" title="VFS KPIs"></a>VFS KPIs</h3><p>KPI -&gt; Kernel Programming Interface<br>bsd&#x2F;vfs&#x2F;vfs_vnops.c</p>
+<ul>
+<li>The vfs_context_t</li>
+<li>Manipulating file in kernel mode<br>namei [bsd&#x2F;vfs&#x2F;vfs_lookup.c]<br>vnode_open [bsd&#x2F;vfs&#x2F;vfs_subr.c]</li>
+<li>Direct File I&#x2F;O<br>kern_open_file_for_direct_io()</li>
+<li>Vnode lifecycle<br>File I&#x2F;O, however, is very frequent. So sooner or later any limit will be hit,<br>but vnodes never get freed - instead, they are recycled.</li>
+</ul>
+<h3 id="VFS-SPIs"><a href="#VFS-SPIs" class="headerlink" title="VFS SPIs"></a>VFS SPIs</h3><p>SPI -&gt; Service Provider Interface</p>
+<ul>
+<li>Registering Filesystems<br>vfs_fsadd [bsd&#x2F;vfs&#x2F;kpi_vfs.c]</li>
+<li>VFS operations<br>struct vfsops [bsd&#x2F;sys&#x2F;mount.h]</li>
+<li>Vnode operations</li>
+</ul>
+<h3 id="Case-Studies"><a href="#Case-Studies" class="headerlink" title="Case Studies"></a>Case Studies</h3><p>The flow of fo_read</p>
+<ul>
+<li>&#x2F;dev (devfs)</li>
+<li>The [b|c]devsw entries<br>Block&#x2F;Char Device</li>
+<li>specfs nodes<br>v_type of VBLK or VCHR</li>
+<li>The fdesc quasi-filesystem<br>&#x2F;dev&#x2F;fd &#x2F;dev&#x2F;[stdin&#x2F;stdout&#x2F;stderr]<br>[bsd&#x2F;miscfs&#x2F;devfs&#x2F;devfs_fdesc_support.c]</li>
+<li>NFS (MacOS)<br>&#x2F;sbin&#x2F;nfsd<br>&#x2F;usr&#x2F;libexec&#x2F;automountd<br>&#x2F;sbin&#x2F;nfsiod</li>
+<li>NFS server operations<br>nfssvc&#x2F;getfh&#x2F;fhopen</li>
+<li>NFS client operations<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">man nfsstat</span><br></pre></td></tr></table></figure></li>
+<li>Filesystems in USEr mode (FUSE)<br>Because FUSE does require a kernel component, it is not applicable in the <code>*OS</code> variants,<br>wherein Apple uses DMG mounts (by registering loop block devices) instead.</li>
+</ul>
+<h2 id="chapter-8"><a href="#chapter-8" class="headerlink" title="chapter 8"></a>chapter 8</h2><p>Space Oddity: APFS</p>
+<h3 id="A-Bird’s-Eye-View-of-APFS"><a href="#A-Bird’s-Eye-View-of-APFS" class="headerlink" title="A Bird’s Eye View of APFS"></a>A Bird’s Eye View of APFS</h3><p>The APFS partition type is identified by a well-known GUID.<br>B-Tree [The RootFS Tree&#x2F;The Extent Tree]</p>
+<h3 id="Filesystem-Features"><a href="#Filesystem-Features" class="headerlink" title="Filesystem Features"></a>Filesystem Features</h3><ul>
+<li>Full 64-bit filesystem</li>
+<li>Volume Management</li>
+<li>Encryption<br>MacOS was one of the first operationg systems to provide full disk encryption, when Apple<br>introducde FileVault in MacOS 10.7.<br>apfs_meta_crypto</li>
+<li>Fast Directory Sizing<br>du -&gt; dir size<br>APFS provides a significant speed up, by storing the directory usage statistics as<br>additional metadata (an APFS_TYPE_DIR_STATS record) for the directory object.</li>
+<li>Sparse File support</li>
+<li>Atomic safe-save<br>rename[at]x_np</li>
+<li>File&#x2F;Directory Cloning<br>clonefileat (#462)</li>
+<li>Copy-on-Write<br>This also makes APFS a “flash friendly” filesystem.<br>Suprisingly, however, APPLE chose not to provide an undelete tool, instead offering<br>a different model, of snapshots.</li>
+<li>Snapshots<br>fs_snapshot (#518)<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">man fs_snapshot_create <span class="comment"># macOS 10.13</span></span><br></pre></td></tr></table></figure></li>
+<li>Defragmentation<br>Darwin 18</li>
+<li>Volume Groups and Firm Links (Darwin 19+)</li>
+<li>Purgeable Files (Darwin 19+)</li>
+</ul>
+<h3 id="File-System-Internals"><a href="#File-System-Internals" class="headerlink" title="File System Internals"></a>File System Internals</h3><p>Unallocated&#x2F;Used by a file object&#x2F;Used by APFS itself</p>
+<ul>
+<li>APFS Objects</li>
+<li>APFS object structure</li>
+<li>B-Trees<br>The B-tree used by APFS are actually B+ trees - a refinement on classic B-trees, by<br>restricting values to leaf nodes only. Thus, non-leaf nodes (the root and deeper levels) hold only keys and identifiers of child nodes.<br>APFS nodes further have no sibling pointers, which further compacts space needed, but impacts sequential reading of values: When the end of the node is reached, the next value in its sibling record must be located by starting the search at the root</li>
+<li>The B-Tree Node Format<br>BTNODE_ROOT (0x1) BTNODE_LEAF (0x2)</li>
+</ul>
+<h3 id="Containers-amp-Volumes"><a href="#Containers-amp-Volumes" class="headerlink" title="Containers &amp; Volumes"></a>Containers &amp; Volumes</h3><ul>
+<li>Volumes<br>Each volume maintains three trees - filesystem, snapshot metadata and extent.</li>
+<li>Filesystem Trees</li>
+</ul>
+<h3 id="The-Space-Manager"><a href="#The-Space-Manager" class="headerlink" title="The Space Manager"></a>The Space Manager</h3><ul>
+<li>Chunk Info Blocks (CIBs)</li>
+<li>CIB Address Blocks (CABs)</li>
+<li>Reaping Objects</li>
+</ul>
+<h3 id="APFS-kext"><a href="#APFS-kext" class="headerlink" title="APFS.kext"></a>APFS.kext</h3><p>com.apple.filesystem.apfs<br>&#x2F;System&#x2F;Library&#x2F;Extensions&#x2F;apfs.kext<br>closed source</p>
+<ul>
+<li>fsctl(2) codes</li>
+<li>UserClient Methods</li>
+</ul>
+<h2 id="chapter-9"><a href="#chapter-9" class="headerlink" title="chapter 9"></a>chapter 9</h2><p>Tempus Fugit: Mach Scheduling</p>
+<h3 id="The-High-Level-View"><a href="#The-High-Level-View" class="headerlink" title="The High Level View"></a>The High Level View</h3><h3 id="Mach-Tasks"><a href="#Mach-Tasks" class="headerlink" title="Mach Tasks"></a>Mach Tasks</h3><p>struct task [osfmk&#x2F;kern&#x2F;task.h]</p>
+<ul>
+<li>The task lock</li>
+<li>Statistics</li>
+<li>Priority, maxmimum priority and importance</li>
+<li>The vm_map</li>
+<li>Linkage</li>
+<li>Threads</li>
+<li>Task port space</li>
+<li>Task special ports</li>
+<li>Task registered ports</li>
+<li>Task exception ports</li>
+<li>The Machine task</li>
+<li>Security and audit tokens</li>
+<li>Counts</li>
+<li>Resource usage</li>
+<li>The corresponding struct proc</li>
+<li>Corpse information</li>
+<li>I&#x2F;O statistics</li>
+<li>Flags</li>
+<li>Purgeable VM objects</li>
+<li>Coalitions</li>
+<li>Associated hypervisor Virtual Machine (MacOS)</li>
+<li>Seclude memory</li>
+<li>External Modification statistics</li>
+<li>Effective and requested scheduling policies</li>
+<li>IOUserClients</li>
+<li>Task watching (<code>*OS</code>) task_watchers</li>
+</ul>
+<h4 id="The-kernel-task"><a href="#The-kernel-task" class="headerlink" title="The kernel_task"></a>The kernel_task</h4><h3 id="Mach-Threads"><a href="#Mach-Threads" class="headerlink" title="Mach Threads"></a>Mach Threads</h3><p>For all their size, Mach tasks (like UNIX processes) are merely resource containers.<br>It is their threads which are the scheduleable entities.<br>struct thread [osfmk&#x2F;kern&#x2F;thread.h]</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">thread_ro</span> &#123;</span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">thread</span>              *tro_owner;</span><br><span class="line"><span class="meta">#<span class="keyword">if</span> MACH_BSD</span></span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">ucred</span>               *tro_cred;</span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">proc</span>                *tro_proc;</span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">proc_ro</span>             *tro_proc_ro;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">task</span>                *tro_task;</span><br><span class="line">	<span class="type">thread_ro_flags_t</span>           tro_flags;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">ipc_port</span>            *tro_self_port;</span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">ipc_port</span>            *tro_settable_self_port;             <span class="comment">/* send right */</span></span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">ipc_port</span>            *tro_ports[THREAD_SELF_PORT_COUNT];  <span class="comment">/* no right */</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">exception_action</span>    *tro_exc_actions;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">thread</span>&#123;</span><br><span class="line">	<span class="comment">// ......</span></span><br><span class="line">	<span class="comment">/* Task membership */</span></span><br><span class="line"><span class="meta">#<span class="keyword">if</span> __x86_64__ || __arm__</span></span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">task</span>            *t_task;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">	<span class="keyword">struct</span> <span class="title class_">thread_ro</span>       *t_tro;</span><br><span class="line">	<span class="comment">// ......</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Execution State</li>
+<li>Linkage</li>
+<li>Wait data</li>
+<li>Ports</li>
+<li>Priority</li>
+<li>Scheudling information</li>
+<li>Continuation</li>
+<li>Affinity values</li>
+<li>Page fault recovery handler</li>
+<li>Thread call state</li>
+<li>Guard execption codes</li>
+<li>Turnstile</li>
+<li>The BSD uuthread object</li>
+<li>DTrace data</li>
+<li>Per-thread statistics</li>
+<li>Ledger details</li>
+<li>Associated voucher</li>
+<li>Tag</li>
+<li>The machine dependent thread object</li>
+</ul>
+<h3 id="Thread-creation"><a href="#Thread-creation" class="headerlink" title="Thread creation"></a>Thread creation</h3><p>thread_create[_running]<br>Threads are normally created suspended, but using the running variant allows the caller to set the initial register state of the process and immdeidately schedule it for execution.<br>thread_create &amp;&amp; thread_start<br>kernel_thread_create&#x2F;kernel_thread_start[_priority]<br>machine_thread_create [osfmk&#x2F;arm64&#x2F;pcb.c]</p>
+<h3 id="Thread-termination"><a href="#Thread-termination" class="headerlink" title="Thread termination"></a>Thread termination</h3><p>thread_terminate [osfmk&#x2F;kern&#x2F;thread_act.c]<br>It then puts the thread into a block, to continue on thread_terminate_continue.<br>The continuation, however, will never be reached (if it were to be reached, the kernel<br>would panic).</p>
+<h3 id="Processor-Management"><a href="#Processor-Management" class="headerlink" title="Processor Management"></a>Processor Management</h3><p>processor_set_default</p>
+<h3 id="Mach-Scheduling-Enhancements"><a href="#Mach-Scheduling-Enhancements" class="headerlink" title="Mach Scheduling Enhancements"></a>Mach Scheduling Enhancements</h3><p>For IPC to be efficient, the scheduler must be highly effective - as Mach strives to be.</p>
+<ul>
+<li>Handoff<br>Mach supports handoff in addition to the standard yield.<br>注:switch direct, not yield??<br>thread_handoff_[internal&#x2F;parameter]<br>thread_switch (user mode)</li>
+<li>Continuations<br>A continuation is a function, along with an optional parameter, which is provided as<br>an argument to kernel_thread_create(), or to thread_block[_reason].<br>struct thread_snapshot -&gt; uint64_t continuation;<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> ith_continuation    saved.receive.continuation</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> sth_continuation    saved.sema.continuation</span></span><br></pre></td></tr></table></figure>
+struct uthread -&gt; uu_continuation (BSD layer)</li>
+</ul>
+<h3 id="Asynchronous-Software-Traps-AST"><a href="#Asynchronous-Software-Traps-AST" class="headerlink" title="Asynchronous Software Traps (AST)"></a>Asynchronous Software Traps (AST)</h3><ul>
+<li>Handling ASTs</li>
+<li>AST reasons [osfmk&#x2F;kern&#x2F;ast.h]<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> AST_SCHEDULING  (AST_PREEMPTION | AST_YIELD | AST_HANDOFF)</span></span><br><span class="line"><span class="comment">// processor_idle/thread_block_reason call ast_off(AST_SCHEDULING);</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="Mach-Schedulers"><a href="#Mach-Schedulers" class="headerlink" title="Mach Schedulers"></a>Mach Schedulers</h3><p>[osfmk&#x2F;kern&#x2F;sched.h]<br>Darwin version before Darwin 17 use multiq, but Darwin 18 shifts to qualq.<br><code>*OS 13</code> variant use a new scheduler called AMP, which takes into account the core type<br>(Performance or efficiency) as well.The kern.sched sysctl(8) MIB will show the currently<br>active scheduler.<br>Not note in this book<br>amp -&gt; clutch()</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">if</span> CONFIG_SCHED_EDGE</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;kern/sched_amp_common.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span> <span class="comment">/* CONFIG_SCHED_EDGE */</span></span></span><br><span class="line">.sched_name = <span class="string">&quot;clutch&quot;</span>,</span><br><span class="line">.sched_name = <span class="string">&quot;edge&quot;</span>,</span><br></pre></td></tr></table></figure>
+<p>sched_clutch.c<br>clutch&#x2F;edage</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sysctl kern.sched</span><br></pre></td></tr></table></figure>
+<p>macOS 12.6<br>Mac mini (Late 2014)<br>kern.sched: dualq<br>Mac mini (M1, 2020)<br>kern.sched: edge</p>
+<figure class="highlight cpp"><figcaption><span>[osfmk/arm/proc_reg.h]</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">if</span> CONFIG_CLUTCH</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">if</span> __ARM_AMP__</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* Enable the Edge scheduler for all J129 platforms */</span></span><br><span class="line"><span class="meta">#<span class="keyword">if</span> XNU_TARGET_OS_OSX</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CONFIG_SCHED_CLUTCH 1</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CONFIG_SCHED_EDGE   1</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span> <span class="comment">/* XNU_TARGET_OS_OSX */</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">else</span> <span class="comment">/* __ARM_AMP__ */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CONFIG_SCHED_CLUTCH 1</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span> <span class="comment">/* __ARM_AMP__ */</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span> <span class="comment">/* CONFIG_CLUTCH */</span></span></span><br></pre></td></tr></table></figure>
+<p>All Mach schedulers “plug in” to the scheduler primitives defined in osfmk&#x2F;kern&#x2F;sched_prim.c.</p>
+<ul>
+<li>The Run Queue<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">run_queue</span>;</span><br></pre></td></tr></table></figure></li>
+<li>Priorities<br>Threads are queued in one of the NRQS queues, in FIFO ordering.<br>BASEPRI_DEFAULT -&gt; nice(1)</li>
+<li>Load Average&#x2F;Mach Factor, and Priority Shifts<br>A key metric in any UNIX system is its load average, which is reported by commands such<br>as w(1) and uptime (1).<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sysctl vm.loadavg</span><br></pre></td></tr></table></figure>
+The Mach factor can be retrieved using hostinfo(1).<br>XNU also calculates a more fine grained scheduler load, which it uses to implement priortiy shifts.<br>update_priority&#x2F;sched_usage</li>
+<li>Scheduling buckets and the EWMA<br>sched_bucket_t<br>XNU’s averages was further tweaked in Darwin 18 to an Exponentially Weighted Moving Average<br>algorithm(EWMA).<br>[osfmk&#x2F;kern&#x2F;sched_average.c]</li>
+<li>Scheduler dispatch<br>[osfmk&#x2F;kern&#x2F;sched_prim.c]<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">sched_dispatch_table</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>thread_select</li>
+<li>thread_invoke</li>
+<li>thread_dispatch</li>
+<li>qunatum_expire</li>
+<li>update_priority (osfmk&#x2F;kern&#x2F;priority.c)</li>
+<li>sched_maintenance_thread</li>
+</ul>
+</li>
+<li>Multicore considerations<br>The calls for rebalancing, by moving queued threads from busy processor(s) to the less busy<br>ones(s), based on the respective run queue lengths.<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sysctl kern | grep kern.sched</span><br><span class="line">sysctl kern.sched_enable_smt</span><br><span class="line">sysctl kern.sched_allow_NO_SMT_threads</span><br></pre></td></tr></table></figure></li>
+<li>Darwin 17 additions<ul>
+<li>Real time threading support</li>
+<li>Multi processor support</li>
+<li>Thread yield checks</li>
+</ul>
+</li>
+<li>Darwin 19 additions<ul>
+<li>Run counts</li>
+<li>Thread buckets</li>
+<li>Multiple processor set support</li>
+</ul>
+</li>
+<li>Effectuating policy changes</li>
+</ul>
+<h3 id="Deferred-Calls"><a href="#Deferred-Calls" class="headerlink" title="Deferred Calls"></a>Deferred Calls</h3><p>[osfmk&#x2F;kern&#x2F;call_entry.h]</p>
+<ul>
+<li>Timer calls<br>[osfmk&#x2F;kern&#x2F;timer_call.h]<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">timer_call</span>;</span><br></pre></td></tr></table></figure></li>
+<li>Timer coalescing<br>One of Darwin 13’s most important “under the hood” changes was the introduction of<br>Timer Coalescing. When timers start up too frequently, the CPU can enjoy less idle periods</li>
+<li>and waking up the CPU can actually take more power than just leaving it on for a slightly<br>longer period.<br>timer_call_enter_with_leeway<br>Note: Windows 8 and later have a similar mechanism in the EX_TIMERS and <code>EX*Timer</code> routines,<br>with “No-wake timers”. Linux 2.6.22 and later timer_lists offer TIMER_DEFERRABLE).<br>Ref: <a target="_blank" rel="noopener" href="https://learn.microsoft.com/zh-cn/windows-hardware/drivers/ddi/wdm/ns-wdm-_ext_set_parameters_v0">https://learn.microsoft.com/zh-cn/windows-hardware/drivers/ddi/wdm/ns-wdm-_ext_set_parameters_v0</a> (LONGLONG NoWakeTolerance;)</li>
+<li>Scheduling timers</li>
+<li>Thread calls</li>
+<li>Servicing thread calls</li>
+</ul>
+<h3 id="Scheduler-assisted-synchronization"><a href="#Scheduler-assisted-synchronization" class="headerlink" title="Scheduler assisted synchronization"></a>Scheduler assisted synchronization</h3><ul>
+<li>Wait Queues<br>Mach follows this pattern as well, with the waitq and waitq_set structures.The waitqs can be<br>found embedded in Mach ports, semaphores and (as of Darwin 18) turnstiles, and they also<br>support BSD’s select(2) and AIO implementaiotns. The waitq_sets back select(2) as well,<br>along with kqueues and Mach ipc_mqueues.<br>struct waitq [osfmk&#x2F;kern&#x2F;waitq.h]</li>
+<li>selection callbacks<br>waitq_select_<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">pragma</span> mark global wait queues</span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> __startup_data <span class="keyword">struct</span> <span class="title class_">waitq</span> g_boot_waitq;</span><br><span class="line"><span class="function"><span class="type">static</span> <span class="title">SECURITY_READ_ONLY_LATE</span><span class="params">(<span class="keyword">struct</span> waitq *)</span> global_waitqs </span>= &amp;g_boot_waitq;</span><br><span class="line"><span class="function"><span class="type">static</span> <span class="title">SECURITY_READ_ONLY_LATE</span><span class="params">(<span class="type">uint32_t</span>)</span> g_num_waitqs </span>= <span class="number">1</span>;</span><br></pre></td></tr></table></figure></li>
+<li>Ulocks (Darwin 16+)<br>__ulock_wait&#x2F;__ulock_wake<br>As the double underscores imply, user mode is not intened to use these system calls<br>directly, instead working with libplatform.dylib’s higher level os_unfair_lock_t.<br>[bsd&#x2F;kern&#x2F;sys_ulock.c]<br>sys_ulock_wait (#515) -&gt; ulock_wait<br>sys_ulock_wake (#516) -&gt; ulock_wake</li>
+<li>Turnstiles (Darwin 18+)<br>The concept first appeared in Solaris, and was then adopted by FreeBSD, and well explained<br>in the BSD bible.<br>Theory<br>optimize short term locks and the scheduling of waiters wehn the locks become available.<br>Darwin implmentation of Turnstiles.<br>turnstiles_init()<br>[osfmk&#x2F;kern&#x2F;turnstile.h]<br>Ref:<a target="_blank" rel="noopener" href="https://book.douban.com/subject/3666232/">https://book.douban.com/subject/3666232/</a><br><a target="_blank" rel="noopener" href="https://greenteapress.com/wp/semaphores/">https://greenteapress.com/wp/semaphores/</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/booksyhay/article/details/82692362">https://blog.csdn.net/booksyhay/article/details/82692362</a><br>[信号量小书 第三章 基本同步模式]<br><a target="_blank" rel="noopener" href="https://www.likecs.com/show-204583284.html#3.7.6%20%E9%A2%84%E8%A3%85%E6%97%8B%E8%BD%AC%E6%A0%85%E9%97%A8%EF%BC%88Preloaded%20turnstile%EF%BC%89">https://www.likecs.com/show-204583284.html#3.7.6%20%E9%A2%84%E8%A3%85%E6%97%8B%E8%BD%AC%E6%A0%85%E9%97%A8%EF%BC%88Preloaded%20turnstile%EF%BC%89</a><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">enum</span> <span class="title class_">__attribute__</span>((packed)) turnstile_type &#123;</span><br><span class="line">	TURNSTILE_NONE = <span class="number">0</span>,</span><br><span class="line">	TURNSTILE_KERNEL_MUTEX = <span class="number">1</span>,</span><br><span class="line">	TURNSTILE_ULOCK = <span class="number">2</span>,</span><br><span class="line">	TURNSTILE_PTHREAD_MUTEX = <span class="number">3</span>,</span><br><span class="line">	TURNSTILE_SYNC_IPC = <span class="number">4</span>,</span><br><span class="line">	TURNSTILE_WORKLOOPS = <span class="number">5</span>,</span><br><span class="line">	TURNSTILE_WORKQS = <span class="number">6</span>,</span><br><span class="line">	TURNSTILE_KNOTE = <span class="number">7</span>,</span><br><span class="line">	TURNSTILE_SLEEP_INHERITOR = <span class="number">8</span>,</span><br><span class="line">	TURNSTILE_TOTAL_TYPES = <span class="number">9</span>,</span><br><span class="line">&#125; <span class="type">turnstile_type_t</span>;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<ul>
+<li>Benefits of Turnstiles<br>“thundering herd” problem<br>priority inversion</li>
+<li>KDebug codes<br>DBG_TURNSTILE</li>
+</ul>
+<ul>
+<li>Gates (Darwin 19)</li>
+</ul>
+<h3 id="Ledgers"><a href="#Ledgers" class="headerlink" title="Ledgers"></a>Ledgers</h3><ul>
+<li>ledger (#373)</li>
+<li>Initialization</li>
+<li>Maintenance</li>
+</ul>
+<h3 id="Selective-Forced-Idle-SFI"><a href="#Selective-Forced-Idle-SFI" class="headerlink" title="Selective Forced Idle (SFI)"></a>Selective Forced Idle (SFI)</h3><p>Darwin 13<br>The main user-mode client of the SFI facility is the thermald.</p>
+<h2 id="chapter-10"><a href="#chapter-10" class="headerlink" title="chapter 10"></a>chapter 10</h2><p>Mixed Messages: Mach IPC</p>
+<h3 id="The-High-Level-View-1"><a href="#The-High-Level-View-1" class="headerlink" title="The High Level View"></a>The High Level View</h3><p>Mach is, first and foremost, a kernel optimized for message passing.<br>ipc_space_t</p>
+<h3 id="Task-ipc-space-t"><a href="#Task-ipc-space-t" class="headerlink" title="Task ipc_space_t"></a>Task ipc_space_t</h3><p>struct ipc_space [osfmk&#x2F;ipc&#x2F;ipc_space.h]<br>ipc_space_create</p>
+<h3 id="The-ipc-port"><a href="#The-ipc-port" class="headerlink" title="The ipc_port"></a>The ipc_port</h3><p>[osfmk&#x2F;ipc&#x2F;ipc_port.h]<br>ipc_port_make_send</p>
+<ul>
+<li>Case Study: resolving a port name to the underlying object address<br>[osfmk&#x2F;ipc&#x2F;ipc_object.c]</li>
+<li>Port lifecycle</li>
+</ul>
+<ul>
+<li>Port allocation<br> [osfmk&#x2F;ipc&#x2F;mach_port.c]</li>
+</ul>
+<ul>
+<li>Rights and Names</li>
+<li>Reference counting<br>mach_msg -&gt; mach_msg_trap<br>-&gt; mach_msg_trap<br>-&gt; ipc_kmsg_send&#x2F;ipc_mqueue_receive</li>
+<li>Port deallocation</li>
+<li>Handling messages<br>[osfmk&#x2F;ipc&#x2F;ipc_mqueue.h]</li>
+</ul>
+<h3 id="mach-msg-revisited"><a href="#mach-msg-revisited" class="headerlink" title="mach_msg revisited"></a>mach_msg revisited</h3><ul>
+<li>Sending Mach messages<br>ipc_kmsg_send</li>
+</ul>
+<ul>
+<li>ipc_mqueue_send()</li>
+</ul>
+<ul>
+<li>Receiving Mach messages<br>ipc_mqueue_receive</li>
+<li>Destriying messages<br>[osfmk&#x2F;ipc&#x2F;ipc_kmsg.c]</li>
+<li>Message Descriptors</li>
+</ul>
+<ul>
+<li>Port right descriptors<br> ipc_kmsg_copyin_port_descriptor</li>
+<li>Port set (OOL ports) descriptors</li>
+<li>OOL memory descriptors</li>
+</ul>
+<ul>
+<li>Descriptors as a vehicle for malicious attacks</li>
+</ul>
+<h3 id="Vouchers"><a href="#Vouchers" class="headerlink" title="Vouchers"></a>Vouchers</h3><p>Darwin 14 [osfmk&#x2F;ipc&#x2F;ipc_voucher.h]</p>
+<ul>
+<li>User-mode API<br>host_create_mach_voucher_trap<br>mach_voucher_extract_attr_recipe_trap</li>
+<li>Implementation<br>IKOT_VOUCHER</li>
+</ul>
+<h3 id="Multinode"><a href="#Multinode" class="headerlink" title="Multinode"></a>Multinode</h3><ul>
+<li>Multinode requirements<br>mach_host_other()</li>
+<li>FLIPC<br>Fast Local InterProcess Communication (FLIPC)<br>Mach Node [osfmk&#x2F;kern&#x2F;mach_node.c] mach_node_register<br>FLIPC [osfmk&#x2F;ipc&#x2F;flipc.c]</li>
+</ul>
+<h2 id="chapter-11"><a href="#chapter-11" class="headerlink" title="chapter 11"></a>chapter 11</h2><p>Mapped out: Mach Memory Management</p>
+<h3 id="A-Bird’s-Eye-View"><a href="#A-Bird’s-Eye-View" class="headerlink" title="A Bird’s Eye View"></a>A Bird’s Eye View</h3><p>Mach’s Virtual Memory subsystem<br>vm_map -&gt; virtual memory<br>pmap -&gt; physical memory</p>
+<h3 id="The-vm-map-Layer"><a href="#The-vm-map-Layer" class="headerlink" title="The vm_map Layer"></a>The vm_map Layer</h3><ul>
+<li>The <code>struct _vm_map</code><br>[osfmk&#x2F;vm&#x2F;vm_map.h]<br>vm_map_create[_options]</li>
+<li>vm_objects<br>[osfmk&#x2F;vm&#x2F;vm_object.h]</li>
+<li>vm_pages<br>[osfmk&#x2F;vm&#x2F;vm_page.h]<br>pmap_startup&#x2F;pmap_free_pages<br>pmap_steal_memory<br>vm_page_lookup()</li>
+<li>User mode interface<br>host_virtual_physical_table_info<br>vm_mapped_pages_info<br>mach_vm_page_info<br>vm_page_info_basic <code>&lt;mach/vm_region.h&gt;</code></li>
+<li>vm_map_enter and friends<br>[mach_]vm_allocate()<br><code>&lt;mach/vm_statistics.h&gt;</code></li>
+<li>Allocating memory (highlighs)<br>VM_PROT_EXECUTE<br>com.apple.security.cs.allow-jit<br>kernel_memory_allocate</li>
+<li>The vm_map_copy object<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">vm_map_copy</span>;</span><br></pre></td></tr></table></figure></li>
+<li>Copying memory<br>[mach_]vm_copy()</li>
+</ul>
+<h3 id="Pagers"><a href="#Pagers" class="headerlink" title="Pagers"></a>Pagers</h3><p>Pager types supported in Darwin 18<br>Vnode&#x2F;Device&#x2F;Apple Protect&#x2F;swapfile<br>Compressor&#x2F;4K(4K emulation on 16K)&#x2F;shared</p>
+<ul>
+<li>The Pager object<br>struct memory_object</li>
+<li>Pager Lifecycle callbacks</li>
+<li>The vnode pager</li>
+<li>The swapfile pager</li>
+<li>The compressor pager<br>[osfmk&#x2F;vm&#x2F;WKdm_new.h]<br>Wilson &amp; Kaplan<br>vm_compressor_algorithms.h</li>
+</ul>
+<ul>
+<li>Lifecycle</li>
+</ul>
+<ul>
+<li>The Device Pager<br>[osfmk&#x2F;vm&#x2F;device_vm.c]</li>
+<li>The 4K Pager (<code>*OS</code>)</li>
+<li>The sahred region pager (Darwin 18)</li>
+<li>The Apple Protect pager<br>memory encryption<br>[osfmk&#x2F;vm&#x2F;vm_apple_protect.c]</li>
+<li>MacOS: Dont Steal Mac OS X.kext<br>dsmos_page_transform_hook<br>[osfmk&#x2F;kern&#x2F;page_decypt.c]</li>
+<li><code>*OS</code>: Fairplay encryption</li>
+<li>Page Lists (UPLs)<br>struct upl [osfmk&#x2F;vm&#x2F;vm_pageout.h]</li>
+</ul>
+<ul>
+<li>Creating UPLs<br> ubc_create_upl()</li>
+<li>Handling UPLs<br> [osfmk&#x2F;mach&#x2F;upl.defs]</li>
+</ul>
+<h3 id="The-pmap-Layer"><a href="#The-pmap-Layer" class="headerlink" title="The pmap Layer"></a>The pmap Layer</h3><p>[osfmk&#x2F;vm&#x2F;pmap.h]<br>pmap_create</p>
+<ul>
+<li>Page Tables<br>In Intel, the special CR3 register holds the base of the page tables for a giver process.<br>In ARM architecures, the Translation Table Base Registers (TTBRs) are used instead. ARM64<br>providers a differnt TTBR for every execption level, so TTBR_EL0 is employde by user mode,<br>and TTBR_EL1 by the kernel.<br>Page Table Entrye(PTE)<br>pmap_pte(pmap, va)</li>
+<li>WIMG<br>Write-through, Cache-Inhibition, Memory Coherence and Guarde writes</li>
+<li>I&#x2F;O Mappings<br>ml_io_map()</li>
+<li>Intel PTEs</li>
+<li>The ARM PTEs</li>
+</ul>
+<h2 id="chapre-12"><a href="#chapre-12" class="headerlink" title="chapre 12"></a>chapre 12</h2><p>Ceci n’est pas une “heap”: Kernel Memory Management<br>We detail how the kernel manages its own vm_map - the kernel_map - through <code>kmem_alloc*</code><br>and <code>kalloc*</code>.</p>
+<h3 id="Kernel-Memory-Allocation"><a href="#Kernel-Memory-Allocation" class="headerlink" title="Kernel Memory Allocation"></a>Kernel Memory Allocation</h3><ul>
+<li>The kernel_map<br>[osfmk&#x2F;vm&#x2F;vm_kern.c]<br>VM_MIN_KERNEL_AND_KEXT_ADDRESS<br>VM_MAX_KERNEL_AND_KEXT_ADDRESS</li>
+<li>kmem_alloc() and friends</li>
+</ul>
+<ul>
+<li>kernel_memory_allocate<br> vm_map_find_space</li>
+<li>kmem_suballoc</li>
+<li>kmem_realloc</li>
+<li>kalloc</li>
+<li>kalloc.###zones<br> zalloc_canblock_tag&#x2F;vm_allocation_site</li>
+</ul>
+<ul>
+<li>The Kalloc DLUT<br>Direct LookUp Table (DLUT)<br>[osfmk&#x2F;kern&#x2F;kalloc.c]</li>
+<li>The slow path</li>
+<li>OSMalloc*<br>[libkern&#x2F;libkern&#x2F;OSMalloc.h]<br>The main advantage of using OSMalloc is its support of memory tags.</li>
+</ul>
+<h3 id="The-Zone-Allocator"><a href="#The-Zone-Allocator" class="headerlink" title="The Zone Allocator"></a>The Zone Allocator</h3><p>like Linux’s Slabs<br>zalloc() [osfmk&#x2F;kern&#x2F;zalloc.c]</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">man zprint</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Zone Management</li>
+<li>The zone_metadata_region</li>
+<li>The zone metadata</li>
+<li>Element Free Lists</li>
+<li>Garbage Collection<br>consider_zone_gc()&#x2F;zone_gc()<br>vm_pageout_garbage_collect</li>
+<li>GC and UAF<br>mach_zone_force_gc</li>
+<li>Battling zone corruption</li>
+<li>The Guard Mode Zone Allocator (MacOS)<br>like libgmalloc(3) (Guard Malloc) in user mode</li>
+<li>The Zone Cache (Darwin 18+)</li>
+</ul>
+<h3 id="Memorystauts-MacOS-anad-Jetsam-OS"><a href="#Memorystauts-MacOS-anad-Jetsam-OS" class="headerlink" title="Memorystauts (MacOS) anad Jetsam (*OS)"></a>Memorystauts (MacOS) anad Jetsam (<code>*OS</code>)</h3><ul>
+<li>Purgeable memory<br>task_purgable_info<br>[mach_]vm_purgable_control<br>memory_entry_purgable_control</li>
+</ul>
+<h3 id="Kernel-Memory-Layout"><a href="#Kernel-Memory-Layout" class="headerlink" title="Kernel Memory Layout"></a>Kernel Memory Layout</h3><ul>
+<li>The kernel_map regions</li>
+<li>The Kernel Slide<br>Kernel Address Space Layout Randomization (KALSR) [Darwin 12]<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sysctl kern.slide</span><br></pre></td></tr></table></figure>
+vm_kernel_slider<br>vm_kernel_addrhash_salt</li>
+</ul>
+<h2 id="chapter-13"><a href="#chapter-13" class="headerlink" title="chapter 13"></a>chapter 13</h2><p>All in the Family: IOKit<br>IORegistry IOCatalogue</p>
+<h3 id="A-High-level-view-of-IOKit"><a href="#A-High-level-view-of-IOKit" class="headerlink" title="A High level view of IOKit"></a>A High level view of IOKit</h3><ul>
+<li>The IOKit.framework<br>IO Master Port<br>device_service_create [osfmk&#x2F;device&#x2F;device_init.c]</li>
+<li>IOKit error codes<br>[iokit&#x2F;IOKit&#x2F;IOReturn.h]<br>IOService::stringFromReturn</li>
+</ul>
+<h3 id="The-IORegistry"><a href="#The-IORegistry" class="headerlink" title="The IORegistry"></a>The IORegistry</h3><p>IORegistryPlanes</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ioreg -l -w 0 -f | grep IORegistryPlanes</span><br></pre></td></tr></table></figure>
+<p>IORegistryExplorer.app -&gt; XCode’s Additional Tools</p>
+<ul>
+<li>User Mode APIs</li>
+<li>Iterators<br>IOIterator</li>
+</ul>
+<h3 id="The-IOCatalog-ue"><a href="#The-IOCatalog-ue" class="headerlink" title="The IOCatalog (ue)"></a>The IOCatalog (ue)</h3><ul>
+<li>Matching Dictionaries</li>
+<li>Notifiations<br>kIO…Notification<br>IONotificationPortCreate()</li>
+</ul>
+<h3 id="Interlude-Libkern-Base-Classes"><a href="#Interlude-Libkern-Base-Classes" class="headerlink" title="Interlude: Libkern Base Classes"></a>Interlude: Libkern Base Classes</h3><ul>
+<li>OSObject</li>
+<li>OSMetaClass(Base)</li>
+<li>APIs</li>
+<li>DefaultStrutors</li>
+<li>Members, methods and the Fragile Base Class proble</li>
+<li>Object types</li>
+</ul>
+<ul>
+<li>OSStrings and OSSymbols</li>
+<li>OSCollections</li>
+</ul>
+<ul>
+<li>Serializaition</li>
+</ul>
+<ul>
+<li>XML Serialization</li>
+<li>Binary Serialization</li>
+</ul>
+<h3 id="The-Class-Menagerie"><a href="#The-Class-Menagerie" class="headerlink" title="The Class Menagerie"></a>The Class Menagerie</h3><ul>
+<li>IOKIt Built-in classes</li>
+</ul>
+<ul>
+<li>IORegistryEntry</li>
+<li>IOService</li>
+<li><code>IO*MemoryDescriptor</code></li>
+<li><code>IO*MemoryCursor</code></li>
+<li>IOWorkLoop</li>
+<li><code>IO*EventSource</code> and IOCommand</li>
+<li>IOCommandQueue</li>
+</ul>
+<ul>
+<li>IOKit Families</li>
+</ul>
+<h3 id="Driver-Life-Cycle"><a href="#Driver-Life-Cycle" class="headerlink" title="Driver Life Cycle"></a>Driver Life Cycle</h3><ul>
+<li>Driver Matching<br>IOKitPersonalities</li>
+<li>Case Study: VMWare Fusion VMIOPlug</li>
+<li>Driver activity and the IOWorkLoop</li>
+<li>Messaging</li>
+<li>Matching Notifications</li>
+<li>Interrupt Handling</li>
+</ul>
+<h3 id="IOUserClients"><a href="#IOUserClients" class="headerlink" title="IOUserClients"></a>IOUserClients</h3><ul>
+<li>IOUserClient lifecycle</li>
+<li>Driver Properties</li>
+<li>Notifications<br>IOConnectSetNotificationPort</li>
+<li>Mapped Memory</li>
+<li>External Traps</li>
+<li>Extenal Methods</li>
+<li>IOCFPlugInTypes</li>
+</ul>
+<h3 id="Darwin-19-DriverKit"><a href="#Darwin-19-DriverKit" class="headerlink" title="Darwin 19: DriverKit"></a>Darwin 19: DriverKit</h3><ul>
+<li>IOUserServer</li>
+<li>IORPC</li>
+</ul>
+<h2 id="chapter-14"><a href="#chapter-14" class="headerlink" title="chapter 14"></a>chapter 14</h2><p>Stacking Up: Kernel Networking</p>
+<h3 id="The-High-Level-View-2"><a href="#The-High-Level-View-2" class="headerlink" title="The High Level View"></a>The High Level View</h3><h3 id="Layer-V-Sockets"><a href="#Layer-V-Sockets" class="headerlink" title="Layer V: Sockets"></a>Layer V: Sockets</h3><ul>
+<li>The struct socket</li>
+<li>Socket Creation<br>socreate_internal() [bsd&#x2F;kern&#x2F;uipc_socket.c]</li>
+<li>sockbufs</li>
+<li>mbufs<br>struct mbuf;<br>[bsd&#x2F;sys&#x2F;mbuf.h]<br>XNU also supports an “mbuf watchdog”, toggled through kern.ipc.mb_watchdog.</li>
+<li>Sockets in kernel mode<br>[bsd&#x2F;kern&#x2F;kpi_socket.h]<br>sock_connectwait<br>sock_socket -&gt; socreate</li>
+</ul>
+<h3 id="Layer-IV-Domains-amp-Protocols"><a href="#Layer-IV-Domains-amp-Protocols" class="headerlink" title="Layer IV: Domains &amp; Protocols"></a>Layer IV: Domains &amp; Protocols</h3><ul>
+<li>Domains</li>
+<li>Protocols</li>
+<li>Case Study: PF_SYSTEM sockets</li>
+</ul>
+<ul>
+<li>SYSPROTO_EVENT</li>
+<li>SYSPROTO_CONTROL</li>
+</ul>
+<h3 id="Layer-III-Network-Protocols"><a href="#Layer-III-Network-Protocols" class="headerlink" title="Layer III: Network Protocols"></a>Layer III: Network Protocols</h3><ul>
+<li>Incoming packets</li>
+</ul>
+<h3 id="Layer-II-Interfaces-The-Data-Link-Interface-Layer"><a href="#Layer-II-Interfaces-The-Data-Link-Interface-Layer" class="headerlink" title="Layer II: Interfaces - The Data Link Interface Layer"></a>Layer II: Interfaces - The Data Link Interface Layer</h3><ul>
+<li>The struct ifnet</li>
+<li>Interface lifecycle</li>
+<li>Case Study: The UTUN interface</li>
+</ul>
+<h3 id="Network-Data-Processing"><a href="#Network-Data-Processing" class="headerlink" title="Network Data Processing"></a>Network Data Processing</h3><ul>
+<li>Sending Data</li>
+<li>IPv4&#x2F;IPv6 packet output</li>
+<li>DLIL output</li>
+<li>Receiving data</li>
+<li>DLIL frame reception</li>
+<li>IPv4&#x2F;IPv6 packaet input</li>
+</ul>
+<h3 id="Firewalling-amp-Filtering-mechanisms"><a href="#Firewalling-amp-Filtering-mechanisms" class="headerlink" title="Firewalling &amp; Filtering mechanisms"></a>Firewalling &amp; Filtering mechanisms</h3><ul>
+<li>Socket Filters</li>
+<li>Content Filters (Darwin 14+)</li>
+<li>IP filters</li>
+<li>PF<br>BSD PF<br>pfctl(8)</li>
+<li>Interface Filters</li>
+<li>BPF</li>
+</ul>
+<h3 id="Network-Extension-Control-Policies"><a href="#Network-Extension-Control-Policies" class="headerlink" title="Network Extension Control Policies"></a>Network Extension Control Policies</h3><ul>
+<li>NECP file descriptors<br>necp_open() [bsd&#x2F;net&#x2F;necp_client.c]</li>
+<li>NECP Session FDs<br>necp_session_opne()</li>
+<li>Policy evaluation</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://wurui1994.github.io">WuRui</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://wurui1994.github.io/2023/06/27/macos-ios-internals-vol-two/">https://wurui1994.github.io/2023/06/27/macos-ios-internals-vol-two/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://wurui1994.github.io" target="_blank">WuRui</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/macos/">macos</a></div><div class="post_share"><div class="social-share" data-image="/img/avatar.jpg" data-sites="wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/butterfly-extsrc/1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.bootcdn.net/ajax/libs/butterfly-extsrc/1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechatpay.png" target="_blank"><img class="post-qr-code-img" src="/img/wechatpay.png" alt="微信"/></a><div class="post-qr-code-desc">微信</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/alipay.jpg" alt="支付宝"/></a><div class="post-qr-code-desc">支付宝</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2023/06/27/macos-ios-internals-vol-three/" title="深入解析MacOS和iOS 卷三 笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">深入解析MacOS和iOS 卷三 笔记</div></div></a></div><div class="next-post pull-right"><a href="/2023/06/27/macos-ios-internals-vol-one/" title="深入解析MacOS和iOS 卷一 笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">深入解析MacOS和iOS 卷一 笔记</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2023/06/27/macos-cmds/" title="macOS命令行"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-27</div><div class="title">macOS命令行</div></div></a></div><div><a href="/2023/06/26/macos-image/" title="macOS镜像"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-26</div><div class="title">macOS镜像</div></div></a></div><div><a href="/2023/06/27/macos-ios-internals-vol-one/" title="深入解析MacOS和iOS 卷一 笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-27</div><div class="title">深入解析MacOS和iOS 卷一 笔记</div></div></a></div><div><a href="/2023/06/27/macos-ios-internals-vol-three/" title="深入解析MacOS和iOS 卷三 笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-27</div><div class="title">深入解析MacOS和iOS 卷三 笔记</div></div></a></div><div><a href="/2023/06/26/macos-kernel/" title="macOS内核"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-26</div><div class="title">macOS内核</div></div></a></div><div><a href="/2023/06/27/macos-kext/" title="macOS内核扩展"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-27</div><div class="title">macOS内核扩展</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="giscus-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">WuRui</div><div class="author-info__description">每天都是新的一天</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">101</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">90</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/wurui1994" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="/img/qq.jpg" target="_blank" title="QQ"><i class="fab fa-qq"></i></a><a class="social-icon" href="/img/wechat.jpg" target="_blank" title="微信"><i class="fab fa-weixin"></i></a><a class="social-icon" href="mailto:1341531859@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn"></i><span>公告</span></div><div class="announcement_content">这里是我的博客, <a href=https://www.cnblogs.com/wurui1994/>旧博客地址</a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#MacOS-and-iOS-Internals-Volume-II-Kernel-Mode"><span class="toc-number">1.</span> <span class="toc-text">MacOS and iOS Internals, Volume II : Kernel Mode</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#chapter-1"><span class="toc-number">1.1.</span> <span class="toc-text">chapter 1</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Devices"><span class="toc-number">1.1.1.</span> <span class="toc-text">Devices</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Ports"><span class="toc-number">1.1.2.</span> <span class="toc-text">Ports</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#iDevice-Connectors"><span class="toc-number">1.1.3.</span> <span class="toc-text">iDevice Connectors</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NVRAM"><span class="toc-number">1.1.4.</span> <span class="toc-text">NVRAM</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#The-Device-Tree"><span class="toc-number">1.1.5.</span> <span class="toc-text">The Device Tree</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Dedicated-Processors"><span class="toc-number">1.1.6.</span> <span class="toc-text">Dedicated Processors</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#chapter-2"><span class="toc-number">1.2.</span> <span class="toc-text">chapter 2</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#The-XNU-Source"><span class="toc-number">1.2.1.</span> <span class="toc-text">The XNU Source</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Compiling-the-kernel"><span class="toc-number">1.2.2.</span> <span class="toc-text">Compiling the kernel</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Kernel-Debugging"><span class="toc-number">1.2.3.</span> <span class="toc-text">Kernel Debugging</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Don%E2%80%99t-panic"><span class="toc-number">1.2.4.</span> <span class="toc-text">Don’t panic</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#The-Panic-report"><span class="toc-number">1.2.4.1.</span> <span class="toc-text">The Panic report</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Kernel-Core-Dumps"><span class="toc-number">1.2.4.2.</span> <span class="toc-text">Kernel Core Dumps</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Coredump-helpers"><span class="toc-number">1.2.4.3.</span> <span class="toc-text">Coredump helpers</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#chapter-3"><span class="toc-number">1.3.</span> <span class="toc-text">chapter 3</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#The-Kernel-Programming-Interface"><span class="toc-number">1.3.1.</span> <span class="toc-text">The Kernel Programming Interface</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#The-kernelcache"><span class="toc-number">1.3.2.</span> <span class="toc-text">The kernelcache</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Kext-Loading-The-user-mode-perspective"><span class="toc-number">1.3.3.</span> <span class="toc-text">Kext Loading: The user mode perspective</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Kext-Loading-The-kernel-perspective"><span class="toc-number">1.3.4.</span> <span class="toc-text">Kext Loading: The kernel perspective</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#kext-metadata-management"><span class="toc-number">1.3.5.</span> <span class="toc-text">kext metadata management</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MacOS-15-System-Extensions-and-DriverKit"><span class="toc-number">1.3.6.</span> <span class="toc-text">MacOS 15: System Extensions and DriverKit</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#chapter-4"><span class="toc-number">1.4.</span> <span class="toc-text">chapter 4</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Data-Structures"><span class="toc-number">1.4.1.</span> <span class="toc-text">Data Structures</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Concurrent-resource-access"><span class="toc-number">1.4.2.</span> <span class="toc-text">Concurrent resource access</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Per-CPU-data"><span class="toc-number">1.4.2.1.</span> <span class="toc-text">Per-CPU data</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Processor-execution-modes"><span class="toc-number">1.4.3.</span> <span class="toc-text">Processor execution modes</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Mode-Traversal"><span class="toc-number">1.4.4.</span> <span class="toc-text">Mode Traversal</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Returning-to-user-mode"><span class="toc-number">1.4.4.1.</span> <span class="toc-text">Returning to user mode</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Context-Switching"><span class="toc-number">1.4.4.2.</span> <span class="toc-text">Context Switching</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Accessing-user-mode-memory"><span class="toc-number">1.4.4.3.</span> <span class="toc-text">Accessing user mode memory</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Memory-Access-Protections"><span class="toc-number">1.4.4.4.</span> <span class="toc-text">Memory Access Protections</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Interrupt-Handling"><span class="toc-number">1.4.5.</span> <span class="toc-text">Interrupt Handling</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#System-call-personalities"><span class="toc-number">1.4.6.</span> <span class="toc-text">System call personalities</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#chapter-5"><span class="toc-number">1.5.</span> <span class="toc-text">chapter 5</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#MacOS-EFI"><span class="toc-number">1.5.1.</span> <span class="toc-text">MacOS: EFI</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#OS-iBoot"><span class="toc-number">1.5.2.</span> <span class="toc-text">*OS: iBoot</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MacBook-Pro-2018-and-later-iBoot-EFI"><span class="toc-number">1.5.3.</span> <span class="toc-text">MacBook Pro (2018) and later: iBoot + EFI</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Kernel-Boot-Process"><span class="toc-number">1.5.4.</span> <span class="toc-text">Kernel Boot Process</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#SMP-Considerations"><span class="toc-number">1.5.4.1.</span> <span class="toc-text">SMP Considerations</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Kernel-Threads"><span class="toc-number">1.5.5.</span> <span class="toc-text">Kernel Threads</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Kernel-Shutdown"><span class="toc-number">1.5.5.1.</span> <span class="toc-text">Kernel Shutdown</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#chapter-6"><span class="toc-number">1.6.</span> <span class="toc-text">chapter 6</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#A-Tour-of-BSD"><span class="toc-number">1.6.1.</span> <span class="toc-text">A Tour of BSD</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Launching-launchd-8"><span class="toc-number">1.6.1.1.</span> <span class="toc-text">Launching launchd(8)</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Processes"><span class="toc-number">1.6.2.</span> <span class="toc-text">Processes</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#U-Threads"><span class="toc-number">1.6.3.</span> <span class="toc-text">(U)Threads</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Pthread-shims-and-callbacks-Darwin-13"><span class="toc-number">1.6.3.1.</span> <span class="toc-text">Pthread shims and callbacks (Darwin 13)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Work-Queue-threads-the-kernel-side-portion-of-GCD"><span class="toc-number">1.6.3.2.</span> <span class="toc-text">Work Queue threads (the kernel-side portion of GCD)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#BSD-sleep-nad-wakeup"><span class="toc-number">1.6.3.3.</span> <span class="toc-text">BSD *sleep nad wakeup*</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Process-Lifecycle"><span class="toc-number">1.6.4.</span> <span class="toc-text">Process Lifecycle</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Process-Termination"><span class="toc-number">1.6.4.1.</span> <span class="toc-text">Process Termination</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Core-dumps"><span class="toc-number">1.6.4.2.</span> <span class="toc-text">Core dumps</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Crash-Reports"><span class="toc-number">1.6.4.3.</span> <span class="toc-text">Crash Reports</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#File-Descriptors"><span class="toc-number">1.6.5.</span> <span class="toc-text">File Descriptors</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#File-Types"><span class="toc-number">1.6.5.1.</span> <span class="toc-text">File Types</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#File-I-x2F-O"><span class="toc-number">1.6.6.</span> <span class="toc-text">File I&#x2F;O</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Asynchronous-I-x2F-O"><span class="toc-number">1.6.6.1.</span> <span class="toc-text">Asynchronous I&#x2F;O</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#BSD-Memory-Zones"><span class="toc-number">1.6.7.</span> <span class="toc-text">BSD Memory Zones</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#sysctl"><span class="toc-number">1.6.8.</span> <span class="toc-text">sysctl</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DTrace"><span class="toc-number">1.6.9.</span> <span class="toc-text">DTrace</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#chapter-7"><span class="toc-number">1.7.</span> <span class="toc-text">chapter 7</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#VFS-Concepts"><span class="toc-number">1.7.1.</span> <span class="toc-text">VFS Concepts</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Apple-Extensions"><span class="toc-number">1.7.2.</span> <span class="toc-text">Apple Extensions</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#VFS-KPIs"><span class="toc-number">1.7.3.</span> <span class="toc-text">VFS KPIs</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#VFS-SPIs"><span class="toc-number">1.7.4.</span> <span class="toc-text">VFS SPIs</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Case-Studies"><span class="toc-number">1.7.5.</span> <span class="toc-text">Case Studies</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#chapter-8"><span class="toc-number">1.8.</span> <span class="toc-text">chapter 8</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#A-Bird%E2%80%99s-Eye-View-of-APFS"><span class="toc-number">1.8.1.</span> <span class="toc-text">A Bird’s Eye View of APFS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Filesystem-Features"><span class="toc-number">1.8.2.</span> <span class="toc-text">Filesystem Features</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#File-System-Internals"><span class="toc-number">1.8.3.</span> <span class="toc-text">File System Internals</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Containers-amp-Volumes"><span class="toc-number">1.8.4.</span> <span class="toc-text">Containers &amp; Volumes</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#The-Space-Manager"><span class="toc-number">1.8.5.</span> <span class="toc-text">The Space Manager</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#APFS-kext"><span class="toc-number">1.8.6.</span> <span class="toc-text">APFS.kext</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#chapter-9"><span class="toc-number">1.9.</span> <span class="toc-text">chapter 9</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#The-High-Level-View"><span class="toc-number">1.9.1.</span> <span class="toc-text">The High Level View</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Mach-Tasks"><span class="toc-number">1.9.2.</span> <span class="toc-text">Mach Tasks</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#The-kernel-task"><span class="toc-number">1.9.2.1.</span> <span class="toc-text">The kernel_task</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Mach-Threads"><span class="toc-number">1.9.3.</span> <span class="toc-text">Mach Threads</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Thread-creation"><span class="toc-number">1.9.4.</span> <span class="toc-text">Thread creation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Thread-termination"><span class="toc-number">1.9.5.</span> <span class="toc-text">Thread termination</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Processor-Management"><span class="toc-number">1.9.6.</span> <span class="toc-text">Processor Management</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Mach-Scheduling-Enhancements"><span class="toc-number">1.9.7.</span> <span class="toc-text">Mach Scheduling Enhancements</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Asynchronous-Software-Traps-AST"><span class="toc-number">1.9.8.</span> <span class="toc-text">Asynchronous Software Traps (AST)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Mach-Schedulers"><span class="toc-number">1.9.9.</span> <span class="toc-text">Mach Schedulers</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Deferred-Calls"><span class="toc-number">1.9.10.</span> <span class="toc-text">Deferred Calls</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Scheduler-assisted-synchronization"><span class="toc-number">1.9.11.</span> <span class="toc-text">Scheduler assisted synchronization</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Ledgers"><span class="toc-number">1.9.12.</span> <span class="toc-text">Ledgers</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Selective-Forced-Idle-SFI"><span class="toc-number">1.9.13.</span> <span class="toc-text">Selective Forced Idle (SFI)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#chapter-10"><span class="toc-number">1.10.</span> <span class="toc-text">chapter 10</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#The-High-Level-View-1"><span class="toc-number">1.10.1.</span> <span class="toc-text">The High Level View</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Task-ipc-space-t"><span class="toc-number">1.10.2.</span> <span class="toc-text">Task ipc_space_t</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#The-ipc-port"><span class="toc-number">1.10.3.</span> <span class="toc-text">The ipc_port</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#mach-msg-revisited"><span class="toc-number">1.10.4.</span> <span class="toc-text">mach_msg revisited</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Vouchers"><span class="toc-number">1.10.5.</span> <span class="toc-text">Vouchers</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Multinode"><span class="toc-number">1.10.6.</span> <span class="toc-text">Multinode</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#chapter-11"><span class="toc-number">1.11.</span> <span class="toc-text">chapter 11</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#A-Bird%E2%80%99s-Eye-View"><span class="toc-number">1.11.1.</span> <span class="toc-text">A Bird’s Eye View</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#The-vm-map-Layer"><span class="toc-number">1.11.2.</span> <span class="toc-text">The vm_map Layer</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Pagers"><span class="toc-number">1.11.3.</span> <span class="toc-text">Pagers</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#The-pmap-Layer"><span class="toc-number">1.11.4.</span> <span class="toc-text">The pmap Layer</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#chapre-12"><span class="toc-number">1.12.</span> <span class="toc-text">chapre 12</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Kernel-Memory-Allocation"><span class="toc-number">1.12.1.</span> <span class="toc-text">Kernel Memory Allocation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#The-Zone-Allocator"><span class="toc-number">1.12.2.</span> <span class="toc-text">The Zone Allocator</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Memorystauts-MacOS-anad-Jetsam-OS"><span class="toc-number">1.12.3.</span> <span class="toc-text">Memorystauts (MacOS) anad Jetsam (*OS)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Kernel-Memory-Layout"><span class="toc-number">1.12.4.</span> <span class="toc-text">Kernel Memory Layout</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#chapter-13"><span class="toc-number">1.13.</span> <span class="toc-text">chapter 13</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#A-High-level-view-of-IOKit"><span class="toc-number">1.13.1.</span> <span class="toc-text">A High level view of IOKit</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#The-IORegistry"><span class="toc-number">1.13.2.</span> <span class="toc-text">The IORegistry</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#The-IOCatalog-ue"><span class="toc-number">1.13.3.</span> <span class="toc-text">The IOCatalog (ue)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Interlude-Libkern-Base-Classes"><span class="toc-number">1.13.4.</span> <span class="toc-text">Interlude: Libkern Base Classes</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#The-Class-Menagerie"><span class="toc-number">1.13.5.</span> <span class="toc-text">The Class Menagerie</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Driver-Life-Cycle"><span class="toc-number">1.13.6.</span> <span class="toc-text">Driver Life Cycle</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#IOUserClients"><span class="toc-number">1.13.7.</span> <span class="toc-text">IOUserClients</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Darwin-19-DriverKit"><span class="toc-number">1.13.8.</span> <span class="toc-text">Darwin 19: DriverKit</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#chapter-14"><span class="toc-number">1.14.</span> <span class="toc-text">chapter 14</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#The-High-Level-View-2"><span class="toc-number">1.14.1.</span> <span class="toc-text">The High Level View</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Layer-V-Sockets"><span class="toc-number">1.14.2.</span> <span class="toc-text">Layer V: Sockets</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Layer-IV-Domains-amp-Protocols"><span class="toc-number">1.14.3.</span> <span class="toc-text">Layer IV: Domains &amp; Protocols</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Layer-III-Network-Protocols"><span class="toc-number">1.14.4.</span> <span class="toc-text">Layer III: Network Protocols</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Layer-II-Interfaces-The-Data-Link-Interface-Layer"><span class="toc-number">1.14.5.</span> <span class="toc-text">Layer II: Interfaces - The Data Link Interface Layer</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Network-Data-Processing"><span class="toc-number">1.14.6.</span> <span class="toc-text">Network Data Processing</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Firewalling-amp-Filtering-mechanisms"><span class="toc-number">1.14.7.</span> <span class="toc-text">Firewalling &amp; Filtering mechanisms</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Network-Extension-Control-Policies"><span class="toc-number">1.14.8.</span> <span class="toc-text">Network Extension Control Policies</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/02/media-guide/" title="学习入门">学习入门</a><time datetime="2024-03-02T01:00:12.000Z" title="发表于 2024-03-02 09:00:12">2024-03-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/10/22/clipboard-note/" title="clipboard笔记">clipboard笔记</a><time datetime="2023-10-22T08:54:25.000Z" title="发表于 2023-10-22 16:54:25">2023-10-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/08/04/optimize-note/" title="优化相关">优化相关</a><time datetime="2023-08-04T06:51:45.000Z" title="发表于 2023-08-04 14:51:45">2023-08-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/08/04/love-note/" title="关于爱情">关于爱情</a><time datetime="2023-08-04T00:35:24.000Z" title="发表于 2023-08-04 08:35:24">2023-08-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/07/20/dopamine-note/" title="多巴胺相关">多巴胺相关</a><time datetime="2023-07-20T06:47:32.000Z" title="发表于 2023-07-20 14:47:32">2023-07-20</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By WuRui</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>function getGiscusTheme (theme) {
+  return theme === 'dark' ? 'dark' : 'light'
+}
+
+function loadGiscus () {
+  const config = Object.assign({
+    src: 'https://giscus.app/client.js',
+    'data-repo': 'wurui1994/wurui1994.github.io',
+    'data-repo-id': 'R_kgDOJzB0HA',
+    'data-category-id': 'DIC_kwDOJzB0HM4CXeHj',
+    'data-lang': 'zh-CN',
+    'data-mapping': 'pathname',
+    'data-theme': getGiscusTheme(document.documentElement.getAttribute('data-theme')),
+    'data-reactions-enabled': '1',
+    crossorigin: 'anonymous',
+    async: true
+  },null)
+
+  let ele = document.createElement('script')
+  for (let key in config) {
+    ele.setAttribute(key, config[key])
+  }
+  document.getElementById('giscus-wrap').insertAdjacentElement('afterbegin',ele)
+}
+
+function changeGiscusTheme (theme) {
+  function sendMessage(message) {
+    const iframe = document.querySelector('iframe.giscus-frame')
+    if (!iframe) return
+    iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app')
+  }
+
+  sendMessage({
+    setConfig: {
+      theme: getGiscusTheme(theme)
+    }
+  });
+}
+
+btf.addModeChange('giscus', changeGiscusTheme)
+
+if ('Giscus' === 'Giscus' || !false) {
+  if (false) btf.loadComment(document.getElementById('giscus-wrap'), loadGiscus)
+  else loadGiscus()
+} else {
+  function loadOtherComment () {
+    loadGiscus()
+  }
+}</script></div><link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/aplayer/1.10.1/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.bootcdn.net/ajax/libs/aplayer/1.10.1/APlayer.min.js"></script><script src="https://cdn.bootcdn.net/ajax/libs/butterfly-extsrc/1.1.3/metingjs/dist/Meting.min.js"></script><script src="https://cdn.bootcdn.net/ajax/libs/pjax/0.2.8/pjax.min.js"></script><script>let pjaxSelectors = ["link[rel=\"canonical\"]","meta[property=\"og:image\"]","meta[property=\"og:title\"]","meta[property=\"og:url\"]","head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener scroll 
+  window.tocScrollFn && window.removeEventListener('scroll', window.tocScrollFn)
+  window.scrollCollect && window.removeEventListener('scroll', scrollCollect)
+
+  document.getElementById('rightside').style.cssText = "opacity: ''; transform: ''"
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+  typeof disqusjs === 'object' && disqusjs.destroy()
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', (e) => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
